@@ -1,0 +1,30 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1, 1]
+
+******************** Starting Execution for DC_ST_Example4 ********************
+
+The solution of Equipment1 "DC_ST" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[14],
+       [35]]), 'candidate_set_cardinality_after_each_trimming': [1]}
+Performing Exhaustive Enumeration now
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1]
+{'Cost_OF': {'Ctotal': 47302.520594474685, 'Number_of_solutions': 1}, 'dPtotal_OF': {'ht_total': 4.074678317375501, 'Number_of_solutions': 1}, 'Dc': 0.9144, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0635, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 0.03 seconds 
+
+OF Solution total ($) 47302.520594474685
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+All 1 candidates were evaluated
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Solution after Exhaustive Enumeration {'TAC_OF': {'TAC': 93568.9971337941}, 'Nf': 14, 'Ns': 35, 'Next_Level': {'Equipment1': {'Cost_OF': {'Ctotal': 47302.520594474685, 'Number_of_solutions': 1}, 'dPtotal_OF': {'ht_total': 4.074678317375501, 'Number_of_solutions': 1}, 'Dc': 0.9144, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0635, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'total_solution': 47302.520594474685}}
+Elapsed time for Equipment1 "DC_ST": 4.25 seconds 
+
+OF Solution total ($/year) 93568.9971337941
+Total elapsed time: 11.41 seconds
+

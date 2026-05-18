@@ -1,0 +1,1449 @@
+
+******* Testing consistency *******
+
+********** Incremental Set Trimming running **********
+WC_STHE_RST parameter from par_calc was not generated at this stage. Skipping
+Primordial LD_lb - Initial Space ['Ds', 'L'].
+Primordial LD_lb - Space Size of Initial Space: 510
+Primordial - Initial Space building time:  0.00106 seconds
+
+Primordial LD_lb - Space Size After Trimming: 296
+Primordial - Trimming time:  0.00000 seconds
+
+Primordial LD_ub - Space Preparation is not needed. The set ['Ds', 'L'] remains without changes.
+Primordial LD_ub - Space Size After Trimming: 268
+Primordial - Trimming time:  0.00000 seconds
+
+Primordial lbc_lb - Space Preparation adding following variables: ['Nb'] to the previous set ['Ds', 'L']
+Primordial lbc_lb - Space Size After Adding the variables ['Nb']: 5360
+Primordial - Adding variables time:  0.00100 seconds
+
+Primordial lbc_lb - Space Size After Trimming: 5095
+Primordial - Trimming time:  0.00000 seconds
+
+Primordial lbc_ub - Space Preparation is not needed. The set ['Ds', 'Nb', 'L'] remains without changes.
+Primordial lbc_ub - Space Size After Trimming: 3752
+Primordial - Trimming time:  0.00000 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set using Incremental Set Trimming************
+
+Candidate set cardinality after each incremental trimming [510, 296, 268, 5360, 5095, 3752, 3752] 
+ Variables used for trim ['Ds', 'L', 'Nb']
+
+******************** Starting Execution for WC_STHE_RST_Example1 ********************
+
+Options selected for mc: [44.67, 49.67, 54.67, 59.67, 64.67, 69.67, 74.67, 79.67, 84.67, 89.67, 94.67, 99.67, 104.67, 109.67, 114.67, 119.67, 124.67, 129.67, 134.67, 139.67, 144.67, 149.67, 150]
+If only one option is desired example input for Model_Parameters['mc'] must be included with one of given options
+
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 44.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01099 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02398 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.01115 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02307 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 247386
+Set Trimming - Trimming time:  0.17525 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 166960
+Set Trimming - Trimming time:  0.15008 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 166960
+Set Trimming - Trimming time:  0.10501 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 158468
+Set Trimming - Trimming time:  0.09994 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 158468
+Set Trimming - Trimming time:  0.02498 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 158468
+Set Trimming - Trimming time:  0.02498 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 1109276
+Set Trimming - Adding variables time:  0.10838 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 1104326
+Set Trimming - Trimming time:  6.91353 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 1060526
+Set Trimming - Trimming time:  1.30096 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 247204
+Set Trimming - Trimming time:  3.63104 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 247386, 166960, 166960, 158468, 158468, 158468, 1109276, 1104326, 1060526, 247204, 247204]
+{'TAC_OF': {'TAC': np.float64(27273.823975087187), 'Number_of_solutions': 1}, 'Ds': np.float64(0.59055), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.33), 'lay': np.float64(1.0), 'L': np.float64(3.6576), 'Nb': np.float64(8.0), 'Bc': np.float64(0.25)}
+Since Selected Objective Function TAC_OF does not allow for recursive trimming, initial set will be used for next mc option.
+
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 49.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01099 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02224 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00900 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 253862
+Set Trimming - Trimming time:  0.15201 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 163265
+Set Trimming - Trimming time:  0.14891 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 163265
+Set Trimming - Trimming time:  0.08820 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 154026
+Set Trimming - Trimming time:  0.09014 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 154026
+Set Trimming - Trimming time:  0.02199 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 154026
+Set Trimming - Trimming time:  0.02199 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 1078182
+Set Trimming - Adding variables time:  0.09530 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 1073855
+Set Trimming - Trimming time:  6.69661 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 1033737
+Set Trimming - Trimming time:  1.27737 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 255138
+Set Trimming - Trimming time:  3.13523 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 253862, 163265, 163265, 154026, 154026, 154026, 1078182, 1073855, 1033737, 255138, 255138]
+{'TAC_OF': {'TAC': np.float64(30099.3904119365), 'Number_of_solutions': 1}, 'Ds': np.float64(0.53975), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(3.6576), 'Nb': np.float64(6.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 54.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00907 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00921 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02108 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 258407
+Set Trimming - Trimming time:  0.15491 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 158207
+Set Trimming - Trimming time:  0.15198 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 158207
+Set Trimming - Trimming time:  0.08537 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 147452
+Set Trimming - Trimming time:  0.08895 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 147452
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 147452
+Set Trimming - Trimming time:  0.02097 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 1032164
+Set Trimming - Adding variables time:  0.09195 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 1028145
+Set Trimming - Trimming time:  5.73673 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 990567
+Set Trimming - Trimming time:  0.97965 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 260842
+Set Trimming - Trimming time:  3.00718 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 258407, 158207, 158207, 147452, 147452, 147452, 1032164, 1028145, 990567, 260842, 260842]
+{'TAC_OF': {'TAC': np.float64(32901.25117721307), 'Number_of_solutions': 1}, 'Ds': np.float64(0.59055), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(3.048), 'Nb': np.float64(5.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 59.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01000 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02022 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00908 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 263668
+Set Trimming - Trimming time:  0.15492 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 151401
+Set Trimming - Trimming time:  0.15201 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 151401
+Set Trimming - Trimming time:  0.07896 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 142355
+Set Trimming - Trimming time:  0.08506 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 142355
+Set Trimming - Trimming time:  0.02119 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 142355
+Set Trimming - Trimming time:  0.02293 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 996485
+Set Trimming - Adding variables time:  0.09095 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 993294
+Set Trimming - Trimming time:  5.51527 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 963045
+Set Trimming - Trimming time:  0.94224 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 266643
+Set Trimming - Trimming time:  2.91658 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 263668, 151401, 151401, 142355, 142355, 142355, 996485, 993294, 963045, 266643, 266643]
+{'TAC_OF': {'TAC': np.float64(35743.394014153484), 'Number_of_solutions': 1}, 'Ds': np.float64(0.635), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.7432), 'Nb': np.float64(5.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 64.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00899 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00907 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 266275
+Set Trimming - Trimming time:  0.15505 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 147538
+Set Trimming - Trimming time:  0.15559 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 147538
+Set Trimming - Trimming time:  0.07931 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 137295
+Set Trimming - Trimming time:  0.08204 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 137295
+Set Trimming - Trimming time:  0.01999 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 137295
+Set Trimming - Trimming time:  0.01999 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 961065
+Set Trimming - Adding variables time:  0.08195 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 958055
+Set Trimming - Trimming time:  5.34031 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 925957
+Set Trimming - Trimming time:  0.95128 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 268484
+Set Trimming - Trimming time:  2.82766 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 266275, 147538, 147538, 137295, 137295, 137295, 961065, 958055, 925957, 268484, 268484]
+{'TAC_OF': {'TAC': np.float64(38590.52560790169), 'Number_of_solutions': 1}, 'Ds': np.float64(0.59055), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(3.048), 'Nb': np.float64(5.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 69.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00999 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02126 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.01008 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 269567
+Set Trimming - Trimming time:  0.15290 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 142331
+Set Trimming - Trimming time:  0.15909 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 142331
+Set Trimming - Trimming time:  0.07496 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 133043
+Set Trimming - Trimming time:  0.07896 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 133043
+Set Trimming - Trimming time:  0.01906 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 133043
+Set Trimming - Trimming time:  0.01899 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 931301
+Set Trimming - Adding variables time:  0.07941 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 928986
+Set Trimming - Trimming time:  5.16818 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 897591
+Set Trimming - Trimming time:  0.87903 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 270140
+Set Trimming - Trimming time:  2.73023 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 269567, 142331, 142331, 133043, 133043, 133043, 931301, 928986, 897591, 270140, 270140]
+{'TAC_OF': {'TAC': np.float64(41435.92214644506), 'Number_of_solutions': 1}, 'Ds': np.float64(0.635), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.7432), 'Nb': np.float64(5.0), 'Bc': np.float64(0.25)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 74.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00900 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00911 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 272020
+Set Trimming - Trimming time:  0.15391 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 137957
+Set Trimming - Trimming time:  0.16003 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 137957
+Set Trimming - Trimming time:  0.07029 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 128409
+Set Trimming - Trimming time:  0.07803 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 128409
+Set Trimming - Trimming time:  0.01499 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 128409
+Set Trimming - Trimming time:  0.01531 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 898863
+Set Trimming - Adding variables time:  0.07806 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 896882
+Set Trimming - Trimming time:  5.01456 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 866909
+Set Trimming - Trimming time:  0.85709 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 269061
+Set Trimming - Trimming time:  2.65420 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 272020, 137957, 137957, 128409, 128409, 128409, 898863, 896882, 866909, 269061, 269061]
+{'TAC_OF': {'TAC': np.float64(44296.83902910361), 'Number_of_solutions': 1}, 'Ds': np.float64(0.635), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.7432), 'Nb': np.float64(5.0), 'Bc': np.float64(0.25)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 79.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01000 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02210 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00909 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02304 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 273843
+Set Trimming - Trimming time:  0.16091 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 133100
+Set Trimming - Trimming time:  0.15255 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 133100
+Set Trimming - Trimming time:  0.06507 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 123145
+Set Trimming - Trimming time:  0.07754 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 123145
+Set Trimming - Trimming time:  0.01508 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 123145
+Set Trimming - Trimming time:  0.01599 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 862015
+Set Trimming - Adding variables time:  0.07414 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 860240
+Set Trimming - Trimming time:  4.75149 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 832225
+Set Trimming - Trimming time:  0.82096 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 269539
+Set Trimming - Trimming time:  2.53564 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 273843, 133100, 133100, 123145, 123145, 123145, 862015, 860240, 832225, 269539, 269539]
+{'TAC_OF': {'TAC': np.float64(47132.97061456708), 'Number_of_solutions': 1}, 'Ds': np.float64(0.635), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.4384), 'Nb': np.float64(5.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 84.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01000 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02110 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00900 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02199 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 276093
+Set Trimming - Trimming time:  0.15291 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 127174
+Set Trimming - Trimming time:  0.15963 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 127174
+Set Trimming - Trimming time:  0.05807 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 118020
+Set Trimming - Trimming time:  0.07096 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 118020
+Set Trimming - Trimming time:  0.01316 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 118020
+Set Trimming - Trimming time:  0.01408 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 826140
+Set Trimming - Adding variables time:  0.06994 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 824811
+Set Trimming - Trimming time:  4.58948 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 800423
+Set Trimming - Trimming time:  0.79010 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 267592
+Set Trimming - Trimming time:  2.49935 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 276093, 127174, 127174, 118020, 118020, 118020, 826140, 824811, 800423, 267592, 267592]
+{'TAC_OF': {'TAC': np.float64(49981.992063861835), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(5.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 89.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00901 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00821 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02209 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 276960
+Set Trimming - Trimming time:  0.18418 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 121661
+Set Trimming - Trimming time:  0.17000 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 121661
+Set Trimming - Trimming time:  0.07995 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 112892
+Set Trimming - Trimming time:  0.07795 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 112892
+Set Trimming - Trimming time:  0.01899 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 112892
+Set Trimming - Trimming time:  0.01699 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 790244
+Set Trimming - Adding variables time:  0.08295 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 789066
+Set Trimming - Trimming time:  4.66529 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 767800
+Set Trimming - Trimming time:  0.74289 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 265830
+Set Trimming - Trimming time:  2.32728 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 276960, 121661, 121661, 112892, 112892, 112892, 790244, 789066, 767800, 265830, 265830]
+{'TAC_OF': {'TAC': np.float64(52840.19288705148), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(5.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 94.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00900 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00902 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02136 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 278896
+Set Trimming - Trimming time:  0.15248 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 118586
+Set Trimming - Trimming time:  0.14100 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 118586
+Set Trimming - Trimming time:  0.05107 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 109321
+Set Trimming - Trimming time:  0.05297 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 109321
+Set Trimming - Trimming time:  0.01399 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 109321
+Set Trimming - Trimming time:  0.01299 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 765247
+Set Trimming - Adding variables time:  0.06396 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 764135
+Set Trimming - Trimming time:  4.38315 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 745739
+Set Trimming - Trimming time:  0.80699 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 263220
+Set Trimming - Trimming time:  2.44145 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 278896, 118586, 118586, 109321, 109321, 109321, 765247, 764135, 745739, 263220, 263220]
+{'TAC_OF': {'TAC': np.float64(55666.308710283956), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(5.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 99.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01006 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00902 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02199 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 279580
+Set Trimming - Trimming time:  0.15671 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 113986
+Set Trimming - Trimming time:  0.16099 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 113986
+Set Trimming - Trimming time:  0.04997 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 105036
+Set Trimming - Trimming time:  0.06397 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 105036
+Set Trimming - Trimming time:  0.01316 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 105036
+Set Trimming - Trimming time:  0.01309 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 735252
+Set Trimming - Adding variables time:  0.06194 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 734361
+Set Trimming - Trimming time:  4.08669 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 717267
+Set Trimming - Trimming time:  0.69722 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 260975
+Set Trimming - Trimming time:  2.18405 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 279580, 113986, 113986, 105036, 105036, 105036, 735252, 734361, 717267, 260975, 260975]
+{'TAC_OF': {'TAC': np.float64(58477.94901015256), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(4.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 104.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01017 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02109 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00899 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02108 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 280354
+Set Trimming - Trimming time:  0.15291 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 109885
+Set Trimming - Trimming time:  0.16164 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 109885
+Set Trimming - Trimming time:  0.04605 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 100941
+Set Trimming - Trimming time:  0.06496 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 100941
+Set Trimming - Trimming time:  0.01299 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 100941
+Set Trimming - Trimming time:  0.01199 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 706587
+Set Trimming - Adding variables time:  0.05996 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 705736
+Set Trimming - Trimming time:  4.27966 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 688922
+Set Trimming - Trimming time:  0.66884 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 260889
+Set Trimming - Trimming time:  2.09204 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 280354, 109885, 109885, 100941, 100941, 100941, 706587, 705736, 688922, 260889, 260889]
+{'TAC_OF': {'TAC': np.float64(61341.3890016587), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(4.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 109.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01016 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02208 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00901 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02199 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 281746
+Set Trimming - Trimming time:  0.15493 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 106592
+Set Trimming - Trimming time:  0.16452 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 106592
+Set Trimming - Trimming time:  0.04406 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 98817
+Set Trimming - Trimming time:  0.05719 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 98817
+Set Trimming - Trimming time:  0.01399 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 98817
+Set Trimming - Trimming time:  0.01099 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 691719
+Set Trimming - Adding variables time:  0.05897 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 690894
+Set Trimming - Trimming time:  3.84629 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 674563
+Set Trimming - Trimming time:  0.68134 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 259430
+Set Trimming - Trimming time:  2.05253 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 281746, 106592, 106592, 98817, 98817, 98817, 691719, 690894, 674563, 259430, 259430]
+{'TAC_OF': {'TAC': np.float64(64206.73036444712), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(4.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 114.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00908 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02199 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00900 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02208 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 282166
+Set Trimming - Trimming time:  0.15091 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 103450
+Set Trimming - Trimming time:  0.16545 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 103450
+Set Trimming - Trimming time:  0.04398 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 94746
+Set Trimming - Trimming time:  0.05797 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 94746
+Set Trimming - Trimming time:  0.01309 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 94746
+Set Trimming - Trimming time:  0.01108 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 663222
+Set Trimming - Adding variables time:  0.05697 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 662597
+Set Trimming - Trimming time:  3.66047 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 648296
+Set Trimming - Trimming time:  0.62188 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 254425
+Set Trimming - Trimming time:  1.97592 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 282166, 103450, 103450, 94746, 94746, 94746, 663222, 662597, 648296, 254425, 254425]
+{'TAC_OF': {'TAC': np.float64(67074.04992704687), 'Number_of_solutions': 1}, 'Ds': np.float64(0.6858), 'dte': np.float64(0.01905), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.1336), 'Nb': np.float64(4.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 119.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00905 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00900 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 282976
+Set Trimming - Trimming time:  0.15191 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 100407
+Set Trimming - Trimming time:  0.16396 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 100407
+Set Trimming - Trimming time:  0.04167 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 90778
+Set Trimming - Trimming time:  0.05650 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 90778
+Set Trimming - Trimming time:  0.01315 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 90778
+Set Trimming - Trimming time:  0.01099 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 635446
+Set Trimming - Adding variables time:  0.05397 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 634917
+Set Trimming - Trimming time:  3.55295 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 622898
+Set Trimming - Trimming time:  0.60411 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 252062
+Set Trimming - Trimming time:  1.89887 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 282976, 100407, 100407, 90778, 90778, 90778, 635446, 634917, 622898, 252062, 252062]
+{'TAC_OF': {'TAC': np.float64(69905.98015079017), 'Number_of_solutions': 1}, 'Ds': np.float64(0.7874), 'dte': np.float64(0.0254), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.4384), 'Nb': np.float64(6.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 124.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00998 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02132 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00909 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02199 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 283693
+Set Trimming - Trimming time:  0.15475 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 95589
+Set Trimming - Trimming time:  0.16301 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 95589
+Set Trimming - Trimming time:  0.03798 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 87950
+Set Trimming - Trimming time:  0.04997 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 87950
+Set Trimming - Trimming time:  0.01343 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 87950
+Set Trimming - Trimming time:  0.01299 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 615650
+Set Trimming - Adding variables time:  0.05265 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 615124
+Set Trimming - Trimming time:  3.40969 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 603868
+Set Trimming - Trimming time:  0.58215 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 248447
+Set Trimming - Trimming time:  1.82930 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 283693, 95589, 95589, 87950, 87950, 87950, 615650, 615124, 603868, 248447, 248447]
+{'TAC_OF': {'TAC': np.float64(72761.08250454054), 'Number_of_solutions': 1}, 'Ds': np.float64(0.7874), 'dte': np.float64(0.0254), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.4384), 'Nb': np.float64(6.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 129.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01014 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02111 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00902 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02126 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 283933
+Set Trimming - Trimming time:  0.15630 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 92717
+Set Trimming - Trimming time:  0.16190 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 92717
+Set Trimming - Trimming time:  0.03700 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 84819
+Set Trimming - Trimming time:  0.04897 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 84819
+Set Trimming - Trimming time:  0.01199 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 84819
+Set Trimming - Trimming time:  0.01199 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 593733
+Set Trimming - Adding variables time:  0.04997 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 593331
+Set Trimming - Trimming time:  3.31898 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 582236
+Set Trimming - Trimming time:  0.57279 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 243989
+Set Trimming - Trimming time:  1.77523 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 283933, 92717, 92717, 84819, 84819, 84819, 593733, 593331, 582236, 243989, 243989]
+{'TAC_OF': {'TAC': np.float64(75617.14420502786), 'Number_of_solutions': 1}, 'Ds': np.float64(0.7874), 'dte': np.float64(0.0254), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.4384), 'Nb': np.float64(6.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 134.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00899 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02099 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.01010 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02106 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 284413
+Set Trimming - Trimming time:  0.16191 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 89650
+Set Trimming - Trimming time:  0.16190 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 89650
+Set Trimming - Trimming time:  0.03549 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 81076
+Set Trimming - Trimming time:  0.04798 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 81076
+Set Trimming - Trimming time:  0.01206 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 81076
+Set Trimming - Trimming time:  0.01199 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 567532
+Set Trimming - Adding variables time:  0.05109 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 567189
+Set Trimming - Trimming time:  3.14131 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 559412
+Set Trimming - Trimming time:  0.53165 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 242318
+Set Trimming - Trimming time:  1.69709 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 284413, 89650, 89650, 81076, 81076, 81076, 567532, 567189, 559412, 242318, 242318]
+{'TAC_OF': {'TAC': np.float64(78474.1982989241), 'Number_of_solutions': 1}, 'Ds': np.float64(0.7874), 'dte': np.float64(0.0254), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.4384), 'Nb': np.float64(6.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 139.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00911 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02108 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00900 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02199 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 285083
+Set Trimming - Trimming time:  0.16473 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 86044
+Set Trimming - Trimming time:  0.16103 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 86044
+Set Trimming - Trimming time:  0.03398 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 78526
+Set Trimming - Trimming time:  0.04468 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 78526
+Set Trimming - Trimming time:  0.01238 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 78526
+Set Trimming - Trimming time:  0.01199 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 549682
+Set Trimming - Adding variables time:  0.05097 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 549342
+Set Trimming - Trimming time:  3.05343 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 542328
+Set Trimming - Trimming time:  0.51525 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 239561
+Set Trimming - Trimming time:  1.64334 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 285083, 86044, 86044, 78526, 78526, 78526, 549682, 549342, 542328, 239561, 239561]
+{'TAC_OF': {'TAC': np.float64(81332.2777147041), 'Number_of_solutions': 1}, 'Ds': np.float64(0.7874), 'dte': np.float64(0.0254), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.4384), 'Nb': np.float64(6.0), 'Bc': np.float64(0.2)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 144.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00919 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02110 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00917 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02107 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 285240
+Set Trimming - Trimming time:  0.15433 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 84019
+Set Trimming - Trimming time:  0.16709 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 84019
+Set Trimming - Trimming time:  0.03296 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 75951
+Set Trimming - Trimming time:  0.04359 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 75951
+Set Trimming - Trimming time:  0.01109 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 75951
+Set Trimming - Trimming time:  0.00900 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 531657
+Set Trimming - Adding variables time:  0.04697 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 531319
+Set Trimming - Trimming time:  2.93847 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 524137
+Set Trimming - Trimming time:  0.49508 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 235071
+Set Trimming - Trimming time:  1.59091 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 285240, 84019, 84019, 75951, 75951, 75951, 531657, 531319, 524137, 235071, 235071]
+{'TAC_OF': {'TAC': np.float64(84188.45515098126), 'Number_of_solutions': 1}, 'Ds': np.float64(0.8382), 'dte': np.float64(0.03175), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.7432), 'Nb': np.float64(8.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 149.67 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.00909 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02199 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00919 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02209 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 285450
+Set Trimming - Trimming time:  0.15391 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 80455
+Set Trimming - Trimming time:  0.16391 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 80455
+Set Trimming - Trimming time:  0.03033 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 73308
+Set Trimming - Trimming time:  0.03951 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 73308
+Set Trimming - Trimming time:  0.01107 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 73308
+Set Trimming - Trimming time:  0.00914 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 513156
+Set Trimming - Adding variables time:  0.04897 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 512913
+Set Trimming - Trimming time:  2.83855 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 506396
+Set Trimming - Trimming time:  0.48128 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 229966
+Set Trimming - Trimming time:  1.52213 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 285450, 80455, 80455, 73308, 73308, 73308, 513156, 512913, 506396, 229966, 229966]
+{'TAC_OF': {'TAC': np.float64(87042.57797048289), 'Number_of_solutions': 1}, 'Ds': np.float64(0.8382), 'dte': np.float64(0.03175), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.7432), 'Nb': np.float64(8.0), 'Bc': np.float64(0.15)}
+
+The solution of Equipment1 "WC_STHE_RST" with mc = 150 is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vs_lb - Space Preparation adding following variables: ['dte', 'rp', 'lay'] to the previous set ['Ds', 'Nb', 'L']
+Set Trimming vs_lb - Space Size After Adding the variables ['dte', 'rp', 'lay']: 168840
+Set Trimming - Adding variables time:  0.01000 seconds
+
+Set Trimming vs_lb - Space Size After Trimming: 89981
+Set Trimming - Trimming time:  0.02120 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 71795
+Set Trimming - Trimming time:  0.00909 seconds
+
+Set Trimming vt_lb - Space Preparation adding following variables: ['Npt'] to the previous set ['lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming vt_lb - Space Size After Adding the variables ['Npt']: 287180
+Set Trimming - Adding variables time:  0.02099 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 285450
+Set Trimming - Trimming time:  0.15316 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 80391
+Set Trimming - Trimming time:  0.16400 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 80391
+Set Trimming - Trimming time:  0.03000 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 73244
+Set Trimming - Trimming time:  0.03953 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 73244
+Set Trimming - Trimming time:  0.01207 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 73244
+Set Trimming - Trimming time:  0.01099 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Npt', 'lay', 'dte', 'Nb', 'rp', 'L', 'Ds']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 512708
+Set Trimming - Adding variables time:  0.04973 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 512465
+Set Trimming - Trimming time:  2.83092 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 506389
+Set Trimming - Trimming time:  0.47967 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Npt', 'lay', 'dte', 'Bc', 'Nb', 'rp', 'L', 'Ds'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 230003
+Set Trimming - Trimming time:  1.53105 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [3752, 168840, 89981, 71795, 287180, 285450, 80391, 80391, 73244, 73244, 73244, 512708, 512465, 506389, 230003, 230003]
+{'TAC_OF': {'TAC': np.float64(87230.97582368653), 'Number_of_solutions': 1}, 'Ds': np.float64(0.8382), 'dte': np.float64(0.03175), 'Npt': np.float64(1.0), 'rp': np.float64(1.25), 'lay': np.float64(1.0), 'L': np.float64(2.7432), 'Nb': np.float64(8.0), 'Bc': np.float64(0.15)}
+Elapsed time for Equipment1 "WC_STHE_RST": 224.57 seconds 
+
+OF Solution total ($/year) 27273.823975087187
+Total time elapsed: 224.58249 seconds
+

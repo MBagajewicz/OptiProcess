@@ -1,0 +1,19 @@
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [15120, 10080, 9180]
+
+******************** Starting Execution for Kettle_2_Example2_DC_validation ********************
+
+The solution of Equipment1 "Kettle_2" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [9180, 9180, 8442, 8442, 8442, 8442, 8442]
+{'Cost_OF': {'HE_CAPEX': 29459.909062409744, 'Number_of_solutions': 2}, 'Area_OF': {'HE_Area': 1.167741299072879, 'Number_of_solutions': 2}, 'Ds': 0.203, 'dte': 0.0508, 'Npt': 2.0, 'rp': 1.33, 'lay': 1.0, 'L': 1.2195}
+Elapsed time for Equipment1 "Kettle_2": 0.00 seconds 
+
+OF Solution total ($) 29459.909062409744
+Total elapsed time: 0.01 seconds
+

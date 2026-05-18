@@ -1,0 +1,18 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+
+******************** Starting Execution for STRAY_Example2_DC_validation ********************
+
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [783900, 51126, 16023, 10718, 9832, 9832]
+{'Dc1': {'Cost_OF': {'COL_CAPEX': 62592.338177446596, 'Number_of_solutions': 1273}, 'dPtotal_OF': {'ht_total': 3.6828905641289635, 'Number_of_solutions': 1}, 'Dc': 0.9144, 'dh': 0.004, 'hdwap': 0.01, 'hw': 0.0381, 'lt': 0.9144, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc2': {'Cost_OF': {'COL_CAPEX': 69122.89200861331, 'Number_of_solutions': 813}, 'dPtotal_OF': {'ht_total': 3.432149649834032, 'Number_of_solutions': 6}, 'Dc': 1.0668, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.6096, 'lw': 0.9144, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc3': {'Cost_OF': {'COL_CAPEX': 71746.07805693711, 'Number_of_solutions': 309}, 'dPtotal_OF': {'ht_total': 3.2596451509950928, 'Number_of_solutions': 6}, 'Dc': 1.27, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 1.1684, 'lp': 0.009, 'tt': 0.0034, 'lay': 2.0}, 'Dc4': {'Cost_OF': {'COL_CAPEX': 83091.77090649062, 'Number_of_solutions': 266}, 'dPtotal_OF': {'ht_total': 3.2264089784106287, 'Number_of_solutions': 6}, 'Dc': 1.4732, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 1.1684, 'lp': 0.012, 'tt': 0.0034, 'lay': 1.0}, 'Cost_OF': {'COL_CAPEX': 62592.338177446596, 'Number_of_solutions': 1273}, 'dPtotal_OF': {'ht_total': 3.6828905641289635, 'Number_of_solutions': 1}, 'Dc': 0.9144, 'dh': 0.004, 'hdwap': 0.01, 'hw': 0.0381, 'lt': 0.9144, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 1.39 seconds 
+
+OF Solution total ($) 62592.338177446596
+Total elapsed time: 4.08 seconds
+

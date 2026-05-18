@@ -1,0 +1,55 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [4, 4, 4]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [289]
+HSTC parameter from par_calc was not generated at this stage. Skipping
+HSTC parameter from par_calc was not generated at this stage. Skipping
+HSTC parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [403200, 288000, 288000, 273600, 207600]
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [15120, 10080, 9180]
+Reflux_Drum parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [221, 190, 144, 144]
+
+******************** Starting Execution for DC_ST_HE_RD_2D_Example9_Fix ********************
+
+The solution of Equipment1 "DC_ST_HE_RD_2D" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[25, 16, 25, 16],
+       [50, 50, 37, 37]]), 'candidate_set_cardinality_after_each_trimming': [4]}
+Elapsed time Set Trimming: 0.001001119613647461
+Performing Exhaustive Enumeration now

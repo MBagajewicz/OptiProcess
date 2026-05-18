@@ -1,0 +1,17 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [158200]
+
+******************** Starting Execution for GPHE_Example2 ********************
+
+The solution of Equipment1 "GPHE" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [158200, 63650, 36740, 36740, 4900, 4008, 1188, 704]
+{'TAC_OF': {'TAC': np.float64(31174.538747638377), 'Number_of_solutions': 1}, 'Ntp': np.int64(261), 'Pl': np.int64(2), 'Sa': np.int64(65), 'Nph': np.int64(2), 'Npc': np.int64(1)}
+Elapsed time for Equipment1 "GPHE": 0.03 seconds 
+
+OF Solution total ($/year) 31174.538747638377
+Total elapsed time: 0.05 seconds
+

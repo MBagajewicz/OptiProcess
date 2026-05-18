@@ -1,0 +1,25 @@
+These are the codes that were adapted or created for fouling dynamics. I suggest you revise them on this order
+
+
+Calculations_STHE_velocity_tubeside
+Calculations_STHE_Reynolds_tubeside
+Calculations_STHE_frictionfactor
+Calculations_STHE_DeltaPtubeside
+Calculations_STHE_Nusselt_tubeside
+Calculations_STHE_htubeside
+Calculations_STHE_U
+Calculations_STHE_TAC
+Calculations_STHE_Reynolds_shellside
+Calculations_STHE_Auxiliary_Bell_Method
+
+Calculations_STHE_PNTU
+Calculations_STHE_Layers_Temperature
+Calculations_STHE_Fouling_tubeside
+Calculations_STHE_Fouling_thickness_tubeside
+Calculations_STHE_Fouling_DAE_solver
+
+
+Constraints_and_OF_STHE
+Model_Def_STHE
+Parameters_Update_STHE
+Examples_STHE

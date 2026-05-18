@@ -1,0 +1,113 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [2, 2, 2]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1, 1]
+HSTC parameter from par_calc was not generated at this stage. Skipping
+HSTC parameter from par_calc was not generated at this stage. Skipping
+HSTC parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1]
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1, 1, 1]
+Reflux_Drum parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1, 1, 1, 1]
+
+******************** Starting Execution for DC_ST_HE_RD_Example6_Fix ********************
+
+The solution of Equipment1 "DC_ST_HE_RD" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[ 9,  9],
+       [30, 20]]), 'candidate_set_cardinality_after_each_trimming': [2]}
+Elapsed time Set Trimming: 0.0010008811950683594
+Performing Exhaustive Enumeration now
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1]
+{'Cost_OF': {'COL_CAPEX': 36983.758026155876, 'Number_of_solutions': 1}, 'dPtotal_OF': {'ht_total': 2.485948004620829, 'Number_of_solutions': 1}, 'Dc': 0.762, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 0.03 seconds 
+
+The solution of Equipment2 "HSTC" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming produced an empty set using constraint: vs_lb
+The problem has no solution
+Candidate set cardinality after each trimming [1, 0]
+{'Cost_OF': {'HE_CAPEX': 1e+20}}
+Elapsed time for Equipment2 "HSTC": 0.00 seconds 
+
+The solution of Equipment3 "Kettle_2" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1, 1]
+{'Cost_OF': {'HE_CAPEX': 29390.309251868704, 'Number_of_solutions': 1}, 'Area_OF': {'HE_Area': 0.9731177492273992, 'Number_of_solutions': 1}, 'Ds': 0.203, 'dte': 0.0508, 'Npt': 2.0, 'rp': 1.5, 'lay': 1.0, 'L': 1.2195}
+Elapsed time for Equipment3 "Kettle_2": 0.00 seconds 
+
+The solution of Equipment4 "Reflux_Drum" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1]
+{'Cost_OF': {'RD_CAPEX': 13307.281054882296, 'Number_of_solutions': 1}, 'D': 1.0668, 'L': 1.2195}
+Elapsed time for Equipment4 "Reflux_Drum": 0.00 seconds 
+
+OF Solution total ($) 1.0000000000000008e+20
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1]
+{'Cost_OF': {'COL_CAPEX': 28543.20887933184, 'Number_of_solutions': 1}, 'dPtotal_OF': {'ht_total': 1.653291237226989, 'Number_of_solutions': 1}, 'Dc': 0.762, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 0.02 seconds 
+
+The solution of Equipment2 "HSTC" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+{'Cost_OF': {'HE_CAPEX': 28219.553902380147, 'Number_of_solutions': 1}, 'Area_OF': {'HE_Area': 3.218272647078613, 'Number_of_solutions': 1}, 'Ds': 0.43815, 'dte': 0.07, 'Npt': 6.0, 'rp': 1.5, 'lay': 1.0, 'L': 1.8293, 'Nb': 11.0}
+Elapsed time for Equipment2 "HSTC": 0.00 seconds 
+
+The solution of Equipment3 "Kettle_2" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1, 1, 1, 1, 1, 1]
+{'Cost_OF': {'HE_CAPEX': 29390.309251868704, 'Number_of_solutions': 1}, 'Area_OF': {'HE_Area': 0.9731177492273992, 'Number_of_solutions': 1}, 'Ds': 0.203, 'dte': 0.0508, 'Npt': 2.0, 'rp': 1.5, 'lay': 1.0, 'L': 1.2195}
+Elapsed time for Equipment3 "Kettle_2": 0.00 seconds 
+
+The solution of Equipment4 "Reflux_Drum" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [1, 1]
+{'Cost_OF': {'RD_CAPEX': 13307.281054882296, 'Number_of_solutions': 1}, 'D': 1.0668, 'L': 1.2195}
+Elapsed time for Equipment4 "Reflux_Drum": 0.00 seconds 
+
+OF Solution total ($) 99460.35308846299
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+All 2 candidates were evaluated
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Solution after Exhaustive Enumeration {'TAC_OF': {'TAC': 79032.2569953845}, 'Nf': 9, 'Ns': 20, 'Next_Level': {'Equipment1': {'Cost_OF': {'COL_CAPEX': 28543.20887933184, 'Number_of_solutions': 1}, 'dPtotal_OF': {'ht_total': 1.653291237226989, 'Number_of_solutions': 1}, 'Dc': 0.762, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Equipment2': {'Cost_OF': {'HE_CAPEX': 28219.553902380147, 'Number_of_solutions': 1}, 'Area_OF': {'HE_Area': 3.218272647078613, 'Number_of_solutions': 1}, 'Ds': 0.43815, 'dte': 0.07, 'Npt': 6.0, 'rp': 1.5, 'lay': 1.0, 'L': 1.8293, 'Nb': 11.0}, 'Equipment3': {'Cost_OF': {'HE_CAPEX': 29390.309251868704, 'Number_of_solutions': 1}, 'Area_OF': {'HE_Area': 0.9731177492273992, 'Number_of_solutions': 1}, 'Ds': 0.203, 'dte': 0.0508, 'Npt': 2.0, 'rp': 1.5, 'lay': 1.0, 'L': 1.2195}, 'Equipment4': {'Cost_OF': {'RD_CAPEX': 13307.281054882296, 'Number_of_solutions': 1}, 'D': 1.0668, 'L': 1.2195}, 'total_solution': 99460.35308846299}}
+Elapsed time for Equipment1 "DC_ST_HE_RD": 5.01 seconds 
+
+OF Solution total ($/year) 79032.2569953845
+Total elapsed time: 16.26 seconds
+

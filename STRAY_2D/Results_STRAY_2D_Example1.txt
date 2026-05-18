@@ -1,0 +1,42 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [289]
+
+******************** Starting Execution for STRAY_2D_Example1 ********************
+
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [783900, 60972, 43699, 36458, 35010, 33512]
+{'Dc1': {'Wshell_OF': {'Wshell': 605.2519496323793, 'Number_of_solutions': 2734}, 'dPtotal_OF': {'ht_total': 0.8557813599723287, 'Number_of_solutions': 6}, 'Dc': 0.762, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.05715, 'lt': 0.9144, 'lw': 0.4064, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc2': {'Wshell_OF': {'Wshell': 363.1511697794275, 'Number_of_solutions': 525}, 'dPtotal_OF': {'ht_total': 0.6179655335291367, 'Number_of_solutions': 6}, 'Dc': 0.9144, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc3': {'Wshell_OF': {'Wshell': 395.431273759821, 'Number_of_solutions': 84}, 'dPtotal_OF': {'ht_total': 0.5511071180105309, 'Number_of_solutions': 6}, 'Dc': 1.0668, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc4': {'Wshell_OF': {'Wshell': 470.7515163807393, 'Number_of_solutions': 504}, 'dPtotal_OF': {'ht_total': 0.5369890965948587, 'Number_of_solutions': 6}, 'Dc': 1.27, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 0.9144, 'lp': 0.012, 'tt': 0.0034, 'lay': 2.0}, 'Dc5': {'Wshell_OF': {'Wshell': 546.0717590016576, 'Number_of_solutions': 259}, 'dPtotal_OF': {'ht_total': 0.5282939545642202, 'Number_of_solutions': 6}, 'Dc': 1.4732, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 1.1684, 'lp': 0.012, 'tt': 0.0034, 'lay': 2.0}, 'Dc6': {'Wshell_OF': {'Wshell': 621.3920016225759, 'Number_of_solutions': 48}, 'dPtotal_OF': {'ht_total': 0.5246597259078442, 'Number_of_solutions': 6}, 'Dc': 1.6764, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 1.4224, 'lp': 0.012, 'tt': 0.0034, 'lay': 1.0}, 'Dc7': {'Wshell_OF': {'Wshell': 1452.6046791177098, 'Number_of_solutions': 78}, 'dPtotal_OF': {'ht_total': 0.5229910584802074, 'Number_of_solutions': 6}, 'Dc': 2.7432, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 2.6924, 'lp': 0.012, 'tt': 0.0034, 'lay': 1.0}, 'Wshell_OF': {'Wshell': 363.1511697794275, 'Number_of_solutions': 525}, 'dPtotal_OF': {'ht_total': 0.6179655335291367, 'Number_of_solutions': 6}, 'Dc': 0.9144, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 0.83 seconds 
+
+The solution of Equipment2 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [783900, 44868, 31250, 21495, 21495, 21495]
+{'Dc1': {'Wshell_OF': {'Wshell': 86.46456423319702, 'Number_of_solutions': 66}, 'dPtotal_OF': {'ht_total': 0.25098912780266436, 'Number_of_solutions': 6}, 'Dc': 0.762, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc2': {'Wshell_OF': {'Wshell': 103.75747707983643, 'Number_of_solutions': 655}, 'dPtotal_OF': {'ht_total': 0.17433356683579532, 'Number_of_solutions': 6}, 'Dc': 0.9144, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 2.0}, 'Dc3': {'Wshell_OF': {'Wshell': 112.98036393137745, 'Number_of_solutions': 30}, 'dPtotal_OF': {'ht_total': 0.1633490136068137, 'Number_of_solutions': 6}, 'Dc': 1.0668, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 0.9144, 'lp': 0.009, 'tt': 0.0034, 'lay': 2.0}, 'Dc4': {'Wshell_OF': {'Wshell': 134.5004332516398, 'Number_of_solutions': 92}, 'dPtotal_OF': {'ht_total': 0.16141340999255915, 'Number_of_solutions': 6}, 'Dc': 1.27, 'dh': 0.0036, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 1.1684, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Dc5': {'Wshell_OF': {'Wshell': 156.02050257190217, 'Number_of_solutions': 123}, 'dPtotal_OF': {'ht_total': 0.15458895498133862, 'Number_of_solutions': 6}, 'Dc': 1.4732, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.3048, 'lw': 1.4224, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}, 'Wshell_OF': {'Wshell': 86.46456423319702, 'Number_of_solutions': 66}, 'dPtotal_OF': {'ht_total': 0.25098912780266436, 'Number_of_solutions': 6}, 'Dc': 0.762, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.4572, 'lw': 0.6604, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment2 "STRAY": 0.36 seconds 
+
+The solution of Equipment3 "STRAY_2D" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [289, 119, 35]
+{'Cost_OF': {'COL_CAPEX': 21631.484087177425, 'Number_of_solutions': 1}, 'DRECT': 0.9144, 'DSTRIP': 0.762}
+Elapsed time for Equipment3 "STRAY_2D": 0.02 seconds 
+
+OF Solution total ($) 22081.099821190048
+Total elapsed time: 6.52 seconds
+

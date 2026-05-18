@@ -1,0 +1,37 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1444, 741, 705]
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+
+******************** Starting Execution for DC_ST_Example1 ********************
+
+The solution of Equipment1 "DC_ST" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[ 3,  4,  5, ..., 38, 39, 40],
+       [13, 13, 13, ..., 42, 42, 42]]), 'candidate_set_cardinality_after_each_trimming': [705]}
+[[ 3  4  5 ... 38 39 40]
+ [13 13 13 ... 42 42 42]]
+Performing Segmental Smart Enumeration now
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [783900, 618966, 119224, 92791, 91496, 91496]
+{'Cost_OF': {'COL_CAPEX': 310507.6447638569, 'Number_of_solutions': 3649}, 'dPtotal_OF': {'ht_total': 5.858150450450228, 'Number_of_solutions': 6}, 'Dc': 2.7432, 'dh': 0.004, 'hdwap': 0.005, 'hw': 0.0381, 'lt': 0.9144, 'lw': 1.6764, 'lp': 0.009, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 16.38 seconds 
+
+OF Solution total ($) 310507.6447638569
+The solution of Equipment1 "STRAY" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [783900, 329580, 112988, 86103, 84361, 84361]
+{'Cost_OF': {'COL_CAPEX': 146281.36232761538, 'Number_of_solutions': 86}, 'dPtotal_OF': {'ht_total': 6.64939919625399, 'Number_of_solutions': 1}, 'Dc': 1.9304, 'dh': 0.0052, 'hdwap': 0.01, 'hw': 0.0762, 'lt': 0.6096, 'lw': 1.1684, 'lp': 0.012, 'tt': 0.0034, 'lay': 1.0}
+Elapsed time for Equipment1 "STRAY": 9.53 seconds 
+
+OF Solution total ($) 146281.36232761538

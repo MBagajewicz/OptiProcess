@@ -1,0 +1,189 @@
+
+******* Testing consistency *******
+
+********** Incremental Set Trimming running **********
+Primordial LD_lb - Initial Space ['Ds', 'L'].
+Primordial LD_lb - Space Size of Initial Space: 510
+Primordial - Initial Space building time:  0.00050 seconds
+
+Primordial LD_lb - Space Size After Trimming: 296
+Primordial - Trimming time:  0.00000 seconds
+
+Primordial LD_ub - Space Preparation is not needed. The set ['L', 'Ds'] remains without changes.
+Primordial LD_ub - Space Size After Trimming: 268
+Primordial - Trimming time:  0.00050 seconds
+
+Primordial lbc_lb - Space Preparation adding following variables: ['Nb'] to the previous set ['L', 'Ds']
+Primordial lbc_lb - Space Size After Adding the variables ['Nb']: 5360
+Primordial - Adding variables time:  0.00000 seconds
+
+Primordial lbc_lb - Space Size After Trimming: 5095
+Primordial - Trimming time:  0.00050 seconds
+
+Primordial lbc_ub - Space Preparation is not needed. The set ['L', 'Ds', 'Nb'] remains without changes.
+Primordial lbc_ub - Space Size After Trimming: 3752
+Primordial - Trimming time:  0.00050 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set using Incremental Set Trimming************
+
+Candidate set cardinality after each incremental trimming [510, 296, 268, 5360, 5095, 3752, 3752] 
+ Variables used for trim ['Ds', 'L', 'Nb']
+
+******************** Starting Execution for WC_STHE_Example2 ********************
+
+The solution of Equipment1 "WC_STHE" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Space from Primordial has the variables: ['Ds', 'L', 'Nb']
+Size of Space from Primordial: 3752
+Set Trimming vt_lb - Space Preparation adding following variables: ['dte', 'lay', 'Npt', 'rp'] to the previous set ['L', 'Ds', 'Nb']
+Set Trimming vt_lb - Space Size After Adding the variables ['dte', 'lay', 'Npt', 'rp']: 675360
+Set Trimming - Adding variables time:  0.04891 seconds
+
+Set Trimming vt_lb - Space Size After Trimming: 637186
+Set Trimming - Trimming time:  0.91280 seconds
+
+Set Trimming vt_ub - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming vt_ub - Space Size After Trimming: 414008
+Set Trimming - Trimming time:  0.80001 seconds
+
+Set Trimming Ret_ub - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming Ret_ub - Space Size After Trimming: 396697
+Set Trimming - Trimming time:  0.51654 seconds
+
+Set Trimming Ret_lb - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming Ret_lb - Space Size After Trimming: 396697
+Set Trimming - Trimming time:  0.48260 seconds
+
+Set Trimming Tco_ub - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming Tco_ub - Space Size After Trimming: 396697
+Set Trimming - Trimming time:  0.33388 seconds
+
+Set Trimming vs_lb - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming vs_lb - Space Size After Trimming: 80016
+Set Trimming - Trimming time:  0.04891 seconds
+
+Set Trimming vs_ub - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming vs_ub - Space Size After Trimming: 77807
+Set Trimming - Trimming time:  0.00898 seconds
+
+Set Trimming Res_ub - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming Res_ub - Space Size After Trimming: 77807
+Set Trimming - Trimming time:  0.00948 seconds
+
+Set Trimming Res_lb - Space Preparation is not needed. The set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming Res_lb - Space Size After Trimming: 77807
+Set Trimming - Trimming time:  0.00848 seconds
+
+Set Trimming DPs_ub - Space Preparation adding following variables: ['Bc'] to the previous set ['Ds', 'rp', 'dte', 'lay', 'Npt', 'L', 'Nb']
+Set Trimming DPs_ub - Space Size After Adding the variables ['Bc']: 544649
+Set Trimming - Adding variables time:  0.04641 seconds
+
+Set Trimming DPs_ub - Space Size After Trimming: 544631
+Set Trimming - Trimming time:  2.99692 seconds
+
+Set Trimming DPt_ub - Space Preparation is not needed. The set ['Ds', 'rp', 'Bc', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming DPt_ub - Space Size After Trimming: 535230
+Set Trimming - Trimming time:  0.88984 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Ds', 'rp', 'Bc', 'dte', 'lay', 'Npt', 'L', 'Nb'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 3114
+Set Trimming - Trimming time:  2.03770 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Incremental Solution {'trimmed_candidates': array([[8.8900e-01, 8.8900e-01, 8.8900e-01, ..., 6.8580e-01, 6.8580e-01,
+        6.8580e-01],
+       [1.9050e-02, 1.9050e-02, 1.9050e-02, ..., 2.5400e-02, 2.5400e-02,
+        2.5400e-02],
+       [1.0000e+00, 1.0000e+00, 1.0000e+00, ..., 1.0000e+00, 1.0000e+00,
+        1.0000e+00],
+       ...,
+       [2.7432e+00, 2.7432e+00, 2.7432e+00, ..., 6.0976e+00, 6.0976e+00,
+        6.0976e+00],
+       [1.1000e+01, 1.2000e+01, 1.2000e+01, ..., 2.0000e+01, 2.0000e+01,
+        2.0000e+01],
+       [1.5000e-01, 1.5000e-01, 2.0000e-01, ..., 1.5000e-01, 2.0000e-01,
+        2.5000e-01]], shape=(8, 3114)), 'candidate_set_cardinality_after_each_trimming': [3752, 675360, 637186, 414008, 396697, 396697, 396697, 80016, 77807, 77807, 77807, 544649, 544631, 535230, 3114, 3114], 'variables_survivor_names': ['Ds', 'L', 'Nb', 'dte', 'Npt', 'rp', 'lay', 'Bc']}
+Elapsed time Set Trimming Incremental: 9.16242527961731
+Performing Smart Enumeration now
+Lower bound values [74018.23278078 74050.16718929 74027.53989665 ... 46584.4654023
+ 46546.99073574 46517.55366262]
+Incumbent value: []
+**********************************
+Updating incumbent
+Lower Bound: 40528.36843300526 Candidate: 0
+New Incumbent: 84271.08234488647
+**********************************
+Updating incumbent
+Lower Bound: 40559.50293590626 Candidate: 2
+New Incumbent: 77832.38994673657
+**********************************
+Updating incumbent
+Lower Bound: 40569.786474166176 Candidate: 4
+New Incumbent: 71665.0837012732
+**********************************
+Updating incumbent
+Lower Bound: 40602.18022683112 Candidate: 14
+New Incumbent: 66283.43589573583
+**********************************
+Updating incumbent
+Lower Bound: 40636.30162291632 Candidate: 31
+New Incumbent: 62166.840939760266
+**********************************
+Updating incumbent
+Lower Bound: 40648.322393531154 Candidate: 42
+New Incumbent: 61684.39705847382
+**********************************
+Updating incumbent
+Lower Bound: 40655.83954702555 Candidate: 48
+New Incumbent: 61103.70342095819
+**********************************
+Updating incumbent
+Lower Bound: 40672.1162903757 Candidate: 64
+New Incumbent: 58931.30687718143
+**********************************
+Updating incumbent
+Lower Bound: 40673.80515917449 Candidate: 65
+New Incumbent: 56061.16958962747
+**********************************
+Updating incumbent
+Lower Bound: 40683.78920861302 Candidate: 76
+New Incumbent: 53196.27552773632
+**********************************
+Updating incumbent
+Lower Bound: 40703.24744496578 Candidate: 100
+New Incumbent: 52998.79735459895
+**********************************
+Updating incumbent
+Lower Bound: 40715.134423997435 Candidate: 113
+New Incumbent: 48263.02257284038
+**********************************
+Updating incumbent
+Lower Bound: 40748.845574104234 Candidate: 168
+New Incumbent: 46180.79603651465
+**********************************
+Updating incumbent
+Lower Bound: 40761.3271665285 Candidate: 187
+New Incumbent: 46169.59092576423
+**********************************
+Updating incumbent
+Lower Bound: 40769.88598199305 Candidate: 202
+New Incumbent: 45471.496172961735
+**********************************
+Updating incumbent
+Lower Bound: 40783.86046923097 Candidate: 223
+New Incumbent: 42908.4795100118
+**********************************
+Updating incumbent
+Lower Bound: 40807.088408275995 Candidate: 263
+New Incumbent: 40807.088408275995
+##################################
+Exit at candidate: 263
+Lower Bound: 40807.088408275995 Candidate: 263
+Solution after Smart Enumeration {'TAC_OF': {'TAC': array(40807.08840828)}, 'Ds': array([0.6858]), 'dte': array([0.01905]), 'Npt': array([1.]), 'rp': array([1.25]), 'lay': array([1.]), 'L': array([4.572]), 'Nb': array([17.]), 'Bc': array([0.15])}
+Elapsed time for Equipment1 "WC_STHE": 36.75 seconds 
+
+OF Solution total ($/year) 40807.088408275995
+Total time elapsed: 36.75905 seconds
+

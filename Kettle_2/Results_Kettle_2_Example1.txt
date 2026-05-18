@@ -1,0 +1,17 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [15120, 10080, 9180]
+
+******************** Starting Execution for Kettle_2_Example1 ********************
+
+The solution of Equipment1 "Kettle_2" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [9180, 9180, 6790, 6790, 6790, 6790, 5532]
+{'Cost_OF': {'HE_CAPEX': np.float64(38966.48053161164), 'Number_of_solutions': 1}, 'Area_OF': {'HE_Area': np.float64(35.61610962172281), 'Number_of_solutions': 1}, 'Ds': np.float64(0.438), 'dte': np.float64(0.01905), 'Npt': np.float64(2.0), 'rp': np.float64(1.33), 'lay': np.float64(2.0), 'L': np.float64(2.439)}
+Elapsed time for Equipment1 "Kettle_2": 0.01 seconds 
+
+OF Solution total ($) 38966.48053161164
+Total elapsed time: 0.01 seconds
+

@@ -1,0 +1,92 @@
+
+******* Testing consistency *******
+
+DeltaTmin does not exist in the Model_Parameters. A default value of 5 °C is adopted.
+
+********** Incremental Set Trimming running **********
+
+************ Initial Set = Primordial Set with 158200 candidates ************
+
+
+******************** Starting Execution for WC_GPHE_Example1 ********************
+
+The solution of Equipment1 "WC_GPHE" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Empty Primordial Set!!!!
+Initial size without primordial set: 158200
+Set Trimming vh_lb - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming vh_lb - Space Size After Trimming: 32680
+Set Trimming - Trimming time:  0.00949 seconds
+
+Set Trimming vh_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming vh_ub - Space Size After Trimming: 22030
+Set Trimming - Trimming time:  0.00249 seconds
+
+Set Trimming Reh_lb - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming Reh_lb - Space Size After Trimming: 22030
+Set Trimming - Trimming time:  0.00150 seconds
+
+Set Trimming Reh_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming Reh_ub - Space Size After Trimming: 22030
+Set Trimming - Trimming time:  0.00200 seconds
+
+Set Trimming DPh_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming DPh_ub - Space Size After Trimming: 9872
+Set Trimming - Trimming time:  0.00549 seconds
+
+Set Trimming vc_lb - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming vc_lb - Space Size After Trimming: 9872
+Set Trimming - Trimming time:  0.00050 seconds
+
+Set Trimming vc_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming vc_ub - Space Size After Trimming: 4568
+Set Trimming - Trimming time:  0.00100 seconds
+
+Set Trimming Rec_lb - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming Rec_lb - Space Size After Trimming: 4568
+Set Trimming - Trimming time:  0.00050 seconds
+
+Set Trimming Rec_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming Rec_ub - Space Size After Trimming: 4568
+Set Trimming - Trimming time:  0.00050 seconds
+
+Set Trimming Tco_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming Tco_ub - Space Size After Trimming: 4568
+Set Trimming - Trimming time:  0.00050 seconds
+
+Set Trimming DPc_ub - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming DPc_ub - Space Size After Trimming: 4304
+Set Trimming - Trimming time:  0.00199 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Nph', 'Sa', 'Pl', 'Npc', 'Ntp'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 4088
+Set Trimming - Trimming time:  0.69970 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Incremental Solution {'trimmed_candidates': array([[ 52,  53,  54, ..., 165, 165, 165],
+       [  0,   0,   0, ...,   9,   9,   9],
+       [ 45,  45,  45, ...,  50,  60,  65],
+       [  1,   1,   1, ...,   2,   2,   2],
+       [  1,   1,   1, ...,   1,   1,   1]], shape=(5, 4088)), 'candidate_set_cardinality_after_each_trimming': [158200, 32680, 22030, 22030, 22030, 9872, 9872, 4568, 4568, 4568, 4568, 4304, 4088, 4088], 'variables_survivor_names': ['Ntp', 'Pl', 'Sa', 'Nph', 'Npc']}
+Elapsed time Set Trimming Incremental: 0.7416191101074219
+Performing Smart Enumeration now
+Lower bound values [29260.88476856 29174.44322592 29092.96476188 ... 49297.53126059
+ 48405.25373268 48163.59237771]
+Incumbent value: []
+**********************************
+Updating incumbent
+Lower Bound: 27574.37354198024 Candidate: 0
+New Incumbent: 35911.627095043346
+**********************************
+Updating incumbent
+Lower Bound: 27685.44407464804 Candidate: 8
+New Incumbent: 27685.44407464804
+##################################
+Exit at candidate: 8
+Lower Bound: 27685.44407464804 Candidate: 8
+Solution after Smart Enumeration {'TAC_OF': {'TAC': array(27685.44407465)}, 'Ntp': array([83]), 'Pl': array([1]), 'Sa': array([60]), 'Nph': array([1]), 'Npc': array([1])}
+Elapsed time for Equipment1 "WC_GPHE": 1.15 seconds 
+
+OF Solution total ($/year) 27685.44407464804
+Total time elapsed: 1.29530 seconds
+

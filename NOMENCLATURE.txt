@@ -1,0 +1,11 @@
+NOMENCLATURE
+
+
+STHE - Shell and Tube Heat Exchanger
+GPHE - Gasketed Plate Heat Exchanger
+WC_STHE - Water Cooler Shell and Tube Heat Exchanger using Set Trimming and Smart Enumeration
+WC_STHE_2 - Water Cooler Shell and Tube Heat Exchanger using Complete Set Trimming (normal STHE model, but considering the price of water in the objective function)
+WC_STHE_PE - Water Cooler Shell and Tube Heat Exchanger using Set Trimming and Parameter Enumeration (Global Optimizer)
+WC_STHE_RST - Water Cooler Shell and Tube Heat Exchanger using Recursive Set Trimming (Recursive variable: Fw cooling water flowrate)
+WC_STHE_Fw - Water Cooler Shell and Tube Heat Exchanger using Fw (cooling water flowrate) as variable in search space
+WC_GPHE - Water Cooler Gasketed Plate Heat Exchanger using Set Trimming and Smart Enumeration

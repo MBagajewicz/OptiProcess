@@ -1,0 +1,18 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [520, 479, 212, 125]
+
+******************** Starting Execution for Reflux_Drum_Example3 ********************
+
+The solution of Equipment1 "Reflux_Drum" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [125, 113]
+{'Cost_OF': {'RD_CAPEX': 14406.843733248486, 'Number_of_solutions': 1}, 'D': 1.2192, 'L': 1.524}
+Elapsed time for Equipment1 "Reflux_Drum": 0.00 seconds 
+
+OF Solution total ($) 14406.843733248486
+Total elapsed time: 0.01 seconds
+

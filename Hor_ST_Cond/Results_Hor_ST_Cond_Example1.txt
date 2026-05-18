@@ -1,0 +1,17 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [403200, 288000, 288000, 273600, 207600]
+
+******************** Starting Execution for HSTC_Example1 ********************
+
+The solution of Equipment1 "HSTC" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [207600, 203440, 75440, 50499, 32529, 32529, 32529, 23816, 19991, 6376]
+{'Cost_OF': {'HE_CAPEX': np.float64(41690.45643711245), 'Number_of_solutions': 3}, 'Area_OF': {'HE_Area': np.float64(100.77515462865162), 'Number_of_solutions': 3}, 'Ds': np.float64(0.635), 'dte': np.float64(0.016), 'Npt': np.float64(2.0), 'rp': np.float64(1.33), 'lay': np.float64(1.0), 'L': np.float64(3.6585), 'Nb': np.float64(5.0)}
+Elapsed time for Equipment1 "HSTC": 0.28 seconds 
+
+OF Solution total ($) 41690.45643711245
+Total elapsed time: 0.53 seconds
+

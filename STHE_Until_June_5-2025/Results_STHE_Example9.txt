@@ -1,0 +1,14 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [168000, 81600, 81600, 74520, 61560]
+
+******************** Starting Execution for STHE_Example9 ********************
+
+User selection (['coldstream']) for recursive variable (yfluid) is not valid.
+Valid options are: ['cold_stream', 'hot_stream']
+If recursive trimming is desired, insert yfluid = '' or delete entry completely
+Update selection and try again
+OF Solution total (m²) 0
+Total elapsed time: 0.03 seconds
+

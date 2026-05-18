@@ -1,0 +1,17 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [216000]
+
+******************** Starting Execution for Aircooler_Example1 ********************
+
+The solution of Equipment1 "Aircooler" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [216000, 147000, 145280, 145280, 145280, 145280, 145280, 145280, 145280, 145280, 145280, 32940, 25830, 25190, 6860, 6860, 4430, 3960, 263]
+{'TAC_OF': {'TAC': np.float64(28113.850048762564), 'Number_of_solutions': 1}, 'finnedsurface': np.float64(4.0), 'L': np.float64(10.973), 'rp': np.float64(2.5), 'Nbay': np.float64(2.0), 'Nbbay': np.float64(1.0), 'Ntr': np.float64(56.0), 'aircoolerconfig': np.float64(4.0), 'Nfanbay': np.float64(2.0), 'Dfan': np.float64(3.2)}
+Elapsed time for Equipment1 "Aircooler": 0.55 seconds 
+
+OF Solution total ($/year) 28113.850048762564
+Total elapsed time: 0.59 seconds
+
