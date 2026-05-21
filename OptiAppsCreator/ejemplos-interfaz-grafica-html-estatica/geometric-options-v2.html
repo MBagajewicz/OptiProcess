@@ -1,0 +1,279 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiHexx - Heat Exchanger Optimal Design Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .optihexx-title {
+            font-family: 'Playfair+Display', serif;
+            font-style: italic;
+        }
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            background-color: #fff;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .custom-checkbox:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #333;
+            font-size: 12px;
+        }
+        .input-box {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        .tube-options-input {
+            background-color: transparent;
+            border: 1px solid #ef4444;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .tube-options-label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: #1c1917;
+            padding: 0 4px;
+            font-size: 0.75rem;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <div class="p-4">
+        <div class="w-full h-24 rounded-xl border-2 border-black bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-400 flex flex-col items-center justify-center shadow-md">
+            <h1 class="optihexx-title text-3xl font-bold text-black">OptiHexx</h1>
+            <p class="text-xs font-semibold italic text-black">Heat Exchanger Optimal Design Suite</p>
+            <p class="text-[10px] text-gray-700">Prototype P07</p>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="px-4 border-b border-gray-200">
+        <nav class="flex space-x-8">
+            <a href="#" class="py-2 px-1 text-sm font-medium text-gray-600 hover:text-blue-600">Problem Data</a>
+            <a href="#" class="py-2 px-1 text-sm font-medium text-blue-600 border-b-2 border-blue-600">Geometric Options</a>
+            <a href="#" class="py-2 px-1 text-sm font-medium text-gray-600 hover:text-blue-600">Results</a>
+            <a href="#" class="py-2 px-1 text-sm font-medium text-gray-600 hover:text-blue-600">Exit Shell & Tube</a>
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow relative overflow-hidden bg-gray-50">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://placehold.co/1920x1080/ffffff/cccccc?text=CFD+Heat+Exchanger+Simulation+Visualization+with+Fluid+Flow+Lines" alt="CFD simulation of a heat exchanger showing complex fluid flow lines in various colors like blue, green, and yellow" class="w-full h-full object-cover opacity-80">
+        </div>
+
+        <!-- Panels Container -->
+        <div class="relative z-10 p-6 flex flex-wrap gap-4 items-start justify-start">
+            
+            <!-- Column 1: Brown Panels -->
+            <div class="flex flex-col gap-4 w-60">
+                <div class="bg-[#7c5e51] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Configurations Available</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <input type="text" value="Series" class="input-box" readonly>
+                            <input type="checkbox" checked class="custom-checkbox">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" value="Parallel" class="input-box" readonly>
+                            <input type="checkbox" checked class="custom-checkbox">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" value="Hot series cold parallel" class="input-box" readonly>
+                            <input type="checkbox" checked class="custom-checkbox">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" value="Cold series hot parallel" class="input-box" readonly>
+                            <input type="checkbox" checked class="custom-checkbox">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#7c5e51] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Number of Shells Available</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="1" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="2" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="3" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="4" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="5" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="6" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="7" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="8" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Blue Panels -->
+            <div class="flex flex-col gap-4 w-40">
+                <div class="bg-[#3b82f6] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3 leading-tight">Number of<br>Tube Passes</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="1" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="2" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="4" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="6" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="8" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="bg-[#3b82f6] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Layouts Available</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="Square" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="Triangle" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="bg-[#3b82f6] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Pitch Ratio</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="1.25" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.33" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.5" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Yellow Panel -->
+            <div class="flex flex-col gap-4 w-40">
+                <div class="bg-[#fbbf24] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3 leading-tight">Shell<br>Diameter [m]</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="0.205" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.3048" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.3874" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.489" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.5906" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.6858" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.7874" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.889" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.9906" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.143" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.2192" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.3716" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.524" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 4: Dark Brown/Red Panels -->
+            <div class="flex flex-col gap-4 w-44">
+                <div class="bg-[#451a03] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3 leading-tight">Outer Tube<br>Diameter [m]</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="0.01905" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.0254" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.03175" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.0381" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.0508" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="bg-[#991b1b] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Tube Length [m]</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="1.2195" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="1.8293" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="2.439" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="3.0488" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="3.6585" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="4.8768" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="6.0976" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 5: Baffle cut and Tube Options -->
+            <div class="flex flex-col gap-4 w-52">
+                <div class="bg-[#4ade80] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Baffle cut</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="0.1" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.15" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.2" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.25" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.3" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.35" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.4" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="0.45" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1c1917] p-4 rounded-xl shadow-lg text-white border border-gray-700">
+                    <h3 class="text-xs font-bold mb-4">Tube Options</h3>
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <label class="tube-options-label">Minimum Tube Length [m]</label>
+                            <input type="text" value="3" class="tube-options-input">
+                        </div>
+                        <div class="relative">
+                            <label class="tube-options-label">Maximum Tube Length [m]</label>
+                            <input type="text" value="15" class="tube-options-input">
+                        </div>
+                        <div class="relative">
+                            <label class="tube-options-label">Thermal Conductivity</label>
+                            <input type="text" value="50" class="tube-options-input">
+                        </div>
+                        <div class="relative">
+                            <label class="tube-options-label">Tube Thickness [m]</label>
+                            <input type="text" value="0.002" class="tube-options-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 6: Number of Baffles -->
+            <div class="flex flex-col gap-4 w-44">
+                <div class="bg-[#166534] p-4 rounded-xl shadow-lg text-white">
+                    <h3 class="text-xs font-bold mb-3">Number of Baffles</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2"><input type="text" value="2" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="4" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="6" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="8" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="10" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="12" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="14" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="16" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="18" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                        <div class="flex items-center gap-2"><input type="text" value="20" class="input-box" readonly><input type="checkbox" checked class="custom-checkbox"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

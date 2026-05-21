@@ -1,0 +1,462 @@
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .logo-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .header-gradient {
+            background: linear-gradient(to bottom, #fef08a, #facc15, #fbbf24);
+            border: 2px solid #000;
+        }
+        .panel-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            background-color: white;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 12px;
+        }
+        .input-box {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 1px solid white;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            font-size: 12px;
+            width: 100%;
+            text-align: left;
+        }
+        .tube-options-input {
+            background: transparent;
+            border: 1px solid white;
+            border-radius: 4px;
+            padding: 8px;
+            color: white;
+            font-size: 12px;
+            width: 100%;
+            margin-top: 4px;
+        }
+        .tube-options-label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: #b91c1c; /* Matches the panel color */
+            padding: 0 4px;
+            font-size: 10px;
+            color: white;
+        }
+        .bg-main {
+            background-image: url('https://placehold.co/1920x1080/ffffff/eaeaea?text=Heat+Exchanger+CFD+Visualization+Background');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <div class="p-4">
+        <div class="header-gradient rounded-xl h-24 flex flex-col items-center justify-center text-center shadow-lg">
+            <h1 class="logo-font text-3xl font-bold italic">OptiHexx</h1>
+            <p class="text-xs font-semibold italic">Heat Exchanger Optimal Design Suite</p>
+            <p class="text-[10px]">Prototype P07</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="px-8 border-b border-gray-200 flex space-x-8 text-sm font-medium text-gray-600">
+        <a href="#" class="py-2">Problem Data</a>
+        <a href="#" class="py-2 text-blue-600 border-b-2 border-blue-600">Geometric Options</a>
+        <a href="#" class="py-2">Results</a>
+        <a href="#" class="py-2">Exit Shell & Tube</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow bg-main relative p-6 flex space-x-4 overflow-x-auto">
+        
+        <!-- Column 1: Configurations & Shells -->
+        <div class="flex flex-col space-y-4 min-w-[200px]">
+            <!-- Configurations Available -->
+            <div class="bg-[#7a635a] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-xs font-bold mb-3">Configurations Available</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">Series</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">Parallel</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">Hot series cold parallel</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">Cold series hot parallel</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Shells Available -->
+            <div class="bg-[#7a635a] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-xs font-bold mb-3">Number of Shells Available</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">2</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">3</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">4</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">5</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">6</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">7</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">8</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Tube Passes, Layouts, Pitch -->
+        <div class="flex flex-col space-y-4 min-w-[120px]">
+            <!-- Number of Tube Passes -->
+            <div class="bg-[#3b9df5] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-[10px] font-bold mb-3 leading-tight">Number of<br>Tube Passes</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">2</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">4</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">6</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">8</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layouts Available -->
+            <div class="bg-[#3b9df5] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-[10px] font-bold mb-3">Layouts Available</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">Square</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">Triangle</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pitch Ratio -->
+            <div class="bg-[#3b9df5] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-[10px] font-bold mb-3">Pitch Ratio</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1.25</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1.33</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1.5</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: Shell Diameter -->
+        <div class="flex flex-col min-w-[120px]">
+            <div class="bg-[#fbbd08] p-3 rounded-xl panel-shadow text-black h-full">
+                <h3 class="text-[10px] font-bold mb-3 leading-tight">Shell<br>Diameter [m]</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.205</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.3048</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.3874</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.489</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.5906</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.6858</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.7874</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.889</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">0.9906</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">1.143</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">1.2192</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">1.3716</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box !text-black !border-black/20">1.524</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 4: Outer Tube Diameter & Tube Length -->
+        <div class="flex flex-col space-y-4 min-w-[130px]">
+            <!-- Outer Tube Diameter -->
+            <div class="bg-[#3d2b24] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-[10px] font-bold mb-3 leading-tight">Outer Tube<br>Diameter [m]</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.01905</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.0254</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.03175</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.0381</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.0508</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tube Length -->
+            <div class="bg-[#b91c1c] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-[10px] font-bold mb-3">Tube Length [m]</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1.2195</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">1.8293</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">2.439</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">3.0488</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">3.6585</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">4.8768</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">6.0976</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 5: Baffle Cut & Tube Options -->
+        <div class="flex flex-col space-y-4 min-w-[140px]">
+            <!-- Baffle cut -->
+            <div class="bg-[#4caf50] p-3 rounded-xl panel-shadow text-white">
+                <h3 class="text-[10px] font-bold mb-3">Baffle cut</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.1</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.15</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.2</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.25</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.3</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.35</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.4</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">0.45</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tube Options -->
+            <div class="bg-[#3d2b24] p-3 rounded-xl panel-shadow text-white relative mt-auto">
+                <h3 class="text-[10px] font-bold mb-4">Tube Options</h3>
+                <div class="space-y-4">
+                    <div class="relative">
+                        <span class="tube-options-label">Minimum Tube Length [m]</span>
+                        <input type="text" class="tube-options-input" value="3">
+                    </div>
+                    <div class="relative">
+                        <span class="tube-options-label">Maximum Tube Length [m]</span>
+                        <input type="text" class="tube-options-input" value="15">
+                    </div>
+                    <div class="relative">
+                        <span class="tube-options-label">Thermal Conductivity</span>
+                        <input type="text" class="tube-options-input" value="50">
+                    </div>
+                    <div class="relative">
+                        <span class="tube-options-label">Tube Thickness [m]</span>
+                        <input type="text" class="tube-options-input" value="0.002">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 6: Number of Baffles -->
+        <div class="flex flex-col min-w-[130px]">
+            <div class="bg-[#4caf50] p-3 rounded-xl panel-shadow text-white h-fit">
+                <h3 class="text-[10px] font-bold mb-3">Number of Baffles</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">2</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">4</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">6</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">8</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">10</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">12</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">14</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">16</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">18</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="input-box">20</div>
+                        <div class="custom-checkbox ml-2"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

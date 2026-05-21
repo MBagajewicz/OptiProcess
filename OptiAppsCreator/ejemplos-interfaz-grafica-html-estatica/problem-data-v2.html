@@ -1,0 +1,289 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiHexx - Heat Exchanger Optimal Design Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        .font-logo { font-family: 'Great Vibes', cursive; }
+        
+        /* Custom styling for fieldsets to match the screenshot's floating label look */
+        fieldset {
+            margin-top: 4px;
+        }
+        legend {
+            line-height: 1;
+            margin-bottom: -4px;
+        }
+        
+        /* Custom scrollbar for a cleaner look if needed, though not visible in screenshot */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+    </style>
+</head>
+<body class="bg-[#f4f6f9] font-sans text-gray-800 min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Top Banner -->
+    <div class="m-2 border-[3px] border-black rounded-lg bg-gradient-to-b from-[#fdf036] via-[#f4d03f] to-[#e67e22] text-center py-2.5 shadow-sm relative z-20">
+        <h1 class="font-logo text-[40px] font-bold tracking-wide text-black leading-none">OptiHexx</h1>
+        <p class="text-[11px] font-serif italic text-black mt-1 font-bold">Heat Exchanger Optimal Design Suite</p>
+        <p class="text-[9px] text-gray-600 mt-0.5">Prototype P07</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex space-x-8 px-6 py-2 bg-[#f4f6f9] border-b border-gray-300 text-sm relative z-20">
+        <a href="#" class="text-[#3b82f6] border-b-2 border-[#3b82f6] pb-1">Problem Data</a>
+        <a href="#" class="text-gray-600 hover:text-gray-800 pb-1">Geometric Options</a>
+        <a href="#" class="text-gray-600 hover:text-gray-800 pb-1">Results</a>
+        <a href="#" class="text-gray-600 hover:text-gray-800 pb-1">Exit Shell & Tube</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="relative flex-grow">
+        <!-- Background Image -->
+        <img src="https://placehold.co/1920x1080/1e3a8a/93c5fd?text=Industrial+Pipes+and+Valves" alt="Background image showing industrial blue pipes, flanges, and valves in a factory setting, slightly out of focus" class="absolute inset-0 w-full h-full object-cover z-0 opacity-50">
+        
+        <!-- Content Container -->
+        <div class="relative z-10 p-4 flex gap-4 items-start justify-start max-w-[1500px] mx-auto">
+            
+            <!-- Column 1: Left Panels -->
+            <div class="flex flex-col gap-4 w-36 shrink-0">
+                <!-- Optimization Target -->
+                <div class="bg-[#e6f0fa]/95 border border-gray-300 rounded-lg p-3 shadow-md">
+                    <h3 class="text-[#3b82f6] text-[11px] font-semibold text-center mb-2 leading-tight">OPIMIZATION<br>TARGET</h3>
+                    <div class="space-y-1.5 text-xs text-gray-800">
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="opt" checked class="w-3.5 h-3.5 text-blue-600 border-gray-400 focus:ring-0"> TAC</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="opt" class="w-3.5 h-3.5 text-blue-600 border-gray-400 focus:ring-0"> AREA</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="opt" class="w-3.5 h-3.5 text-blue-600 border-gray-400 focus:ring-0"> CAPEX</label>
+                    </div>
+                </div>
+                <!-- Fluid Allocation -->
+                <div class="bg-[#e6f0fa]/95 border border-gray-300 rounded-lg p-3 shadow-md">
+                    <h3 class="text-[#3b82f6] text-[11px] font-semibold text-center mb-2 leading-tight">FLUID<br>ALLOCATION</h3>
+                    <div class="space-y-2 text-xs text-gray-800">
+                        <label class="flex items-start gap-2 cursor-pointer"><input type="radio" name="fluid" class="w-3.5 h-3.5 text-blue-600 border-gray-400 focus:ring-0 mt-0.5"> <span class="leading-tight">Autoselect<br>allocation</span></label>
+                        <label class="flex items-start gap-2 cursor-pointer"><input type="radio" name="fluid" class="w-3.5 h-3.5 text-blue-600 border-gray-400 focus:ring-0 mt-0.5"> <span class="leading-tight">Cold in<br>Tubes</span></label>
+                        <label class="flex items-start gap-2 cursor-pointer"><input type="radio" name="fluid" checked class="w-3.5 h-3.5 text-blue-600 border-gray-400 focus:ring-0 mt-0.5"> <span class="leading-tight">Hot in<br>Tubes</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2 & 3 Wrapper for bottom alignment of LMTD -->
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-4">
+                    <!-- Column 2: Hot Stream -->
+                    <div class="bg-[#ffdbdb]/95 border border-red-200 rounded-xl p-3 shadow-lg w-60 shrink-0">
+                        <h2 class="text-[#ff4d4d] font-bold text-center mb-3 text-base">HOT STREAM</h2>
+                        
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Inlet Temperature [°C]</legend>
+                            <input type="text" value="160.0" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Outlet Temperature [°C]</legend>
+                            <input type="text" value="98.0" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Flow Rate [kg/s]</legend>
+                            <input type="text" value="65" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Density [kg/m³]</legend>
+                            <input type="text" value="776" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Heat Capacity [J/(kg K)]</legend>
+                            <input type="text" value="2600" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Viscosity [Pa s]</legend>
+                            <input type="text" value="0.000476" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Thermal Cond. [W/(m K)]</legend>
+                            <input type="text" value="0.122" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Fouling Factor [m² °C/W]</legend>
+                            <input type="text" value="0.0002" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#ff6b6b] rounded px-2 pb-1">
+                            <legend class="text-[10px] text-gray-600 px-1">Available Pressure Drop [Pa]</legend>
+                            <input type="text" value="1000000000000.0" class="w-full bg-transparent text-[#ff4d4d] outline-none text-sm">
+                        </fieldset>
+                    </div>
+
+                    <!-- Column 3: Cold Stream -->
+                    <div class="bg-[#d6eaff]/95 border border-blue-200 rounded-xl p-3 shadow-lg w-60 shrink-0">
+                        <h2 class="text-[#3b82f6] font-bold text-center mb-3 text-base">COLD STREAM</h2>
+                        
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Inlet Temperature [°C]</legend>
+                            <input type="text" value="50.0" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5 bg-[#c0dcf9]">
+                            <legend class="text-[10px] text-gray-600 px-1">Outlet Temp. [°C] (Calculated)</legend>
+                            <input type="text" value="105.0" class="w-full bg-transparent text-gray-500 outline-none text-sm" readonly>
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Flow Rate [kg/s]</legend>
+                            <input type="text" value="45.56" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Density [kg/m³]</legend>
+                            <input type="text" value="992" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Heat Capacity [J/(kg K)]</legend>
+                            <input type="text" value="4181" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Viscosity [Pa s]</legend>
+                            <input type="text" value="0.00057" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Thermal Cond. [W/(m K)]</legend>
+                            <input type="text" value="0.59" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1 mb-1.5">
+                            <legend class="text-[10px] text-gray-600 px-1">Fouling Factor [m² °C/W]</legend>
+                            <input type="text" value="0.0002" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                        <fieldset class="border border-[#60a5fa] rounded px-2 pb-1">
+                            <legend class="text-[10px] text-gray-600 px-1">Available Pressure Drop [Pa]</legend>
+                            <input type="text" value="1000000000000.0" class="w-full bg-transparent text-[#3b82f6] outline-none text-sm">
+                        </fieldset>
+                    </div>
+                </div>
+                
+                <!-- LMTD Calculated -->
+                <div class="flex pl-[160px]">
+                    <div class="bg-[#ffe4e1]/95 border border-gray-300 rounded-lg p-2 shadow-lg w-48">
+                        <fieldset class="border border-gray-400 rounded px-2 pb-1">
+                            <legend class="text-[10px] text-gray-600 px-1">LMTD (Calculated)</legend>
+                            <input type="text" value="51.4" class="w-full bg-transparent text-gray-500 outline-none text-sm">
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 4: Flow Limits, LMTD Settings, Other Options -->
+            <div class="flex flex-col gap-4 w-64 shrink-0">
+                <!-- Flow Limits -->
+                <div class="bg-white/95 rounded-xl p-3 shadow-lg">
+                    <h2 class="text-[#ff4d4d] font-semibold text-center mb-2 text-base">FLOW LIMITS</h2>
+                    <table class="w-full text-center text-[11px] border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border border-gray-300 p-1 text-[#ff4d4d] font-normal w-1/4 leading-tight">Lower<br>limit</th>
+                                <th class="border border-gray-300 p-1 text-[#ff4d4d] font-normal w-1/2">ITEM</th>
+                                <th class="border border-gray-300 p-1 text-[#ff4d4d] font-normal w-1/4 leading-tight">Upper limit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">2</td>
+                                <td class="border border-gray-300 p-1 text-gray-800">Tube velocity<br>[m/s]</td>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">3</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">1</td>
+                                <td class="border border-gray-300 p-1 text-gray-800">Shell velocity<br>[m/s]</td>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">2</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">0</td>
+                                <td class="border border-gray-300 p-1 text-gray-800">Tube Reynolds</td>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">5000000.0</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">0</td>
+                                <td class="border border-gray-300 p-1 text-gray-800">Shell Reynolds</td>
+                                <td class="border border-gray-300 p-1 text-[#ff4d4d]">100000.0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- LMTD Correction Factor Settings -->
+                <div class="bg-[#f5deb3]/95 border border-[#d4a373] rounded-xl p-3 shadow-lg">
+                    <h2 class="text-[#8b5a2b] font-semibold text-center mb-3 text-[13px] leading-tight">LMTD CORRECTION<br>FACTOR SETTINGS</h2>
+                    <fieldset class="border border-[#d4a373] rounded px-2 pb-1 mb-2">
+                        <legend class="text-[10px] text-gray-700 px-1">Xp limit (Pmax*Xp < P)</legend>
+                        <input type="text" value="0.9" class="w-full bg-transparent text-black outline-none text-sm">
+                    </fieldset>
+                    <fieldset class="border border-[#d4a373] rounded px-2 pb-1">
+                        <legend class="text-[10px] text-gray-700 px-1">F min value</legend>
+                        <input type="text" value="0.75" class="w-full bg-transparent text-black outline-none text-sm">
+                    </fieldset>
+                </div>
+
+                <!-- Other Options -->
+                <div class="bg-[#f0f0f0]/95 border border-gray-300 rounded-xl p-3 shadow-lg">
+                    <h2 class="text-gray-600 font-semibold text-center mb-3 text-base">OTHER OPTIONS</h2>
+                    <fieldset class="border border-gray-400 rounded px-2 pb-1 mb-2">
+                        <legend class="text-[10px] text-gray-600 px-1">Maximum Area per Shell [m2]</legend>
+                        <input type="text" value="1000" class="w-full bg-transparent text-black outline-none text-sm">
+                    </fieldset>
+                    <fieldset class="border border-gray-400 rounded px-2 pb-1 mb-2">
+                        <legend class="text-[10px] text-gray-600 px-1">Excess Area [%]</legend>
+                        <input type="text" value="10" class="w-full bg-transparent text-black outline-none text-sm">
+                    </fieldset>
+                    <fieldset class="border border-gray-400 rounded px-2 pb-1">
+                        <legend class="text-[10px] text-gray-600 px-1">Pump Efficiency</legend>
+                        <input type="text" value="0.6" class="w-full bg-transparent text-black outline-none text-sm">
+                    </fieldset>
+                </div>
+            </div>
+
+            <!-- Column 5: Economic Parameters -->
+            <div class="bg-[#e8f5e9]/95 border border-green-200 rounded-xl p-3 shadow-lg w-72 shrink-0">
+                <h2 class="text-[#22c55e] font-bold text-center mb-3 text-base">ECONOMIC PARAMETERS</h2>
+                
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1 mb-1.5">
+                    <legend class="text-[10px] text-gray-600 px-1">Number of years for amortization [years]</legend>
+                    <input type="text" value="10" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1 mb-1.5">
+                    <legend class="text-[10px] text-gray-600 px-1">Energy cost [$/kWh]</legend>
+                    <input type="text" value="0.15" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1 mb-1.5">
+                    <legend class="text-[10px] text-gray-600 px-1">Number of operating hours per year [h/year]</legend>
+                    <input type="text" value="7500" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1 mb-1.5">
+                    <legend class="text-[10px] text-gray-600 px-1">Interest %</legend>
+                    <input type="text" value="10.0" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1 mb-1.5">
+                    <legend class="text-[10px] text-gray-600 px-1">HEX fixed costs [U$D/year]</legend>
+                    <input type="text" value="8500" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1 mb-1.5">
+                    <legend class="text-[10px] text-gray-600 px-1">Area cost coefficient [U$D/m2]</legend>
+                    <input type="text" value="410" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+                <fieldset class="border border-[#4ade80] rounded px-2 pb-1">
+                    <legend class="text-[10px] text-gray-600 px-1">Exponent for area cost</legend>
+                    <input type="text" value="0.85" class="w-full bg-transparent text-[#22c55e] outline-none text-sm">
+                </fieldset>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
