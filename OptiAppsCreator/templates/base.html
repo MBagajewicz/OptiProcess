@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiHexx — {{ page_title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .header-font { font-family: 'Playfair Display', serif; }
+        .input-container { position: relative; margin-top: 12px; margin-bottom: 8px; }
+        .input-label { position: absolute; top: -10px; left: 10px; padding: 0 4px; font-size: 0.7rem; z-index: 10; }
+        .custom-input { width: 100%; border: 1px solid; border-radius: 4px; padding: 4px 8px; font-size: 0.9rem; background: transparent; }
+        .checkbox-item { width: 18px; height: 18px; background-color: white; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+        .checkbox-item.checked { background-color: #3b82f6; color: white; }
+        .checkbox-grid-input { background-color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; padding: 4px 8px; font-size: 12px; width: 100%; text-align: left; color: inherit; }
+        .bg-industrial { background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('https://placehold.co/1920x1080/2c3e50/ffffff?text=Industrial+Heat+Exchanger+Background'); background-size: cover; background-position: center; }
+    </style>
+    {% block extra_style %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Header -->
+    <div class="p-2">
+        <div class="bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-400 border-2 border-black rounded-lg p-4 text-center shadow-md">
+            <h1 class="header-font text-3xl italic font-bold">OptiHexx</h1>
+            <p class="text-xs font-semibold italic">Heat Exchanger Optimal Design Suite</p>
+            <p class="text-[10px] text-gray-600">Prototype P07</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="bg-white border-b border-gray-300 px-4 flex space-x-8 text-sm font-medium text-gray-600">
+        {% for nav_page in nav_pages %}
+        <div class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
+            {{ nav_page.label }}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <script>
+    document.querySelectorAll('.checkbox-item').forEach(function(el) {
+        el.addEventListener('click', function() {
+            this.classList.toggle('checked');
+            var icon = this.querySelector('i');
+            if (icon) icon.classList.toggle('fa-check');
+        });
+    });
+    </script>
+</body>
+</html>

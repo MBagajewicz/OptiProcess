@@ -1,0 +1,259 @@
+# STHE_ui.yaml — UI presentation metadata for Shell & Tube Heat Exchanger
+# This file contains ONLY display-level information.
+# Variable definitions, standard values, constraints → Model_Def_STHE.py
+# Default values → Examples_STHE.py
+
+# ============================================================
+# GLOBAL UI CONFIG
+# ============================================================
+header:
+  title: "OptiHexx"
+  subtitle: "Heat Exchanger Optimal Design Suite"
+  prototype: "Prototype P07"
+
+# List of all known model types for the main menu
+# Active models link to their problem-data page; inactive ones are greyed out
+available_models:
+  - {id: "STHE", label: "Shell & Tube", active: true, link: "problem_data.html"}
+  - {id: "GPHE", label: "Plate Exchangers", active: false, link: "#"}
+  - {id: "DoublePipe", label: "Double Pipe Structures", active: false, link: "#"}
+  - {id: "Spiral", label: "Spiral Exchangers", active: false, link: "#"}
+  - {id: "Condenser", label: "Condensers", active: false, link: "#"}
+  - {id: "Reboiler", label: "Reboilers", active: false, link: "#"}
+  - {id: "AirCooler", label: "Air Coolers", active: false, link: "#"}
+  - {id: "FiredHeater", label: "Fired Heater", active: false, link: "#"}
+
+model:
+  display_name: "Shell & Tube"
+  icon: "fa-industry"
+
+pages:
+  # ============================================================
+  # PROBLEM DATA PAGE
+  # ============================================================
+  problem_data:
+    title: "Problem Data"
+    columns:
+      # Column layout: list of sections per column, left to right
+      - [optimization_target, fluid_allocation]
+      - [hot_stream, cold_stream, lmtd_display]
+      - [flow_limits, lmtd_settings, other_options]
+      - [economic]
+
+    sections:
+
+      optimization_target:
+        title: "OPTIMIZATION TARGET"
+        element: radio_group
+        source: "Model_Declarations"            # from Examples_STHE → EquipmentN.Model_Declarations
+        source_key: "Selected_OF"
+        # Labels for each objective function option (read from Model_Def for options list)
+        option_labels: {TAC_OF: "TAC", CAPEX_OF: "CAPEX", AREA_OF: "AREA"}
+
+      fluid_allocation:
+        title: "FLUID ALLOCATION"
+        element: radio_group
+        source: "Model_Parameters"
+        source_key: "yfluid"
+        options:
+          - {value: "", label: "Autoselect allocation"}
+          - {value: "cold_stream", label: "Cold in Tubes"}
+          - {value: "hot_stream", label: "Hot in Tubes"}
+
+      hot_stream:
+        title: "HOT STREAM"
+        element: form_group
+        color: red
+        source: "Model_Parameters"
+        fields:
+          Thi:      {label: "Inlet Temperature", unit: "°C"}
+          Tho:      {label: "Outlet Temperature", unit: "°C"}
+          mh:       {label: "Flow Rate", unit: "kg/s"}
+          roh:      {label: "Density", unit: "kg/m³"}
+          Cph:      {label: "Heat Capacity", unit: "J/(kg K)"}
+          mih:      {label: "Viscosity", unit: "Pa s"}
+          kh:       {label: "Thermal Cond.", unit: "W/(m K)"}
+          Rfh:      {label: "Fouling Factor", unit: "m² °C/W"}
+          DPhdisp:  {label: "Available Pressure Drop", unit: "Pa"}
+
+      cold_stream:
+        title: "COLD STREAM"
+        element: form_group
+        color: blue
+        source: "Model_Parameters"
+        fields:
+          Tci:      {label: "Inlet Temperature", unit: "°C"}
+          Tco:      {label: "Outlet Temperature", unit: "°C", computed_hint: true}
+          mc:       {label: "Flow Rate", unit: "kg/s"}
+          roc:      {label: "Density", unit: "kg/m³"}
+          Cpc:      {label: "Heat Capacity", unit: "J/(kg K)"}
+          mic:      {label: "Viscosity", unit: "Pa s"}
+          kc:       {label: "Thermal Cond.", unit: "W/(m K)"}
+          Rfc:      {label: "Fouling Factor", unit: "m² °C/W"}
+          DPcdisp:  {label: "Available Pressure Drop", unit: "Pa"}
+
+      lmtd_display:
+        title: ""
+        element: computed_display
+        color: pink
+        rows:
+          - {label: "LMTD (Calculated)", unit: "°C", computed: true}
+
+      flow_limits:
+        title: "FLOW LIMITS"
+        element: limit_table
+        color: red
+        source: "Model_Parameters"
+        rows:
+          - {item: "Tube velocity", unit: "m/s", lower: vtmin, upper: vtmax}
+          - {item: "Shell velocity", unit: "m/s", lower: vsmin, upper: vsmax}
+          - {item: "Tube Reynolds", lower: Retmin, upper: Retmax}
+          - {item: "Shell Reynolds", lower: Resmin, upper: Resmax}
+          - {item: "L/D ratio", lower: LBLD, upper: UBLD}
+
+      lmtd_settings:
+        title: "LMTD CORRECTION FACTOR SETTINGS"
+        element: form_group
+        color: yellow
+        source: "Model_Parameters"
+        fields:
+          Xp:    {label: "Xp limit (Pmax*Xp < P)"}
+          F_min: {label: "F min value"}
+
+      other_options:
+        title: "OTHER OPTIONS"
+        element: form_group
+        color: gray
+        source: "Model_Parameters"
+        fields:
+          Aexc:          {label: "Excess Area", unit: "%"}
+          eta:           {label: "Pump Efficiency"}
+          Shell_Method:  {label: "Shell Method", element: select, options: ["Kern", "Bell"]}
+          Tube_Method:   {label: "Tube Method", element: select, options: ["Dittus_Boelter", "Dewiit_Saunders", "Gnielinski", "Hausen", "Sieder_Tate"]}
+
+      economic:
+        title: "ECONOMIC PARAMETERS"
+        element: form_group
+        color: green
+        source: "Model_Parameters"
+        fields:
+          n:        {label: "Amortization period", unit: "years"}
+          pc:       {label: "Energy cost", unit: "$/kWh", display_factor: 3600000}
+          Nop:      {label: "Operating hours per year", unit: "h/year"}
+          int_rate: {label: "Interest", unit: "%", display_factor: 100}
+          par_a:    {label: "Cost model parameter a"}
+          par_b:    {label: "Cost model exponent b"}
+
+  # ============================================================
+  # GEOMETRIC OPTIONS PAGE
+  # ============================================================
+  geometric_options:
+    title: "Geometric Options"
+    columns:
+      - [configurations, shell_count]
+      - [tube_passes, layouts, pitch_ratio]
+      - [shell_diameter]
+      - [tube_diameter, tube_length]
+      - [baffle_cut, tube_options, bell_params]
+      - [baffle_count]
+
+    sections:
+
+      configurations:
+        title: "Configurations Available"
+        element: checkbox_grid
+        color: brown
+        static: true
+        items:
+          - {value: "series", label: "Series"}
+          - {value: "parallel", label: "Parallel"}
+          - {value: "hot_series_cold_parallel", label: "Hot series cold parallel"}
+          - {value: "cold_series_hot_parallel", label: "Cold series hot parallel"}
+
+      shell_count:
+        title: "Number of Shells Available"
+        element: checkbox_grid
+        color: brown
+        static: true
+        items:
+          - {value: 1}
+          - {value: 2}
+          - {value: 3}
+          - {value: 4}
+          - {value: 5}
+          - {value: 6}
+          - {value: 7}
+          - {value: 8}
+
+      tube_passes:
+        title: "Number of Tube Passes"
+        element: checkbox_grid
+        color: blue
+        variable: "Npt"                        # index in List_of_Variables
+
+      layouts:
+        title: "Layouts Available"
+        element: checkbox_grid
+        color: blue
+        variable: "lay"
+        value_labels: {1: "Square (90°)", 2: "Triangle (30°)", 3: "Rotated Square (45°)"}
+
+      pitch_ratio:
+        title: "Pitch Ratio"
+        element: checkbox_grid
+        color: blue
+        variable: "rp"
+
+      shell_diameter:
+        title: "Shell Diameter"
+        unit: "m"
+        element: checkbox_grid
+        color: yellow
+        variable: "Ds"
+
+      tube_diameter:
+        title: "Outer Tube Diameter"
+        unit: "m"
+        element: checkbox_grid
+        color: brown_dark
+        variable: "dte"
+
+      tube_length:
+        title: "Tube Length"
+        unit: "m"
+        element: checkbox_grid
+        color: red_dark
+        variable: "L"
+
+      baffle_cut:
+        title: "Baffle cut"
+        element: checkbox_grid
+        color: green
+        variable: "Bc"
+
+      baffle_count:
+        title: "Number of Baffles"
+        element: checkbox_grid
+        color: green
+        variable: "Nb"
+
+      tube_options:
+        title: "Tube Options"
+        element: form_group
+        color: brown_dark
+        source: "Model_Parameters"
+        fields:
+          LBLD:   {label: "Minimum Tube Length", unit: "m"}
+          UBLD:   {label: "Maximum Tube Length", unit: "m"}
+          ktube:  {label: "Thermal Conductivity", unit: "W/(m K)"}
+          thk:    {label: "Tube Thickness", unit: "m"}
+
+      bell_params:
+        title: "Bell Method Parameters"
+        element: form_group
+        color: brown_dark
+        source: "Model_Parameters"
+        fields:
+          Nss:     {label: "Number of sealing strips"}
+          plbmax1: {label: "Max unsupported span (type 1)"}
+          plbmax2: {label: "Max unsupported span (type 2)"}
