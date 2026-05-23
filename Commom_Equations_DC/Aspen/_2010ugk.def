@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2010ugk.inm
+MODNAME: apmain
+RUNID: _2010ugk
+NEW_RUNID: _2010ugk
+OLD_RUNID: _2010ugk
+PDF: _2010ugk.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2010ugk.ads

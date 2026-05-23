@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5305dkc.inm
+MODNAME: apmain
+RUNID: _5305dkc
+NEW_RUNID: _5305dkc
+OLD_RUNID: _5305dkc
+PDF: _5305dkc.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+DBCONN: _5305dkc.ads

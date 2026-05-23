@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0811whg.inm
+MODNAME: apmain
+RUNID: _0811whg
+NEW_RUNID: _0811whg
+OLD_RUNID: _0811whg
+PDF: _0811whg.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0811whg.ads

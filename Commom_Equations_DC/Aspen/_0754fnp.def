@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0754fnp.inm
+MODNAME: apmain
+RUNID: _0754fnp
+NEW_RUNID: _0754fnp
+OLD_RUNID: _0754fnp
+PDF: _0754fnp.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0754fnp.ads

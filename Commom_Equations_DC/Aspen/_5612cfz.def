@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5612cfz.inm
+MODNAME: apmain
+RUNID: _5612cfz
+NEW_RUNID: _5612cfz
+OLD_RUNID: _5612cfz
+PDF: _5612cfz.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5612cfz.ads

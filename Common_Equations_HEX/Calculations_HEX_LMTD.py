@@ -1,3 +1,4 @@
+
 #
 #region Titles and Header
 # Nature: Optimization
@@ -7,7 +8,6 @@
 #   0.0          01-Dec-2024     Mariana Mello             Original
 #   0.1          23-Apr-2025     Mariana Mello             Update to fix error
 #   0.2          23-Apr-2025     Sung Young Kim            Edit delta T (if delta T < 0)
-#   0.3          19-Sep-2025     Mariana Mello             Update to fix error np.all()
 ##################################################################################################################
 #endregion
 
@@ -34,7 +34,7 @@ def HEX_lmtd(Thi, Tho, Tci, Tco):
     delta1 = Thi - Tco
     delta2 = Tho - Tci
     # Prevent zero values- 
-    if np.all(delta1) <= 0 or np.all(delta2) <= 0:
+    if delta1 <= 0 or delta2 <= 0:
         raise ValueError(f"Cannot compute LMTD: ΔT1={delta1:.6f}, ΔT2={delta2:.6f} (both must be > 0)")
 
     # If ΔT1 and ΔT2 are almost identical, return ΔT1 directly (limit case)

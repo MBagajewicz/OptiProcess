@@ -19,6 +19,8 @@
 ##################################################################################################################
 #region Import Library
 import numpy as np
+import os
+import pandas as pd
 from Commom_Equations_DC import (
     Calculations_DC_Aspen,
     Calculations_DC_Column_Sizing,
@@ -51,7 +53,7 @@ def TAC_OF(Nf_c,Ns_c,m_p):
 
     # Running Aspen simulation:
     print(f'Running Aspen simulation for candidate with Ns = {Ns_c[0]} and Nf = {Nf_c[0]}')
-    results = Calculations_DC_Aspen.fun_run_Aspen(Ns_c[0], Nf_c[0], m_p['Aspen_engine'], m_p['block_name'][0], m_p['stream_names'], m_p['Comp_name'], m_p['Nc'])
+    results = Calculations_DC_Aspen.fun_run_Aspen(Ns_c[0], Nf_c[0], m_p['Aspen_engine'], m_p['block_name'][0], m_p['stream_names'], m_p['Comp_name'], m_p['Nc'], m_p)
 
     # If candidate was successfully solved:
     if results:
@@ -93,6 +95,65 @@ def TAC_OF(Nf_c,Ns_c,m_p):
         Solution_within = {}
     print(f'TAC = {TAC[0]:.2f}')
 
+    # ------------------------------
+    # Excel Map - TAC Results
+    # Tomazim
+    # ------------------------------
+
+    try:
+        # Ensure TAC is a valid number
+        TAC_value = float(TAC[0]) if not np.isnan(TAC[0]) else np.nan
+
+        # Define search names and ranges
+        Ns_val = int(Ns_c[0])
+        Nf_val = int(Nf_c[0])
+
+        # Path to the current folder
+        folder = os.getcwd()
+
+        # Base name for the file
+        base_name = "TAC_Matrix_DC_"
+
+        # Check if previous TAC files already exist
+        existing = [f for f in os.listdir(folder) if f.startswith(base_name) and f.endswith(".xlsx")]
+
+        # Define the number for the new file (does not overwrite)
+        if existing:
+            nums = []
+            for f in existing:
+                num_part = f.replace(base_name, "").replace(".xlsx", "")
+                if num_part.isdigit():
+                    nums.append(int(num_part))
+            next_num = max(nums) 
+            output_file = f"{base_name}{next_num}.xlsx"
+        else:
+            next_num = 1
+            output_file = f"{base_name}{next_num}.xlsx"
+
+        # If a file already exists, load it; otherwise, create a new DataFrame
+        if os.path.exists(output_file):
+            df_matrix = pd.read_excel(output_file, index_col=0)
+        else:
+            df_matrix = pd.DataFrame()
+
+        # Add columns and indices if they do not exist yet
+        if Nf_val not in df_matrix.columns:
+            df_matrix[Nf_val] = np.nan
+        if Ns_val not in df_matrix.index:
+            df_matrix.loc[Ns_val] = np.nan
+
+        # Save the calculated TAC value
+        df_matrix.at[Ns_val, Nf_val] = TAC_value
+        df_matrix.index.name = "Ns\\Nf"
+
+        # Save the updated Excel file
+        df_matrix.to_excel(output_file, float_format="%.2f")
+        print(f"✅ TAC value saved in: {output_file}")
+
+    except Exception as e:
+        print(f"⚠️ Error saving TAC matrix: {type(e).__name__} — {e}")
+    # ------------------------------
+    
     return [TAC, Solution_within]
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -121,7 +182,7 @@ def LB_Gen(Nf_c,Ns_c,m_p):
     for Nf in range(Nfmin,Nfmax+1):    # For Nf from Nfmin to Nsmax - 2
 
         # Solve candidate on Aspen Plus:
-        GD_results[Nf] = Calculations_DC_Aspen.fun_run_Aspen(Nsmax, Nf, m_p['Aspen_engine'], m_p['block_name'][0], m_p['stream_names'], m_p['Comp_name'], m_p['Nc'])
+        GD_results[Nf] = Calculations_DC_Aspen.fun_run_Aspen(Nsmax, Nf, m_p['Aspen_engine'], m_p['block_name'][0], m_p['stream_names'], m_p['Comp_name'], m_p['Nc'], m_p)
 
         # Checking feasibility:
         if GD_results[Nf]:
@@ -190,6 +251,53 @@ def LB_Gen(Nf_c,Ns_c,m_p):
         if Nf in GD_EX_CAPEX_COL and Nf in GD_TAC else 1e20
         for Nf, Ns in zip(Nf_c, Ns_c)
     ])
+
+
+    #------------------------------
+    # Excel Map - Lower Bounds
+    # Tomazim
+    #------------------------------
+
+    try:
+        # Convert to DataFrame
+        Ns_vals = np.unique(Ns_c)
+        Nf_vals = np.unique(Nf_c)
+        df_matrix = pd.DataFrame(
+            index=Ns_vals, columns=Nf_vals
+        ) 
+        for nfi, nsi, lb in zip(Nf_c, Ns_c, LB_sol):
+            df_matrix.at[nsi, nfi] = lb
+        df_matrix.index.name = "Ns\\Nf"
+
+        # Current directory
+        folder = os.getcwd()
+
+        # Search for existing files
+        base_name = "LowerBound_Matrix_DC_"
+        existing = [f for f in os.listdir(folder) if f.startswith(base_name) and f.endswith(".xlsx")]
+
+        # Determine the number for the next file
+        if existing:
+            # Extract the number from the largest existing file
+            nums = []
+            for f in existing:
+                num_part = f.replace(base_name, "").replace(".xlsx", "")
+                if num_part.isdigit():
+                    nums.append(int(num_part))
+            next_num = max(nums) + 1 if nums else 1
+        else:
+            next_num = 1
+
+        # Name of the new file
+        output_file = f"{base_name}{next_num}.xlsx"
+
+        # Save
+        df_matrix.to_excel(output_file, float_format="%.2f")
+        print(f"✅ File saved: {output_file}")
+
+    except Exception as e:
+        print(f"⚠️ Error saving LB matrix: {type(e).__name__} — {e}")
+    #------------------------------
 
     return [LB_sol, TAC_best, Arg_best, Solution_Within_best]
 

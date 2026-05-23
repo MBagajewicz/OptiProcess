@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4747agt.inm
+MODNAME: apmain
+RUNID: _4747agt
+NEW_RUNID: _4747agt
+OLD_RUNID: _4747agt
+PDF: _4747agt.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4747agt.ads

@@ -1,0 +1,37 @@
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00000 seconds
+
+Primordial Set Trimming time:  0.00000 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [27, 12, 12]
+
+******************** Starting Execution for DC_Q_Condenser_Example1 ********************
+
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0029108524322509766
+Performing Smart Enumeration now
+Lower bound values [96148.22456743 96738.03402067 96739.09768224 97324.984468
+ 97326.07175118 97326.73534829 97909.23982706 97910.35064678
+ 97911.02860331 98490.94727388 98492.08154969 98492.77381658]
+Incumbent value: 98490.9472738842
+**********************************
+Updating incumbent
+Lower Bound: 96148.22456742518 Candidate: 0
+New Incumbent: 94429.01122928636
+##################################
+Exit at candidate: 0
+Lower Bound: 96148.22456742518 Candidate: 0
+Solution after Smart Enumeration {'TAC_OF': {'TAC': array(94429.01122929)}, 'Nf': array([18]), 'Ns': array([20])}
+Elapsed time for Equipment1 "DC_Q_Condenser": 10.15 seconds 
+
+OF Solution total ($/year) 94429.01122928636
+Total time elapsed: 31.79272 seconds
+

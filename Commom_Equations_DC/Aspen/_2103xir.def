@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2103xir.inm
+MODNAME: apmain
+RUNID: _2103xir
+NEW_RUNID: _2103xir
+OLD_RUNID: _2103xir
+PDF: _2103xir.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2103xir.ads

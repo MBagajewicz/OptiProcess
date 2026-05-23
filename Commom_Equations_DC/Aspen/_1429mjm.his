@@ -1,0 +1,1693 @@
+
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + +                                                                         + +
+ + +                      ASPEN PLUS CALCULATION HISTORY                     + +
+ + +                                                                         + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+
+ ASPEN PLUS IS A TRADEMARK OF           HOTLINE:
+ ASPEN TECHNOLOGY, INC.                 U.S.A. 888/996-7100
+ 781/221-6400                           EUROPE (44) 1189-226555
+
+ PLATFORM: WIN-X64                                       JUNE 16, 2025       
+ VERSION: 41.0   Build 609                               MONDAY      
+ INSTALLATION:                                           2:15:04 P.M.        
+
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+      ASPEN PLUS (R) IS A PROPRIETARY PRODUCT OF ASPEN TECHNOLOGY, INC.
+      (ASPENTECH), AND MAY BE USED ONLY UNDER AGREEMENT WITH ASPENTECH.
+      RESTRICTED RIGHTS LEGEND:  USE, REPRODUCTION, OR DISCLOSURE BY THE
+      U.S. GOVERNMENT IS SUBJECT TO RESTRICTIONS SET FORTH IN 
+      (i) FAR 52.227-14, Alt. III, (ii) FAR 52.227-19, (iii) DFARS 
+      252.227-7013(c)(1)(ii), or (iv) THE ACCOMPANYING LICENSE AGREEMENT,
+      AS APPLICABLE. FOR PURPOSES OF THE FAR, THIS SOFTWARE SHALL BE DEEMED
+      TO BE "UNPUBLISHED" AND LICENSED WITH DISCLOSURE PROHIBITIONS.
+      CONTRACTOR/SUBCONTRACTOR: ASPEN TECHNOLOGY, INC. 20 CROSBY DRIVE,
+      BEDFORD, MA 01730.
+ *** INPUT SUMMARY ***
+
+ >>CURRENT RUN
+
+   ORIGINAL RUN                           JUNE 16, 2025       
+   2:15:04 P.M.                           MONDAY      
+   INPUT FILE: _1429mjm.inm
+   RUN ID : _1429mjm
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 41.0 at 14:15:03 Mon Jun 16, 2025
+          3    ;Directory   Runid METHANOL_H2O
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+         11            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+         12            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+         13            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+         14            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+         15            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+         16            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+         17            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+         18            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+         19
+         20    DEF-STREAMS CONVEN ALL
+         21
+         22    MODEL-OPTION
+         23
+         24    DESCRIPTION "
+         25        Chemical Simulation with English Units :
+         26        F, psi, lb/hr, lbmol/hr, Btu/hr, cuft/hr.
+         27
+         28        Property Method: NRTL
+         29
+         30        Flow basis for input: Mole
+         31
+         32        Stream report composition: Mole flow
+         33        "
+         34
+         35    DATABANKS 'APV150 PURE39' / 'APV150 AQUEOUS' / 'APV150 SOLIDS' &
+         36             / 'APV150 INORGANIC' / 'APESV150 AP-EOS' /  &
+         37            'NISTV150 NIST-TRC' / NOASPENPCD
+         38
+         39    PROP-SOURCES 'APV150 PURE39' / 'APV150 AQUEOUS' /  &
+         40            'APV150 SOLIDS' / 'APV150 INORGANIC' / 'APESV150 AP-EOS' &
+         41             / 'NISTV150 NIST-TRC'
+         42
+         43    COMPONENTS
+         44        BENZENE C6H6 /
+         45        TOLUENE C7H8 /
+         46        M-XYLENE C8H10-2 /
+         47        METHANOL CH4O /
+         48        WATER H2O
+         49
+         50    SOLVE
+         51        RUN-MODE MODE=SIM
+         52
+         53    FLOWSHEET
+         54        BLOCK HPC IN=FEED OUT=D-TOP B-BOTTOM
+         55        BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+         56        BLOCK B1 IN=FEED-B1 OUT=B1-TOP B2-BOT
+         57
+         58    PROPERTIES UNIQUAC
+         59        PROPERTIES NRTL / PENG-ROB
+         60
+         61    PROP-DATA NRTL-1
+         62        IN-UNITS ENG SHORT-LENGTH=in
+         63        PROP-LIST NRTL
+         64        BPVAL BENZENE M-XYLENE 0.0 -207.9702000 .3000000000 0.0  &
+         65            0.0 0.0 77.00000000 282.4520000
+         66        BPVAL M-XYLENE BENZENE 0.0 252.8013600 .3000000000 0.0 0.0  &
+         67            0.0 77.00000000 282.4520000
+         68        BPVAL BENZENE TOLUENE -2.885200000 2023.110180 .3000000000  &
+         69            0.0 0.0 0.0 104.0000000 231.3500000
+         70        BPVAL TOLUENE BENZENE 2.191100000 -1554.715440 .3000000000  &
+         71            0.0 0.0 0.0 104.0000000 231.3500000
+         72        BPVAL TOLUENE M-XYLENE 0.0 -353.5938000 .3000000000 0.0  &
+         73            0.0 0.0 231.0440000 282.4520000
+         74        BPVAL M-XYLENE TOLUENE 0.0 677.5857000 .3000000000 0.0 0.0  &
+         75            0.0 231.0440000 282.4520000
+         76        BPVAL BENZENE METHANOL 11.58010000 -5908.597200 .4000000000  &
+         77            0.0 0.0 0.0 131.0000000 176.1800000
+         78        BPVAL METHANOL BENZENE -1.708600000 1606.032720 .4000000000  &
+         79            0.0 0.0 0.0 131.0000000 176.1800000
+         80        BPVAL TOLUENE METHANOL 0.0 804.3742800 .3000000000 0.0 0.0  &
+         81            0.0 146.3000000 231.0800000
+         82        BPVAL METHANOL TOLUENE 0.0 667.9506600 .3000000000 0.0 0.0  &
+         83            0.0 146.3000000 231.0800000
+         84        BPVAL M-XYLENE METHANOL 0.0 751.2847200 .3000000000 0.0  &
+         85            0.0 0.0 148.3700000 282.2000000
+         86        BPVAL METHANOL M-XYLENE 0.0 798.8058000 .3000000000 0.0  &
+         87            0.0 0.0 148.3700000 282.2000000
+         88        BPVAL BENZENE WATER 49.63587177 1064.461680 .2000000000 0.0  &
+         89            -7.562900000 0.0 33.44000000 170.6000000
+         90        BPVAL WATER BENZENE 151.8580631 -10717.75278 .2000000000  &
+         91            0.0 -20.02540000 0.0 33.44000000 170.6000000
+         92        BPVAL TOLUENE WATER -7.235700000 7726.398480 .2000000000  &
+         93            0.0 0.0 0.0 32.09000000 661.0256600
+         94        BPVAL WATER TOLUENE 3.988400000 1794.065580 .2000000000 0.0  &
+         95            0.0 0.0 32.09000000 661.0256600
+         96        BPVAL M-XYLENE WATER -53.97642176 9034.155180 .2000000000  &
+         97            0.0 6.612300000 0.0 32.00000000 519.0800000
+         98        BPVAL WATER M-XYLENE 151.8123829 -9581.283180 .2000000000  &
+         99            0.0 -19.95500000 0.0 32.00000000 519.0800000
+        100        BPVAL METHANOL WATER -.6930000000 311.3767800 .3000000000  &
+        101            0.0 0.0 0.0 76.98200000 212.0000000
+        102        BPVAL WATER METHANOL 2.732200000 -1111.083660 .3000000000  &
+        103            0.0 0.0 0.0 76.98200000 212.0000000
+        104
+        105    PROP-DATA PRKBV-1
+        106        IN-UNITS ENG SHORT-LENGTH=in
+        107        PROP-LIST PRKBV
+        108        BPVAL METHANOL WATER -.0778000000 0.0 0.0 -459.6700000  &
+        109            1340.330000
+        110        BPVAL WATER METHANOL -.0778000000 0.0 0.0 -459.6700000  &
+        111            1340.330000
+        112
+        113    PROP-DATA UNIQ-1
+        114        IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+        115            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+        116            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+        117            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+        118            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+        119            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+        120            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+        121            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+        122            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+        123        PROP-LIST UNIQ
+        124        BPVAL BENZENE TOLUENE 1.337700000 -522.8772000 0.0 0.0  &
+        125            313.1500000 383.9000000 0.0
+        126        BPVAL TOLUENE BENZENE -1.082100000 424.1051000 0.0 0.0  &
+        127            313.1500000 383.9000000 0.0
+        128        BPVAL BENZENE M-XYLENE 0.0 62.26940000 0.0 0.0 298.1500000  &
+        129            412.2900000 0.0
+        130        BPVAL M-XYLENE BENZENE 0.0 -81.33250000 0.0 0.0  &
+        131            298.1500000 412.2900000 0.0
+        132        BPVAL BENZENE METHANOL -9.675100000 2620.773700 0.0 0.0  &
+        133            328.1500000 353.2500000 0.0
+        134        BPVAL METHANOL BENZENE 1.853400000 -576.2604000 0.0 0.0  &
+        135            328.1500000 353.2500000 0.0
+        136        BPVAL BENZENE WATER 0.0 -860.8100000 0.0 0.0 293.1500000  &
+        137            313.1500000 0.0
+        138        BPVAL WATER BENZENE 0.0 -369.0100000 0.0 0.0 293.1500000  &
+        139            313.1500000 0.0
+        140        BPVAL TOLUENE M-XYLENE 0.0 151.3338000 0.0 0.0 383.7300000  &
+        141            412.2900000 0.0
+        142        BPVAL M-XYLENE TOLUENE 0.0 -235.8953000 0.0 0.0  &
+        143            383.7300000 412.2900000 0.0
+        144        BPVAL TOLUENE METHANOL 0.0 -563.0126000 0.0 0.0  &
+        145            336.6500000 383.7500000 0.0
+        146        BPVAL METHANOL TOLUENE 0.0 27.83150000 0.0 0.0 336.6500000  &
+        147            383.7500000 0.0
+        148        BPVAL TOLUENE WATER 0.0 -950.6000000 0.0 0.0 293.1500000  &
+        149            313.1500000 0.0
+        150        BPVAL WATER TOLUENE 0.0 -350.2100000 0.0 0.0 293.1500000  &
+        151            313.1500000 0.0
+        152        BPVAL M-XYLENE METHANOL 0.0 -609.3802000 0.0 0.0  &
+        153            337.8000000 412.1500000 0.0
+        154        BPVAL METHANOL M-XYLENE 0.0 37.75860000 0.0 0.0  &
+        155            337.8000000 412.1500000 0.0
+        156        BPVAL M-XYLENE WATER 0.0 -969.4700000 0.0 0.0 293.1500000  &
+        157            313.1500000 0.0
+        158        BPVAL WATER M-XYLENE 0.0 -337.9100000 0.0 0.0 293.1500000  &
+        159            313.1500000 0.0
+        160        BPVAL METHANOL WATER -1.066200000 432.8785000 0.0 0.0  &
+        161            298.1400000 373.1500000 0.0
+        162        BPVAL WATER METHANOL .6437000000 -322.1312000 0.0 0.0  &
+        163            298.1400000 373.1500000 0.0
+        164
+        165    DEF-STREAMS LOAD
+        166
+        167    PROP-SET HEDESIGN CPMX-M KMX PCMX UNITS='J/kg-K' 'Watt/m-K'  &
+        168            'Pa' SUBSTREAM=MIXED PHASE=T L V
+        169
+        170    STREAM FEED
+        171        SUBSTREAM MIXED TEMP=386.55 PRES=100000.
+        172        MOLE-FLOW METHANOL 60. / WATER 40.
+        173
+        174    STREAM FEED-B1
+        175        SUBSTREAM MIXED TEMP=386.5500000 PRES=1.00000000E+5
+        176        MOLE-FLOW METHANOL 60. / WATER 40.
+        177
+        178    STREAM FEED-LPC
+        179        SUBSTREAM MIXED TEMP=386.5500000 PRES=100000.
+        180        MOLE-FLOW METHANOL 60. / WATER 40.
+        181
+        182    BLOCK B1 DSTWU
+        183        PARAM LIGHTKEY=METHANOL RECOVL=0.99 HEAVYKEY=WATER  &
+        184            RECOVH=0.01 PTOP=1500000. PBOT=1500000. NSTAGE=10
+        185
+        186    BLOCK HPC RADFRAC
+        187        SUBOBJECTS INTERNALS = CS-1
+        188        PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+        189            DAMPING=NONE
+        190        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        191        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        192        FEEDS FEED 5
+        193        PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+        194        P-SPEC 1 100000.
+        195        COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+        196        SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+        197            SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+        198        SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+        199            SPEC-DESCRIP="Bottom Purity"
+        200        VARY 1 MOLE-D 0. 100.
+        201        VARY 2 MOLE-RR 0. 100.
+        202        REPORT NOHYDRAULIC
+        203        CONVERGENCE EXTRA-ML=2
+        204        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        205            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        206            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        207            DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+        208            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        209            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        210            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        211            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        212            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        213            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        214            MIN-PCT-DCA=.1000000000
+        215        TRAY-SIZE 1 2 3 SIEVE
+        216
+        217    BLOCK LPC RADFRAC
+        218        SUBOBJECTS INTERNALS = CS-1
+        219        PARAM NSTAGE=20 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=25  &
+        220            DAMPING=NONE
+        221        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        222        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        223        FEEDS FEED-LPC 10
+        224        PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+        225        P-SPEC 1 100000.
+        226        COL-SPECS MOLE-D=59.8 MOLE-RR=1.55310458
+        227        SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=L-TOP  &
+        228            SPEC-DESCRIP="BENZENE RECUPERATION"
+        229        SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=L-BOTTOM  &
+        230            SPEC-DESCRIP="TOLUENE RECOVERY"
+        231        VARY 1 MOLE-D 0.0 100.0000000
+        232        VARY 2 MOLE-RR 0. 100.
+        233        REPORT NOHYDRAULIC
+        234        CONVERGENCE EXTRA-ML=2
+        235        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        236            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        237            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        238            DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+        239            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        240            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        241            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        242            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        243            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        244            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        245            MIN-PCT-DCA=.1000000000
+        246        TRAY-SIZE 1 2 3 SIEVE
+        247
+        248    EO-CONV-OPTI
+        249
+        250    STREAM-REPOR MOLEFLOW PROPERTIES=HEDESIGN
+        251
+        252    PROPERTY-REP PCES
+        253    ;
+        254    ;
+        255    ;
+        256    ;
+        257    ;
+ *** INPUT TRANSLATOR MESSAGES ***
+
+      SQLLOCALDB.APESV150 : (DATAVERSION - 41.0.0.10)                         
+      SQLLOCALDB.APV150 : (DATAVERSION - 41.0.0.9)                            
+      SQLLOCALDB.FACTV150 : (DATAVERSION - 41.0.0.6)                          
+      SQLLOCALDB.NISTV150 : (DATAVERSION - 41.0.0.7)                          
+  *** THIS RUN USES THE PROPERTIES ENTERPRISE DATABASE ***
+ 
+ 
+
+ PDF updated                                                                      TIME =      2.23
+
+ *** CALCULATION TRACE ***
+
+
+ *** FLOWSHEET ANALYSIS MESSAGES ***
+
+ FLOWSHEET CONNECTIVITY BY STREAMS       
+
+   STREAM     SOURCE     DEST           STREAM     SOURCE     DEST
+   FEED       ----       HPC            FEED-LPC   ----       LPC     
+   FEED-B1    ----       B1             D-TOP      HPC        ----    
+   B-BOTTOM   HPC        ----           L-TOP      LPC        ----    
+   L-BOTTOM   LPC        ----           B1-TOP     B1         ----    
+   B2-BOT     B1         ----                                         
+
+ FLOWSHEET CONNECTIVITY BY BLOCKS        
+
+   BLOCK        INLETS                         OUTLETS
+   HPC          FEED                           D-TOP B-BOTTOM              
+   LPC          FEED-LPC                       L-TOP L-BOTTOM              
+   B1           FEED-B1                        B1-TOP B2-BOT               
+
+      COMPUTATION ORDER FOR THE FLOWSHEET IS:
+      B1 LPC HPC 
+
+Calculations begin                                                              time      1.13
+
+
+ SIMULATION CALCULATIONS BEGIN                                                    TIME =      1.13
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-B1 OF BLOCK B1                   TIME =      1.13
+      KODE = 2  NTRIAL =   5  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK B1       MODEL: DSTWU                                             TIME =      1.13
+       TD =   426.6    ,  TB =   468.1    ,  RMIN =   1.397    ,  RACT =   1.701    
+       MIN STAGES =   14.65    , ACT STAGES =   29.31    
+       ACT. # OF RECT. STAGES =   24.57    
+       REBOILER DUTY =  0.4596E+06
+       FEED QUALITY =   0.9262    
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-LPC OF BLOCK LPC                 TIME =      1.13
+      KODE = 2  NTRIAL =   5  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =      1.13
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1    6      275.12    
+          2   13  112      340.75    
+          3    7   44      157.94    
+          4    5   20      103.25    
+          5    7   21      8.4417    
+          6    5   14      2.3591    
+          7    7   30     0.82834    
+          8    3    5     0.49326    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.5960         0.0000         100.00    
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED OF BLOCK HPC                     TIME =      1.14
+      KODE = 2  NTRIAL =   5  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      1.14
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1    5      444.31    
+          2   15  124      109.97    
+          3   14  110      100.12    
+          4   14  111      97.779    
+          5   14  115      99.044    
+          6   10   83      275.17    
+          7    7   44      172.64    
+          8    7   48      242.36    
+          9   10   82      171.16    
+         10    7   43      259.18    
+         11    7   49      311.16    
+         12    8   60      321.69    
+         13    7   41      217.35    
+         14    7   32      152.87    
+         15    7   26      37.123    
+         16    5   16      19.683    
+         17    8   30      12.780    
+         18    5   12      4.6352    
+         19    8   26      1.7158    
+         20    5   10     0.61232    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          8.4567         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      1.16
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      1.16
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:09:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 6
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =      2.80
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      2.82
+
+
+Calculations begin                                                              time      2.97
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      2.97
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1   15  119      1597.9    
+          2    1    6      155.40    
+          3   14  125      238.39    
+          4    1   10      258.32    
+          5    1   10      465.74    
+          6    1   10      353.27    
+          7    1   10      486.86    
+          8    1   10      613.53    
+          9    1   10      415.00    
+         10    1   10      651.36    
+         11    1   10      550.03    
+         12    1   10      194.49    
+         13    1   10      289.12    
+         14    1   10      340.72    
+         15    1   10      250.37    
+         16    1   10      230.32    
+         17    1   10      227.95    
+         18    1   10      150.00    
+         19    1   10      89.588    
+         20    1   10      78.594    
+         21    1   10      80.717    
+         22    1   10      30.110    
+         23   11   97      265.69    
+         24    7   49      950.57    
+         25    7   40      505.82    
+         26    7   32      245.45    
+         27    7   24      47.649    
+         28    6   18      5.9652    
+         29    3    9      1.1643    
+         30    2    4     0.44837    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          4.5531         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      2.98
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      2.98
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:10:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 7
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =      4.26
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      4.28
+
+
+Calculations begin                                                              time      4.45
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      4.45
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      1577.5    
+          2    1    4      204.61    
+          3   16  116      82.751    
+          4   15  130      203.65    
+          5   15  124      347.15    
+          6    1   10      701.80    
+          7    1   10      1124.9    
+          8    1   10      737.06    
+          9    1   10      363.10    
+         10    8   61      317.29    
+         11    7   40      1058.7    
+         12    1    4      75.541    
+         13    7   29      31.331    
+         14    5   16      16.515    
+         15    8   32      10.152    
+         16    3    7      6.1892    
+         17    5   14      1.4856    
+         18    8   31      4.4828    
+         19    5   12      2.8359    
+         20    4   10     0.67439    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          2.9557         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      4.46
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      4.46
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:11:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 8
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =      5.61
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      5.62
+
+
+Calculations begin                                                              time      5.78
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      5.78
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      1308.2    
+          2    1    4      169.02    
+          3   16  119      78.972    
+          4   14  117      214.12    
+          5    1   10      308.32    
+          6    1   10      685.33    
+          7    1   10      904.46    
+          8    1   10      828.93    
+          9    1   10      418.72    
+         10    7   49      288.06    
+         11    7   33      990.22    
+         12    7   30      48.544    
+         13    6   17      25.802    
+         14    6   18      8.0230    
+         15    4   11      1.0468    
+         16    3    6     0.15773    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          2.2147         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      5.79
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      5.79
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:13:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 9
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =      7.01
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      7.02
+
+
+Calculations begin                                                              time      7.18
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      7.18
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      1043.5    
+          2    1    4      134.39    
+          3   16  118      79.817    
+          4   14  123      222.58    
+          5    1   10      521.46    
+          6    1   10      855.13    
+          7    1   10      714.66    
+          8    1   10      337.07    
+          9    7   47      231.86    
+         10    6   26      708.25    
+         11    7   28      46.836    
+         12    7   20      29.152    
+         13    7   23      14.345    
+         14    6   17      2.3892    
+         15    3   10     0.37585    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.8235         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      7.19
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      7.19
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:14:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 10
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =      8.42
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      8.44
+
+
+Calculations begin                                                              time      8.65
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      8.65
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      796.74    
+          2   14  114      385.61    
+          3   15  123      183.23    
+          4    1   10      270.81    
+          5    1   10      677.55    
+          6    1   10      435.18    
+          7    7   44      277.57    
+          8    6   25      461.67    
+          9    7   32      70.959    
+         10    7   20      31.082    
+         11    7   20      12.240    
+         12    5   15      1.9838    
+         13    7   24     0.54364    
+         14    3    7     0.22046    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.5955         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      8.66
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      8.66
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:16:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 11
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =      9.96
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      9.97
+
+
+Calculations begin                                                              time     10.15
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     10.15
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      579.13    
+          2   15  118      272.91    
+          3    1   10      137.07    
+          4    1   10      449.20    
+          5    1   10      338.32    
+          6    7   41      241.57    
+          7    7   30      265.44    
+          8    7   31      66.984    
+          9    7   23      31.117    
+         10    7   21      12.297    
+         11    6   15      1.6565    
+         12    3    8     0.51400    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.4535         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     10.16
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     10.16
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:17:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 12
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     11.31
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     11.33
+
+
+Calculations begin                                                              time     11.53
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     11.53
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      394.81    
+          2   13  111      137.22    
+          3    7   47      323.90    
+          4    6   22      266.70    
+          5    7   31      48.929    
+          6    7   24      27.281    
+          7    7   19      18.024    
+          8    7   22      7.4322    
+          9    6   14      1.3316    
+         10    3    7     0.59598    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.3622         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     11.53
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     11.53
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:19:09 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 13
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     12.68
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     12.69
+
+
+Calculations begin                                                              time     12.87
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     12.87
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      234.09    
+          2   10   64      162.22    
+          3    5   26      85.378    
+          4    7   32      29.248    
+          5    7   23      16.247    
+          6    7   25      7.6403    
+          7    5   19      5.0946    
+          8    6   26      1.8189    
+          9    6   18      1.2002    
+         10    8   29     0.72141    
+         11    4   11     0.37625    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.3041         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     12.87
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     12.87
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:20:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 14
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     14.00
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     14.01
+
+
+Calculations begin                                                              time     14.17
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     14.17
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      125.49    
+          2    8   50      97.404    
+          3    6   23      47.637    
+          4    7   29      19.907    
+          5    7   20      12.704    
+          6    7   23      5.9383    
+          7    6   18      1.2882    
+          8    3   11     0.54794    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2678         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     14.18
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     14.18
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:22:09 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 15
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     15.66
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     15.68
+
+
+Calculations begin                                                              time     15.84
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     15.84
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      54.976    
+          2    7   43      54.011    
+          3    5   17      30.410    
+          4    6   30      16.625    
+          5    6   28      11.991    
+          6    6   24      8.9476    
+          7    6   24      6.5565    
+          8    6   21      4.6814    
+          9    6   21      3.4402    
+         10    6   20      2.4187    
+         11    6   18      1.7133    
+         12    6   17      1.1622    
+         13    6   15     0.81805    
+         14    6   14     0.53025    
+         15    6   14     0.38611    
+         16    6   13     0.24029    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2473         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     15.84
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     15.84
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:23:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 16
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     17.27
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     17.29
+
+
+Calculations begin                                                              time     17.44
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     17.44
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      32.401    
+          2    9   35      30.811    
+          3    5   17      17.498    
+          4    5   19      8.1215    
+          5    5   15      2.5404    
+          6    4   12     0.71570    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2368         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     17.44
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     17.44
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:24:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 17
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     18.43
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     18.45
+
+
+Calculations begin                                                              time     18.63
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     18.63
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      25.968    
+          2    8   24      23.803    
+          3    3   12      15.245    
+          4    3    9      6.2391    
+          5    3    7      2.1484    
+          6    3    6     0.55748    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2333         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     18.63
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     18.63
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:26:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 18
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     19.85
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     19.86
+
+
+Calculations begin                                                              time     20.02
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     20.02
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    7   29      31.068    
+          2    3   13      15.481    
+          3    3   10      6.7639    
+          4    3    8      2.2519    
+          5    3    6     0.49626    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2356         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     20.03
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     20.03
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:27:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 19
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     21.16
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     21.18
+
+
+Calculations begin                                                              time     21.38
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     21.38
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      39.718    
+          2    8   30      28.364    
+          3    6   19      10.995    
+          4    3    9      3.9700    
+          5    3    6      1.0438    
+          6    3    5     0.24165    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2461         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     21.38
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     21.38
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:29:09 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=24 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 20
+     PRODUCTS D-TOP 1 L / B-BOTTOM 24 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     22.68
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     22.70
+
+
+Calculations begin                                                              time     22.86
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     22.86
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1   10      43.265    
+          2    9   30      34.812    
+          3    6   19      9.4871    
+          4    3    9      3.7233    
+          5    3    6      1.8294    
+          6    2    4     0.51788    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.2727         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     22.86
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     22.86
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ FLOWSHEET    IS GENERATED BECAUSE OF OTHER CHANGES 06/16/2025   14:15:30:99 
+ FLOWSHEET
+     BLOCK HPC IN=FEED OUT=D-TOP B-BOTTOM
+     BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+     BLOCK B1 IN=FEED-B1 OUT=B1-TOP B2-BOT
+
+ CHANGES WERE MADE TO BLOCK        HPC      06/16/2025   14:15:30:99 
+ BLOCK HPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=18 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=30  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED 16
+     PRODUCTS D-TOP 1 L / B-BOTTOM 18 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+     SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=D-TOP  &
+         SPEC-ACTIVE=YES SPEC-DESCRIP="Top Purity"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+         SPEC-DESCRIP="Bottom Purity"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=123.4384348 <mm> DC-WBOT-SIDE=123.4384348 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     24.18
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+ 
+ 
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     24.19
+
+
+Calculations begin                                                              time     24.32
+
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =     24.32
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    9   41      94.743    
+          2    6   16      63.689    
+          3    6   19      43.330    
+          4    3    8      27.499    
+          5    3    6      12.403    
+          6    2    5      2.6191    
+          7    2    4     0.23757    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.5054         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     24.33
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     24.33
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08

@@ -1,0 +1,45 @@
+
+ BLOCK:  LPC      MODEL: RADFRAC         
+ -------------------------------
+    INLETS   - FEED-LPC STAGE   1
+    OUTLETS  - L-TOP    STAGE   1
+               L-BOTTOM STAGE  20
+   PROPERTY OPTION SET:   UNIQUAC   UNIQUAC / IDEAL GAS                         
+
+
+     ***********************************************************************
+     *                                                                     *
+     *     ERRORS IN BLOCK CALCULATIONS                                    *
+     *                                                                     *
+     *     INPUT ERROR - INCONSISTENT INFORMATION OR SPECIFICATIONS        *   
+     *                                                                     *
+     ***********************************************************************
+
+
+
+
+                         **********************
+                         ****  INPUT DATA  ****
+                         **********************
+
+   ****   INPUT PARAMETERS   ****
+
+    NUMBER OF STAGES                                        20
+    ALGORITHM OPTION                                      NEWTON      
+    INITIALIZATION OPTION                                 STANDARD    
+    HYDRAULIC PARAMETER CALCULATIONS                      NO      
+    DESIGN SPECIFICATION METHOD                           SIMULT  
+    MAXIMUM NO. OF NEWTON ITERATIONS                       110
+    MAXIMUM NUMBER OF FLASH ITERATIONS                      30
+    FLASH TOLERANCE                                          0.000100000
+    COLUMN EQUATIONS CONVERGENCE TOLERANCE                   0.100000-06
+
+   ****   COL-SPECS   ****
+
+    MOLAR VAPOR DIST / TOTAL DIST                            0.0        
+    MOLAR REFLUX RATIO                                       1.55310    
+    MOLAR DISTILLATE RATE          KMOL/HR                  40.0000     
+
+   ****    PROFILES   ****
+
+    P-SPEC          STAGE   1  PRES, PA                300,000.         

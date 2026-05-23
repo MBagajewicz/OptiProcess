@@ -5,6 +5,7 @@
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
 #   0.0          06-Mar-2024     Alice Peccini             Proposed 
+#   0.1          28-Jan-2026     Alice Peccini             Correction on twall calculation
 ##################################################################################################################
 # INPUT: Heat exchanger related functions
 ##################################################################################################################
@@ -34,11 +35,11 @@ def f_Hc(lt, Nt):
 # Column wall thicknes (m) 
 def f_twall(Dc):
     if isinstance(Dc,float) or isinstance(Dc,int):
-        twall = 0.005
-        if Dc > 1: twall = 0.007
-        elif Dc > 2: twall = 0.009
+        if Dc > 3: twall = 0.012
         elif Dc > 2.5: twall = 0.010
-        elif Dc > 3: twall = 0.012
+        elif Dc > 2: twall = 0.009
+        elif Dc > 1: twall = 0.007
+        else: twall = 0.005
     else:
         twall = 0.005*np.ones(Dc.shape)
         twall[Dc > 1] = 0.007

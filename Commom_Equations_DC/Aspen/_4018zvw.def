@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4018zvw.inm
+MODNAME: apmain
+RUNID: _4018zvw
+NEW_RUNID: _4018zvw
+OLD_RUNID: _4018zvw
+PDF: _4018zvw.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4018zvw.ads

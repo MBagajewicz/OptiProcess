@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0633ylt.inm
+MODNAME: apmain
+RUNID: _0633ylt
+NEW_RUNID: _0633ylt
+OLD_RUNID: _0633ylt
+PDF: _0633ylt.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

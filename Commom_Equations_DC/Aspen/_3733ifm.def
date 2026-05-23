@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3733ifm.inm
+MODNAME: apmain
+RUNID: _3733ifm
+NEW_RUNID: _3733ifm
+OLD_RUNID: _3733ifm
+PDF: _3733ifm.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3733ifm.ads

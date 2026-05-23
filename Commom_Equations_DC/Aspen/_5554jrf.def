@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5554jrf.inm
+MODNAME: apmain
+RUNID: _5554jrf
+NEW_RUNID: _5554jrf
+OLD_RUNID: _5554jrf
+PDF: _5554jrf.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5554jrf.ads

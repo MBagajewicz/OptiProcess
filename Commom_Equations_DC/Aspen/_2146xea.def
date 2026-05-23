@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2146xea.inm
+MODNAME: apmain
+RUNID: _2146xea
+NEW_RUNID: _2146xea
+OLD_RUNID: _2146xea
+PDF: _2146xea.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2146xea.ads

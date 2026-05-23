@@ -18,6 +18,7 @@
 #   0.11         13-Ago-2025     Diego Oliva               Option Incremental added
 #   0.12         28-Ago-2025     Diego Oliva               Deleting developer message and 
 #   0.12         28-Ago-2025     Diego Oliva               avoid conflicts with old versions (setdefault added)
+#   0.13         27-Jan-2026     Alice Peccini             Set default [] for Set_trimming_info[All_Variables_In_The_Problem]
 
 ##################################################################################################################
 ##################################################################################################################
@@ -80,6 +81,7 @@ def Fill_Model_Definitions(Model_Def):
     Set_trimming_info = Model_Def.setdefault('Set_Trimming_Info', {})
     Set_trimming_info.setdefault('Set_Trimming_Constraints_List', [])
     Set_trimming_info.setdefault('Primordial_Set_Trimming_Constraints_List', None)
+    Set_trimming_info.setdefault('All_Variables_In_The_Problem', [])
     
     # Ensure 'Enumeration_Info' dictionary and its required keys exist
     Enumeration_info = Model_Def.setdefault('Enumeration_Info', {})
@@ -128,6 +130,7 @@ def Fill_Equipment_Data(equipment_def, equipment_dt):
     if Sorting_Variable not in equipment_def['Model_Info']['List_of_Variables']:
         Sorting_Variable = None
 
+
 def Prep_Equipment(equipment_def, equipment_dt, Active_Models, Selected_Model, Selected_Example, save_result):
 
     Type_Equipment = equipment_dt['Model_Declarations']['Type_Equipment']  
@@ -152,4 +155,3 @@ def Prep_Equipment(equipment_def, equipment_dt, Active_Models, Selected_Model, S
 
 #endregion
 ####################################################################################################################
-

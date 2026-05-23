@@ -1,0 +1,9 @@
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1444, 741, 705]
+
+******************** Starting Execution for DC_DC_Double_Effect_Example1 ********************
+
+The solution of Equipment1 "DC_DC_Double_Effect" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration

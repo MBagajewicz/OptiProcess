@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4333hte.inm
+MODNAME: apmain
+RUNID: _4333hte
+NEW_RUNID: _4333hte
+OLD_RUNID: _4333hte
+PDF: _4333hte.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4333hte.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3028xyj.inm
+MODNAME: apmain
+RUNID: _3028xyj
+NEW_RUNID: _3028xyj
+OLD_RUNID: _3028xyj
+PDF: _3028xyj.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3028xyj.ads

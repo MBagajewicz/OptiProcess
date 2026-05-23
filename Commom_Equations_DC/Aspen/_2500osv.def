@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2500osv.inm
+MODNAME: apmain
+RUNID: _2500osv
+NEW_RUNID: _2500osv
+OLD_RUNID: _2500osv
+PDF: _2500osv.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+DBCONN: _2500osv.ads

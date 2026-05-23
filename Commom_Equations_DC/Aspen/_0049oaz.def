@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0049oaz.inm
+MODNAME: apmain
+RUNID: _0049oaz
+NEW_RUNID: _0049oaz
+OLD_RUNID: _0049oaz
+PDF: _0049oaz.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0049oaz.ads

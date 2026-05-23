@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2429brh.inm
+MODNAME: apmain
+RUNID: _2429brh
+NEW_RUNID: _2429brh
+OLD_RUNID: _2429brh
+PDF: _2429brh.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2429brh.ads

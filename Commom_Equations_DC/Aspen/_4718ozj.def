@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4718ozj.inm
+MODNAME: apmain
+RUNID: _4718ozj
+NEW_RUNID: _4718ozj
+OLD_RUNID: _4718ozj
+PDF: _4718ozj.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4718ozj.ads

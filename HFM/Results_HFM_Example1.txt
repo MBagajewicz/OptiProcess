@@ -1,0 +1,38 @@
+
+******* Testing consistency *******
+
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.05602 seconds
+
+Primordial Set Trimming time:  16.67191 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1376256, 811776, 795921, 98301, 92442, 10416, 9632]
+
+******************** Starting Execution for HFM_Example1 ********************
+
+The solution of Equipment1 "HFM" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[5.0e-01, 5.0e-01, 5.0e-01, ..., 1.0e+00, 1.0e+00, 1.0e+00],
+       [1.0e-01, 1.0e-01, 1.0e-01, ..., 2.0e-01, 2.0e-01, 2.0e-01],
+       [5.0e-05, 5.0e-05, 5.0e-05, ..., 2.0e-04, 2.0e-04, 2.0e-04],
+       [4.0e-05, 4.0e-05, 4.0e-05, ..., 1.8e-04, 1.8e-04, 1.8e-04],
+       [3.0e-01, 3.1e-01, 3.2e-01, ..., 4.8e-01, 4.9e-01, 5.0e-01]],
+      shape=(5, 9632)), 'candidate_set_cardinality_after_each_trimming': [9632]}
+Elapsed time Set Trimming: 0.004974365234375
+Performing Smart Enumeration now
+Lower bound values [219.91148575 216.7698931  213.62830044 ... 326.72563597 320.44245067
+ 314.15926536]
+Incumbent value: []
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.1, 0.00017, 0.00015, 0.37] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.1, 0.00014, 0.00012, 0.48] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.1, 0.00018, 0.00016, 0.33] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.12, 0.0002, 0.00018, 0.48] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.1, 0.00016, 0.00014, 0.4] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.1, 0.00017, 0.00015, 0.36] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.1, 0.00015, 0.00013, 0.43] :
+Solving candidate ['L', 'D', 'dfo', 'dfi', 'Void_Frac']  =  [0.5, 0.11, 0.0002, 0.00018, 0.37] :

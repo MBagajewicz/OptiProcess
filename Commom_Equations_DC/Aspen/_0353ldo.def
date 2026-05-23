@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0353ldo.inm
+MODNAME: apmain
+RUNID: _0353ldo
+NEW_RUNID: _0353ldo
+OLD_RUNID: _0353ldo
+PDF: _0353ldo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0353ldo.ads

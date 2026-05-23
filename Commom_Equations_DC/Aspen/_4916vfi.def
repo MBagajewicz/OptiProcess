@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4916vfi.inm
+MODNAME: apmain
+RUNID: _4916vfi
+NEW_RUNID: _4916vfi
+OLD_RUNID: _4916vfi
+PDF: _4916vfi.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4916vfi.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2518aaj.inm
+MODNAME: apmain
+RUNID: _2518aaj
+NEW_RUNID: _2518aaj
+OLD_RUNID: _2518aaj
+PDF: _2518aaj.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

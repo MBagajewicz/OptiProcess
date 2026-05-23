@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3803bvd.inm
+MODNAME: apmain
+RUNID: _3803bvd
+NEW_RUNID: _3803bvd
+OLD_RUNID: _3803bvd
+PDF: _3803bvd.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

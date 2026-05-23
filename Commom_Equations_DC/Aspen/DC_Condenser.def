@@ -1,0 +1,10 @@
+INPUT: DC_Condenser.inm
+MODNAME: apmain
+RUNID: DC_Condenser
+NEW_RUNID: DC_Condenser
+OLD_RUNID: DC_Condenser
+PDF: DC_Condenser.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+SPONLY:
+DBCONN: _3407ksd.ads

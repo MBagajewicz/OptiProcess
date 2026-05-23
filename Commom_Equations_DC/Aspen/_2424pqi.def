@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2424pqi.inm
+MODNAME: apmain
+RUNID: _2424pqi
+NEW_RUNID: _2424pqi
+OLD_RUNID: _2424pqi
+PDF: _2424pqi.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2424pqi.ads

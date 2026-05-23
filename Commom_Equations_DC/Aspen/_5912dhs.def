@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5912dhs.inm
+MODNAME: apmain
+RUNID: _5912dhs
+NEW_RUNID: _5912dhs
+OLD_RUNID: _5912dhs
+PDF: _5912dhs.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5912dhs.ads

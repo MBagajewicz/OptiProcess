@@ -1,0 +1,10 @@
+INPUT: Methanol_H2O.inm
+MODNAME: apmain
+RUNID: Methanol_H2O
+NEW_RUNID: Methanol_H2O
+OLD_RUNID: Methanol_H2O
+PDF: Methanol_H2O.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+SPONLY:
+DBCONN: _3841csm.ads

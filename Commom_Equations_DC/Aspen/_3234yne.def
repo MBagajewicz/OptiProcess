@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3234yne.inm
+MODNAME: apmain
+RUNID: _3234yne
+NEW_RUNID: _3234yne
+OLD_RUNID: _3234yne
+PDF: _3234yne.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3234yne.ads

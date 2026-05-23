@@ -1,0 +1,21 @@
+ IDSET ID_2748 (PROPERTIES) (8103 *2 <10> 1265 *2 <10> )                        
+ IDSET ID_2749 (HIER-ID) ( PLANT )                                              
+ IDSET ID_2750 (STREAM-ID) ( FEED-B1 FEED-LPC FEED )                            
+ LSET L_2050 ( %ID_2749 & %ID_2748 & %ID_2750)                                  
+ DSET UTIL-SUMMARY FEEDSUM @L_2050 ( 2.64314080D+03 <3> 0.D0 <3> 2.64314080D+03 
+ <3> 0.D0 <3> 2.64314080D+03 <3> 0.D0 <3> )                                     
+ IDSET ID_2751 (HIER-ID) ( PLANT )                                              
+ IDSET ID_2752 (STREAM-ID) ( D-TOP B-BOTTOM L-TOP L-BOTTOM B1-TOP B2-BOT )      
+ LSET L_2051 ( %ID_2751 & %ID_2748 & %ID_2752)                                  
+ DSET UTIL-SUMMARY PRODSUM @L_2051 ( 1.97331077D+03 <3> 0.D0 <3> 6.69830029D+02 
+ <3> 0.D0 <3> 1.92706855D+03 <3> 0.D0 <3> 7.16072250D+02 <3> 0.D0 <3>           
+ 1.91051042D+03 <3> 0.D0 <3> 7.32630384D+02 <3> 0.D0 <3> )                      
+ IDSET ID_2753 (PROPERTIES) ( 1266 *2 <10> 1267 *2 <10> 1262 *2 <10> 1263 *2    
+ <10> 1264 *2 <10> 1268 *2 <119> )                                              
+ LSET L_2052 ( %ID_2753)                                                        
+ DSET UTIL-SUMMARY PLANTSUM @L_2052 ( 0.D0 <3> 0.D0 <3> 0.D0 <3> 0.D0 <3> 0.D0  
+ <3> 0.D0 <3> )                                                                 
+ IDSET ID_2754 (HIER-ID) ( PLANT )                                              
+ LSET L_2053 ( %ID_2754 & %ID_2753)                                             
+ DSET UTIL-SUMMARY HIERSUM @L_2053 ( 0.D0 <3> 0.D0 <3> 0.D0 <3> 0.D0 <3> 0.D0   
+ <3> 0.D0 <3> )                                                                 

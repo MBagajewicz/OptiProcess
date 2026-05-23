@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3558vyo.inm
+MODNAME: apmain
+RUNID: _3558vyo
+NEW_RUNID: _3558vyo
+OLD_RUNID: _3558vyo
+PDF: _3558vyo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3558vyo.ads

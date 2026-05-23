@@ -48,6 +48,11 @@ def Set_Up_Thermal_Loop(xD1, xD2, m_p_dict):
     return m_p_dict, feasibility
 
 
+def fun_m_t(m_p):
+
+    m_p['m_t'] = m_p['Q']/(m_p['Cp_t']*(m_p['Tout_t'] - m_p['Tin_t']))
+
+    return m_p
 # endregion
 ##################################################################################################################
 

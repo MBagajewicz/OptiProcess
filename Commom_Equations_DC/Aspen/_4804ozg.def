@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4804ozg.inm
+MODNAME: apmain
+RUNID: _4804ozg
+NEW_RUNID: _4804ozg
+OLD_RUNID: _4804ozg
+PDF: _4804ozg.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+DBCONN: _4804ozg.ads

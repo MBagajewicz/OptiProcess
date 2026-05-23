@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5322wcu.inm
+MODNAME: apmain
+RUNID: _5322wcu
+NEW_RUNID: _5322wcu
+OLD_RUNID: _5322wcu
+PDF: _5322wcu.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5322wcu.ads

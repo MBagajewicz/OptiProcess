@@ -1,1 +1,196 @@
-*__pychache__*
+# ======================================================================
+# PYTHON
+# ======================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.pyo
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+pytestdebug.log
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Type checkers / linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.ruff_cache/
+.pytype/
+
+# Profiling
+.prof
+
+# ======================================================================
+# VIRTUAL ENVIRONMENTS
+# ======================================================================
+
+# Root virtual envs
+venv/
+.venv/
+env/
+.env/
+
+# Nested virtual envs
+*/venv/
+*/.venv/
+*/env/
+*/.env/
+
+# ======================================================================
+# IDEs / EDITORS
+# ======================================================================
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+*.iml
+
+# Spyder
+.spyproject/
+.spyproject
+
+# Rope
+.ropeproject/
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# ======================================================================
+# JUPYTER
+# ======================================================================
+
+.ipynb_checkpoints/
+
+# ======================================================================
+# OS FILES
+# ======================================================================
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ======================================================================
+# LOGS
+# ======================================================================
+
+*.log
+logs/
+
+# ======================================================================
+# DATABASES
+# ======================================================================
+
+*.sqlite3
+*.db
+
+# ======================================================================
+# ENVIRONMENT VARIABLES / SECRETS
+# ======================================================================
+
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ======================================================================
+# CACHES / TEMP FILES
+# ======================================================================
+
+tmp/
+temp/
+.tmp/
+.cache/
+
+# ======================================================================
+# DOCUMENTATION BUILD
+# ======================================================================
+
+docs/_build/
+
+# ======================================================================
+# MKDOCS / SPHINX
+# ======================================================================
+
+site/
+
+# ======================================================================
+# SCIENTIFIC PYTHON
+# ======================================================================
+
+# NumPy
+*.npy
+*.npz
+
+# ======================================================================
+# DOCKER
+# ======================================================================
+
+# Docker override files
+docker-compose.override.yml
+
+# ======================================================================
+# FLET / CUSTOM APP OUTPUTS
+# ======================================================================
+
+# Puedes agregar aquí carpetas generadas por tu simulador
+# outputs/
+# results/
+# exports/
+# simulations/
+

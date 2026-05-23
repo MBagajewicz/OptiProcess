@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2108ilb.inm
+MODNAME: apmain
+RUNID: _2108ilb
+NEW_RUNID: _2108ilb
+OLD_RUNID: _2108ilb
+PDF: _2108ilb.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2108ilb.ads

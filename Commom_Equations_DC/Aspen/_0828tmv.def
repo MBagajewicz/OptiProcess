@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0828tmv.inm
+MODNAME: apmain
+RUNID: _0828tmv
+NEW_RUNID: _0828tmv
+OLD_RUNID: _0828tmv
+PDF: _0828tmv.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+SPONLY:

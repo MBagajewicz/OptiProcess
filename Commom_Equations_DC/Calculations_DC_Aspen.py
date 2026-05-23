@@ -30,7 +30,7 @@ import os
 
 # -------------------------------------------- ASPEN INITIALIZATION -------------------------------------------- # 
 
-def fun_initial_Aspen(file_name, stream_name, block_name, comp_name, z_feed, F_feed, T_feed, P_col, x_TOP, x_BOTTOM, 
+def fun_initial_Aspen(file_name, stream_name, block_name, comp_name, z_feed, F_feed, T_feed, P_col, SPEC_1, SPEC_2, 
                       D_LB, D_UB, RR_LB, RR_UB):
 
      # Build path Aspen subfolder
@@ -63,7 +63,7 @@ def fun_initial_Aspen(file_name, stream_name, block_name, comp_name, z_feed, F_f
         print("Execution will be terminated.")
         exit(1)  # Encerra a execução imediatamente
 
-    Aspen.Visible = 0           # Run in the background
+    Aspen.Visible = 0           # Run in the background #Tomazim
     Aspen.SuppressDialogs = 1   # Suppress pop-ups
     Aspen.Reinit()              # Reset file from previous runs
 
@@ -76,8 +76,8 @@ def fun_initial_Aspen(file_name, stream_name, block_name, comp_name, z_feed, F_f
     
     # Set column data that remain the same for every candidate:
     Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\PRES1').Value = P_col                            # Column pressure (Pa)
-    Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\VALUE\1').Value = x_TOP                          # Top product specification (mole frac)
-    Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\VALUE\2').Value = x_BOTTOM                       # Bottom product specification (mole frac)
+    Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\VALUE\1').Value = SPEC_1                         # Specification 1 - Example: Top Fraction Product or Condenser Duty
+    Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\VALUE\2').Value = SPEC_2                         # Specification 2 - Example: Bottom Fraction Product or Reboiler Duty
 
     # Distillate rate and reflux ratio bounds for aspen search:
     Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\LB\1').Value = D_LB                              # Distillare rate lower bound (kmol/h)
@@ -87,10 +87,9 @@ def fun_initial_Aspen(file_name, stream_name, block_name, comp_name, z_feed, F_f
 
     return Aspen
 
-    
 #------------------------------------------- RUNNING ASPEN SIMULATION ------------------------------------------ # 
 
-def fun_run_Aspen(v_Ns, v_Nf, Aspen, block_name, stream_names, components, v_Nc): 
+def fun_run_Aspen(v_Ns, v_Nf, Aspen, block_name, stream_names, components, v_Nc, m_p): 
 
     feed_name = stream_names[0]
     distillate_name = stream_names[1]
@@ -99,9 +98,33 @@ def fun_run_Aspen(v_Ns, v_Nf, Aspen, block_name, stream_names, components, v_Nc)
     Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\NSTAGE').Value = v_Ns
     Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\FEED_STAGE\{feed_name}').Value = v_Nf
 
+    
+    #----------------------------------
+    # Tomazim changes - Preciso generalizar isso para cada especificação e passar para Alice
+    #----------------------------------
+
+    # Initialize static variable to count function calls
+    if not hasattr(fun_run_Aspen, "count"):
+        fun_run_Aspen.count = 0
+
+    SPEC_1 = m_p['SPEC_1']
+    Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\VALUE\1').Value = SPEC_1     # Update SPEC_1 for current candidate
+    Aspen.Tree.FindNode(rf'\Data\Blocks\{block_name}\Input\PRES1').Value = m_p['Pcol']  # Column pressure (Pa)
+ 
+    # Set feed stream data:
+    for comp, mole_frac in zip(m_p['Comp_name'], m_p['z_f']):                                               # Molar fractions for components
+        molar_flow = m_p['F_f']*mole_frac                                                                   # Calculate molar flow for the component
+        Aspen.Tree.FindNode(rf'\Data\Streams\{stream_names[0]}\Input\FLOW\MIXED\{comp}').Value = molar_flow # Input molar flow for each component
+
+    #----------------------------------
+   
     # Running Aspen simulation:
     results = None
     Aspen.Engine.Run2()
+
+    # Increment function call count # Tomazim
+    fun_run_Aspen.count += 1
+    print(f"\033[92m[Run #{fun_run_Aspen.count}] Aspen simulation executed.\033[0m")
 
     # Checks for errors or warning:
     is_error = Aspen.Tree.FindNode(r'\Data\Results Summary\Run-Status\Output\PER_ERROR').Value
@@ -144,6 +167,11 @@ def fun_run_Aspen(v_Ns, v_Nf, Aspen, block_name, stream_names, components, v_Nc)
             
         Aspen.Reinit()
         Aspen.Engine.Run2()
+
+        # Increment function call count # Tomazim
+        fun_run_Aspen.count += 1
+        print(f"\033[92m[Run #{fun_run_Aspen.count}] Aspen simulation executed (retry).\033[0m")
+
         is_error = Aspen.Tree.FindNode(r'\Data\Results Summary\Run-Status\Output\PER_ERROR').Value
         if is_error == 0:
             print(f'Simulation converged successfully for Ns = {v_Ns} and Nf = {v_Nf}')
@@ -222,6 +250,23 @@ def fun_getfromAspen(Aspen,block_name, distillate_name, v_Ns,components,v_Nc):
     }
 
     return results
+
+# TOMAZIM - Use in Double Effect Column
+# This function is used to get the top product purity from Aspen
+def fun_getfromAspen_x_Top(Aspen, stream_name,component): 
+     # Initialize dictionary
+     x_Top_Info = {}
+     # Try to find the node
+     node = Aspen.Tree.FindNode(rf'\Data\Streams\{stream_name}\Output\MOLEFRAC\MIXED\{component}')
+     if node is not None:
+        # Dictionary
+        x_Top_Info['Mole_Fraction_TOP'] =  Aspen.Tree.FindNode(rf'\Data\Streams\{stream_name}\Output\MOLEFRAC\MIXED\{component}').Value
+     else:
+        # If the component is not found, set the mole fraction to 0 
+        x_Top_Info['Mole_Fraction_TOP'] = 0
+
+     return x_Top_Info
+
 
 def fun_getfromAspen_hydraulics(v_Ns, Aspen, block_name):
     

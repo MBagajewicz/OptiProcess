@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4433pva.inm
+MODNAME: apmain
+RUNID: _4433pva
+NEW_RUNID: _4433pva
+OLD_RUNID: _4433pva
+PDF: _4433pva.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4433pva.ads

@@ -1,0 +1,71 @@
+********** Normal Set Trimming running **********
+DC_ST_HE_RD parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00200 seconds
+
+Primordial Set Trimming time:  0.00177 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [1444, 741, 705]
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.54144 seconds
+
+Primordial Set Trimming time:  1.56729 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [7931520, 4167936, 3560112, 3560112, 1648200, 924600, 783900]
+********** Normal Set Trimming running **********
+HSTC parameter from par_calc was not generated at this stage. Skipping
+HSTC parameter from par_calc was not generated at this stage. Skipping
+HSTC parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.01601 seconds
+
+Primordial Set Trimming time:  0.04904 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [403200, 288000, 288000, 273600, 207600]
+********** Normal Set Trimming running **********
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Kettle_2 parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00100 seconds
+
+Primordial Set Trimming time:  0.00300 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [15120, 10080, 9180]
+********** Normal Set Trimming running **********
+Reflux_Drum parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00000 seconds
+
+Primordial Set Trimming time:  0.00400 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [221, 190, 144, 144]
+
+******************** Starting Execution for DC_ST_HE_RD_Example2_Pb_2_Seg_10 ********************
+
+The solution of Equipment1 "DC_ST_HE_RD" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[ 3,  4,  5, ..., 38, 39, 40],
+       [13, 13, 13, ..., 42, 42, 42]]), 'candidate_set_cardinality_after_each_trimming': [705]}
+Elapsed time Set Trimming: 0.0010006427764892578
+Performing Segmental Smart Enumeration now

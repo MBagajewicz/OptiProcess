@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0703cxh.inm
+MODNAME: apmain
+RUNID: _0703cxh
+NEW_RUNID: _0703cxh
+OLD_RUNID: _0703cxh
+PDF: _0703cxh.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0703cxh.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3051czg.inm
+MODNAME: apmain
+RUNID: _3051czg
+NEW_RUNID: _3051czg
+OLD_RUNID: _3051czg
+PDF: _3051czg.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3051czg.ads

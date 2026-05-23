@@ -1,0 +1,17 @@
+********** Normal Set Trimming running **********
+
+************ Initial Set = Primordial Set with 157500 candidates ************
+
+
+******************** Starting Execution for APH_Example1 ********************
+
+The solution of Equipment1 "APH" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [157500, 136500, 136500, 129250, 119750, 119750, 4370, 4370, 3460, 3460, 3460, 1165, 1165, 1165, 1142]
+{'AREA_OF': {'Area': 805.0728264294384, 'Number_of_solutions': 4}, 'Do_td': '(0.1683,0.0071)', 'L': '4', 'Nr': '9', 'Nc': '11', 'Ncross': '1', 'rph': '1.6', 'rpv': '1.4'}
+Elapsed time for Equipment1 "APH": 3.98 seconds 
+
+OF Solution total (m²) 805.0728264294384
+Total time elapsed: 4.19354 seconds
+

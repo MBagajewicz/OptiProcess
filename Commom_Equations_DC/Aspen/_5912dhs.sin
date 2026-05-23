@@ -1,0 +1,255 @@
+ >>ORIGINAL RUN                           JULY 29, 2025       
+   4:59:54 P.M.                           TUESDAY     
+   INPUT FILE: _5912dhs.inm
+   RUN ID : _5912dhs
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 41.0 at 16:59:53 Tue Jul 29, 2025
+          3    ;Directory   Runid METHANOL_H2O - Q_FIXO
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+         11            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+         12            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+         13            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+         14            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+         15            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+         16            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+         17            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+         18            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+         19
+         20    DEF-STREAMS CONVEN ALL
+         21
+         22    MODEL-OPTION
+         23        RADFRAC MAXOL=30 ALGORITHM=NEWTON
+         24
+         25    DESCRIPTION "
+         26        Chemical Simulation with English Units :
+         27        F, psi, lb/hr, lbmol/hr, Btu/hr, cuft/hr.
+         28
+         29        Property Method: NRTL
+         30
+         31        Flow basis for input: Mole
+         32
+         33        Stream report composition: Mole flow
+         34        "
+         35
+         36    DATABANKS 'APV150 PURE39' / 'APV150 AQUEOUS' / 'APV150 SOLIDS' &
+         37             / 'APV150 INORGANIC' / 'APESV150 AP-EOS' /  &
+         38            'NISTV150 NIST-TRC' / NOASPENPCD
+         39
+         40    PROP-SOURCES 'APV150 PURE39' / 'APV150 AQUEOUS' /  &
+         41            'APV150 SOLIDS' / 'APV150 INORGANIC' / 'APESV150 AP-EOS' &
+         42             / 'NISTV150 NIST-TRC'
+         43
+         44    COMPONENTS
+         45        BENZENE C6H6 /
+         46        TOLUENE C7H8 /
+         47        M-XYLENE C8H10-2 /
+         48        METHANOL CH4O /
+         49        WATER H2O
+         50
+         51    SOLVE
+         52        RUN-MODE MODE=SIM
+         53
+         54    FLOWSHEET
+         55        BLOCK HPC IN=FEED OUT=D-TOP B-BOTTOM
+         56        BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+         57        BLOCK B1 IN=FEED-B1 OUT=B1-TOP B2-BOT
+         58
+         59    PROPERTIES UNIQUAC
+         60        PROPERTIES NRTL / PENG-ROB
+         61
+         62    PROP-DATA NRTL-1
+         63        IN-UNITS ENG SHORT-LENGTH=in
+         64        PROP-LIST NRTL
+         65        BPVAL BENZENE M-XYLENE 0.0 -207.9702000 .3000000000 0.0  &
+         66            0.0 0.0 77.00000000 282.4520000
+         67        BPVAL M-XYLENE BENZENE 0.0 252.8013600 .3000000000 0.0 0.0  &
+         68            0.0 77.00000000 282.4520000
+         69        BPVAL BENZENE TOLUENE -2.885200000 2023.110180 .3000000000  &
+         70            0.0 0.0 0.0 104.0000000 231.3500000
+         71        BPVAL TOLUENE BENZENE 2.191100000 -1554.715440 .3000000000  &
+         72            0.0 0.0 0.0 104.0000000 231.3500000
+         73        BPVAL TOLUENE M-XYLENE 0.0 -353.5938000 .3000000000 0.0  &
+         74            0.0 0.0 231.0440000 282.4520000
+         75        BPVAL M-XYLENE TOLUENE 0.0 677.5857000 .3000000000 0.0 0.0  &
+         76            0.0 231.0440000 282.4520000
+         77        BPVAL BENZENE METHANOL 11.58010000 -5908.597200 .4000000000  &
+         78            0.0 0.0 0.0 131.0000000 176.1800000
+         79        BPVAL METHANOL BENZENE -1.708600000 1606.032720 .4000000000  &
+         80            0.0 0.0 0.0 131.0000000 176.1800000
+         81        BPVAL TOLUENE METHANOL 0.0 804.3742800 .3000000000 0.0 0.0  &
+         82            0.0 146.3000000 231.0800000
+         83        BPVAL METHANOL TOLUENE 0.0 667.9506600 .3000000000 0.0 0.0  &
+         84            0.0 146.3000000 231.0800000
+         85        BPVAL M-XYLENE METHANOL 0.0 751.2847200 .3000000000 0.0  &
+         86            0.0 0.0 148.3700000 282.2000000
+         87        BPVAL METHANOL M-XYLENE 0.0 798.8058000 .3000000000 0.0  &
+         88            0.0 0.0 148.3700000 282.2000000
+         89        BPVAL BENZENE WATER 49.63587177 1064.461680 .2000000000 0.0  &
+         90            -7.562900000 0.0 33.44000000 170.6000000
+         91        BPVAL WATER BENZENE 151.8580631 -10717.75278 .2000000000  &
+         92            0.0 -20.02540000 0.0 33.44000000 170.6000000
+         93        BPVAL TOLUENE WATER -7.235700000 7726.398480 .2000000000  &
+         94            0.0 0.0 0.0 32.09000000 661.0256600
+         95        BPVAL WATER TOLUENE 3.988400000 1794.065580 .2000000000 0.0  &
+         96            0.0 0.0 32.09000000 661.0256600
+         97        BPVAL M-XYLENE WATER -53.97642176 9034.155180 .2000000000  &
+         98            0.0 6.612300000 0.0 32.00000000 519.0800000
+         99        BPVAL WATER M-XYLENE 151.8123829 -9581.283180 .2000000000  &
+        100            0.0 -19.95500000 0.0 32.00000000 519.0800000
+        101        BPVAL METHANOL WATER -.6930000000 311.3767800 .3000000000  &
+        102            0.0 0.0 0.0 76.98200000 212.0000000
+        103        BPVAL WATER METHANOL 2.732200000 -1111.083660 .3000000000  &
+        104            0.0 0.0 0.0 76.98200000 212.0000000
+        105
+        106    PROP-DATA PRKBV-1
+        107        IN-UNITS ENG SHORT-LENGTH=in
+        108        PROP-LIST PRKBV
+        109        BPVAL METHANOL WATER -.0778000000 0.0 0.0 -459.6700000  &
+        110            1340.330000
+        111        BPVAL WATER METHANOL -.0778000000 0.0 0.0 -459.6700000  &
+        112            1340.330000
+        113
+        114    PROP-DATA UNIQ-1
+        115        IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+        116            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+        117            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+        118            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+        119            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+        120            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+        121            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+        122            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+        123            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+        124        PROP-LIST UNIQ
+        125        BPVAL BENZENE TOLUENE 1.337700000 -522.8772000 0.0 0.0  &
+        126            313.1500000 383.9000000 0.0
+        127        BPVAL TOLUENE BENZENE -1.082100000 424.1051000 0.0 0.0  &
+        128            313.1500000 383.9000000 0.0
+        129        BPVAL BENZENE M-XYLENE 0.0 62.26940000 0.0 0.0 298.1500000  &
+        130            412.2900000 0.0
+        131        BPVAL M-XYLENE BENZENE 0.0 -81.33250000 0.0 0.0  &
+        132            298.1500000 412.2900000 0.0
+        133        BPVAL BENZENE METHANOL -9.675100000 2620.773700 0.0 0.0  &
+        134            328.1500000 353.2500000 0.0
+        135        BPVAL METHANOL BENZENE 1.853400000 -576.2604000 0.0 0.0  &
+        136            328.1500000 353.2500000 0.0
+        137        BPVAL BENZENE WATER 0.0 -860.8100000 0.0 0.0 293.1500000  &
+        138            313.1500000 0.0
+        139        BPVAL WATER BENZENE 0.0 -369.0100000 0.0 0.0 293.1500000  &
+        140            313.1500000 0.0
+        141        BPVAL TOLUENE M-XYLENE 0.0 151.3338000 0.0 0.0 383.7300000  &
+        142            412.2900000 0.0
+        143        BPVAL M-XYLENE TOLUENE 0.0 -235.8953000 0.0 0.0  &
+        144            383.7300000 412.2900000 0.0
+        145        BPVAL TOLUENE METHANOL 0.0 -563.0126000 0.0 0.0  &
+        146            336.6500000 383.7500000 0.0
+        147        BPVAL METHANOL TOLUENE 0.0 27.83150000 0.0 0.0 336.6500000  &
+        148            383.7500000 0.0
+        149        BPVAL TOLUENE WATER 0.0 -950.6000000 0.0 0.0 293.1500000  &
+        150            313.1500000 0.0
+        151        BPVAL WATER TOLUENE 0.0 -350.2100000 0.0 0.0 293.1500000  &
+        152            313.1500000 0.0
+        153        BPVAL M-XYLENE METHANOL 0.0 -609.3802000 0.0 0.0  &
+        154            337.8000000 412.1500000 0.0
+        155        BPVAL METHANOL M-XYLENE 0.0 37.75860000 0.0 0.0  &
+        156            337.8000000 412.1500000 0.0
+        157        BPVAL M-XYLENE WATER 0.0 -969.4700000 0.0 0.0 293.1500000  &
+        158            313.1500000 0.0
+        159        BPVAL WATER M-XYLENE 0.0 -337.9100000 0.0 0.0 293.1500000  &
+        160            313.1500000 0.0
+        161        BPVAL METHANOL WATER -1.066200000 432.8785000 0.0 0.0  &
+        162            298.1400000 373.1500000 0.0
+        163        BPVAL WATER METHANOL .6437000000 -322.1312000 0.0 0.0  &
+        164            298.1400000 373.1500000 0.0
+        165
+        166    DEF-STREAMS LOAD
+        167
+        168    PROP-SET HEDESIGN CPMX-M KMX PCMX UNITS='J/kg-K' 'Watt/m-K'  &
+        169            'Pa' SUBSTREAM=MIXED PHASE=T L V
+        170
+        171    STREAM FEED
+        172        SUBSTREAM MIXED TEMP=386.55 PRES=100000.
+        173        MOLE-FLOW METHANOL 60. / WATER 40.
+        174
+        175    STREAM FEED-B1
+        176        SUBSTREAM MIXED TEMP=386.5500000 PRES=1.00000000E+5
+        177        MOLE-FLOW METHANOL 60. / WATER 40.
+        178
+        179    STREAM FEED-LPC
+        180        SUBSTREAM MIXED TEMP=386.55 PRES=100000.
+        181        MOLE-FLOW METHANOL 60. / WATER 40.
+        182
+        183    BLOCK B1 DSTWU
+        184        PARAM LIGHTKEY=METHANOL RECOVL=0.99 HEAVYKEY=WATER  &
+        185            RECOVH=0.01 PTOP=1500000. PBOT=1500000. NSTAGE=10
+        186
+        187    BLOCK HPC RADFRAC
+        188        PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+        189            DAMPING=NONE
+        190        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        191        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        192        FEEDS FEED 11
+        193        PRODUCTS D-TOP 1 L / B-BOTTOM 20 L
+        194        P-SPEC 1 100000.
+        195        COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+        196        SPEC 1 Q1 -5548807.1 SPEC-ACTIVE=YES  &
+        197            SPEC-DESCRIP="Condenser Duty"
+        198        SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+        199            SPEC-DESCRIP="Bottom Purity"
+        200        VARY 1 MOLE-D 0. 100.
+        201        VARY 2 MOLE-RR 0. 100.
+        202        REPORT NOHYDRAULIC
+        203        CONVERGENCE EXTRA-ML=2
+        204
+        205    BLOCK LPC RADFRAC
+        206        SUBOBJECTS INTERNALS = CS-1
+        207        PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+        208            DAMPING=NONE
+        209        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        210        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        211        FEEDS FEED-LPC 18
+        212        PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+        213        P-SPEC 1 100000.
+        214        COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+        215        SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=L-TOP  &
+        216            SPEC-DESCRIP="BENZENE RECUPERATION"
+        217        SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=L-BOTTOM  &
+        218            SPEC-DESCRIP="TOLUENE RECOVERY"
+        219        VARY 1 MOLE-D 0. 100.
+        220        VARY 2 MOLE-RR 0. 100.
+        221        REPORT NOHYDRAULIC
+        222        CONVERGENCE EXTRA-ML=2
+        223        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        224            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        225            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        226            DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+        227            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        228            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        229            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        230            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        231            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        232            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        233            MIN-PCT-DCA=.1000000000
+        234        TRAY-SIZE 1 2 3 SIEVE
+        235
+        236    EO-CONV-OPTI
+        237
+        238    CONV-OPTIONS
+        239        PARAM MSPEC-METHOD=BROYDEN SPEC-LOOP=INSIDE USER-LOOP=OUTSIDE
+        240
+        241    STREAM-REPOR MOLEFLOW PROPERTIES=HEDESIGN
+        242
+        243    PROPERTY-REP PCES
+        244    ;
+        245    ;
+        246    ;
+        247    ;
+        248    ;
+
+   SIMULATION STARTED     MODULE USED: apmain  
+   LOCATED IN:C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\\xeq

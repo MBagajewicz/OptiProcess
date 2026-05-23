@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3102xqc.inm
+MODNAME: apmain
+RUNID: _3102xqc
+NEW_RUNID: _3102xqc
+OLD_RUNID: _3102xqc
+PDF: _3102xqc.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3102xqc.ads

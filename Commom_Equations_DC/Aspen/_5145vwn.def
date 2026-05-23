@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5145vwn.inm
+MODNAME: apmain
+RUNID: _5145vwn
+NEW_RUNID: _5145vwn
+OLD_RUNID: _5145vwn
+PDF: _5145vwn.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5145vwn.ads

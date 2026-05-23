@@ -1,0 +1,192 @@
+
+ BLOCK:  HPC      MODEL: RADFRAC         
+ -------------------------------
+    INLETS   - FEED-HPC STAGE   4
+    OUTLETS  - H-TOP    STAGE   1
+               H-BOTTOM STAGE  19
+   PROPERTY OPTION SET:   UNIQUAC   UNIQUAC / IDEAL GAS                         
+
+                      ***  MASS AND ENERGY BALANCE  ***
+                                    IN              OUT        RELATIVE DIFF.
+    TOTAL BALANCE
+       MOLE(KMOL/HR )            100.000         100.000        0.456737E-12
+       MASS(KG/HR   )            2643.14         2643.14        0.715548E-12
+       ENTHALPY(KJ/HR   )      -0.248981E+08   -0.247542E+08   -0.578008E-02
+
+                      ***  CO2 EQUIVALENT SUMMARY ***
+    FEED STREAMS CO2E             0.00000      KG/HR           
+    PRODUCT STREAMS CO2E          0.00000      KG/HR           
+    NET STREAMS CO2E PRODUCTION   0.00000      KG/HR           
+    UTILITIES CO2E PRODUCTION     0.00000      KG/HR           
+    TOTAL CO2E PRODUCTION         0.00000      KG/HR           
+
+
+
+                         **********************
+                         ****  INPUT DATA  ****
+                         **********************
+
+   ****   INPUT PARAMETERS   ****
+
+    NUMBER OF STAGES                                        19
+    ALGORITHM OPTION                                      NEWTON      
+    INITIALIZATION OPTION                                 STANDARD    
+    HYDRAULIC PARAMETER CALCULATIONS                      NO      
+    DESIGN SPECIFICATION METHOD                           SIMULT  
+    MAXIMUM NO. OF NEWTON ITERATIONS                       110
+    MAXIMUM NUMBER OF FLASH ITERATIONS                      30
+    FLASH TOLERANCE                                          0.000100000
+    COLUMN EQUATIONS CONVERGENCE TOLERANCE                   0.100000-06
+
+   ****   COL-SPECS   ****
+
+    MOLAR VAPOR DIST / TOTAL DIST                            0.0        
+    MOLAR REFLUX RATIO                                       1.30000    
+    DISTILLATE TO FEED RATIO                                 0.60000    
+
+   ****    PROFILES   ****
+
+    P-SPEC          STAGE   1  PRES, PA                500,000.         
+
+                          *******************
+                          ****  RESULTS  ****
+                          *******************
+
+
+   ***   COMPONENT SPLIT FRACTIONS   ***
+
+                             OUTLET STREAMS 
+                             --------------
+                  H-TOP        H-BOTTOM
+    COMPONENT:
+    METHANOL    .99710       .29046E-02
+    WATER       .13299       .86701    
+
+ 
+   ***    SUMMARY OF KEY RESULTS    ***
+
+    TOP STAGE TEMPERATURE          K                       385.926      
+    BOTTOM STAGE TEMPERATURE       K                       424.011      
+    TOP STAGE LIQUID FLOW          KMOL/HR                  77.4446     
+    BOTTOM STAGE LIQUID FLOW       KMOL/HR                  34.8546     
+    TOP STAGE VAPOR FLOW           KMOL/HR                   0.0        
+    BOILUP VAPOR FLOW              KMOL/HR                 125.056      
+    MOLAR REFLUX RATIO                                       1.18880    
+    MOLAR BOILUP RATIO                                       3.58794    
+    CONDENSER DUTY (W/O SUBCOOL)   KJ/HR            -4,635,070.         
+    REBOILER DUTY                  KJ/HR             4,778,980.         
+
+
+   ****   MANIPULATED VARIABLES   ****
+
+                                                 BOUNDS             CALCULATED
+                                          LOWER         UPPER         VALUE
+   DISTILLATE TO FEED RATIO              0.10000E-01    1.0000       0.65145    
+   MOLAR REFLUX RATIO                     0.0000        100.00        1.1888    
+
+   ****    DESIGN SPECIFICATIONS   **** 
+
+ NO  SPEC-TYPE     QUALIFIERS              UNIT       SPECIFIED     CALCULATED
+                                                        VALUE         VALUE
+  1  Q1                                    KJ/HR      -0.46351E+07  -0.46351E+07
+  2  MOLE-FRAC     STREAMS: H-BOTTOM                   0.50000E-02   0.50000E-02
+                   COMPS:   METHANOL     
+
+   ****   MAXIMUM FINAL RELATIVE ERRORS   ****
+
+    DEW POINT                       0.16576E-12  STAGE=  1
+    BUBBLE POINT                    0.16576E-12  STAGE=  1
+    COMPONENT MASS BALANCE          0.33713E-11  STAGE=  1 COMP=WATER   
+    ENERGY BALANCE                  0.18337E-11  STAGE=  1
+
+
+   ****    PROFILES   ****
+
+   **NOTE** REPORTED VALUES FOR STAGE LIQUID AND VAPOR RATES ARE THE FLOWS
+            FROM THE STAGE INCLUDING ANY SIDE PRODUCT.
+
+                                          ENTHALPY
+ STAGE TEMPERATURE   PRESSURE             KJ/KMOL            HEAT DUTY
+       K             PA             LIQUID       VAPOR        KJ/HR   
+
+   1   385.93       0.50000E+06  -0.23268E+06 -0.19865E+06  -.46351+07
+   2   387.12       0.50000E+06  -0.23636E+06 -0.20017E+06            
+   3   388.50       0.50000E+06  -0.24041E+06 -0.20178E+06            
+   4   390.14       0.50000E+06  -0.24493E+06 -0.20352E+06            
+   5   390.14       0.50000E+06  -0.24493E+06 -0.20352E+06            
+  18   420.02       0.50000E+06  -0.27458E+06 -0.23131E+06            
+  19   424.01       0.50000E+06  -0.27532E+06 -0.23615E+06   .47790+07
+
+ STAGE     FLOW RATE                  FEED RATE               PRODUCT RATE
+            KMOL/HR                    KMOL/HR                  KMOL/HR 
+       LIQUID     VAPOR       LIQUID    VAPOR    MIXED      LIQUID    VAPOR
+   1  142.6      0.000                                       65.1453          
+   2  75.82      142.6                                                        
+   3  74.13      141.0                                                        
+   4  175.8      139.3       100.0000                                         
+   5  175.8      141.0                                                        
+  18  159.9      124.5                                                        
+  19  34.85      125.1                                       34.8546          
+
+    ****  MASS FLOW PROFILES  ****
+
+ STAGE     FLOW RATE                  FEED RATE               PRODUCT RATE
+            KG/HR                      KG/HR                    KG/HR   
+       LIQUID     VAPOR       LIQUID    VAPOR    MIXED      LIQUID    VAPOR
+   1  4406.      0.000                                     2012.7806          
+   2  2264.      4406.                                                        
+   3  2128.      4277.                                                        
+   4  4823.      4141.      2643.1408                                         
+   5  4823.      4192.                                                        
+  18  2940.      2503.                                                        
+  19  630.4      2310.                                      630.3602          
+
+                         ****   MOLE-X-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.91834       0.81658E-01
+      2    0.84444       0.15556    
+      3    0.76262       0.23738    
+      4    0.67085       0.32915    
+      5    0.67084       0.32916    
+     18    0.26518E-01   0.97348    
+     19    0.50000E-02   0.99500    
+
+                         ****   MOLE-Y-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.95595       0.44049E-01
+      2    0.91834       0.81658E-01
+      3    0.87859       0.12141    
+      4    0.83546       0.16454    
+      5    0.83545       0.16455    
+     18    0.14931       0.85069    
+     19    0.32515E-01   0.96748    
+
+                         ****   K-VALUES           ****
+   STAGE     METHANOL      WATER   
+      1     1.0410       0.53943    
+      2     1.0875       0.52492    
+      3     1.1521       0.51144    
+      4     1.2454       0.49990    
+      5     1.2454       0.49990    
+     18     5.6304       0.87387    
+     19     6.5031       0.97235    
+
+                         ****   MASS-X-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.95239       0.47613E-01
+      2    0.90615       0.93854E-01
+      3    0.85106       0.14894    
+      4    0.78378       0.21622    
+      5    0.78378       0.21622    
+     18    0.46211E-01   0.95379    
+     19    0.88586E-02   0.99114    
+
+                         ****   MASS-Y-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.97475       0.25253E-01
+      2    0.95239       0.47613E-01
+      3    0.92791       0.72091E-01
+      4    0.90031       0.99693E-01
+      5    0.90031       0.99695E-01
+     18    0.23790       0.76210    
+     19    0.56404E-01   0.94360    

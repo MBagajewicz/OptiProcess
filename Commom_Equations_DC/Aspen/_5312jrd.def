@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5312jrd.inm
+MODNAME: apmain
+RUNID: _5312jrd
+NEW_RUNID: _5312jrd
+OLD_RUNID: _5312jrd
+PDF: _5312jrd.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5312jrd.ads

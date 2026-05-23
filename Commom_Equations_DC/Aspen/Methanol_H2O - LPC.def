@@ -1,0 +1,10 @@
+INPUT: Methanol_H2O - LPC.inm
+MODNAME: apmain
+RUNID: Methanol_H2O - LPC
+NEW_RUNID: Methanol_H2O - LPC
+OLD_RUNID: Methanol_H2O - LPC
+PDF: Methanol_H2O - LPC.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+SPONLY:
+DBCONN: _0741zzt.ads

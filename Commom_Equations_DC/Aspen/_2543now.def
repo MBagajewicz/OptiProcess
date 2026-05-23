@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2543now.inm
+MODNAME: apmain
+RUNID: _2543now
+NEW_RUNID: _2543now
+OLD_RUNID: _2543now
+PDF: _2543now.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2543now.ads

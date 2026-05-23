@@ -1,0 +1,166 @@
+ >>ORIGINAL RUN                           MAY 14, 2025        
+   3:02:44 P.M.                           WEDNESDAY   
+   INPUT FILE: _4804ozg.inm
+   RUN ID : _4804ozg
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 40.0 at 15:02:43 Wed May 14, 2025
+          3    ;Directory   Runid DC_CONDENSER
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+         11            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+         12            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+         13            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+         14            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+         15            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+         16            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+         17            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+         18            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+         19
+         20    DEF-STREAMS CONVEN ALL
+         21
+         22    MODEL-OPTION
+         23
+         24    DESCRIPTION "
+         25        Chemical Simulation with English Units :
+         26        F, psi, lb/hr, lbmol/hr, Btu/hr, cuft/hr.
+         27
+         28        Property Method: NRTL
+         29
+         30        Flow basis for input: Mole
+         31
+         32        Stream report composition: Mole flow
+         33        "
+         34
+         35    DATABANKS 'APV140 PURE39' / 'APV140 AQUEOUS' / 'APV140 SOLIDS' &
+         36             / 'APV140 INORGANIC' / 'APESV140 AP-EOS' /  &
+         37            'NISTV140 NIST-TRC' / NOASPENPCD
+         38
+         39    PROP-SOURCES 'APV140 PURE39' / 'APV140 AQUEOUS' /  &
+         40            'APV140 SOLIDS' / 'APV140 INORGANIC' / 'APESV140 AP-EOS' &
+         41             / 'NISTV140 NIST-TRC'
+         42
+         43    COMPONENTS
+         44        BENZENE C6H6 /
+         45        TOLUENE C7H8 /
+         46        M-XYLENE C8H10-2
+         47
+         48    SOLVE
+         49        RUN-MODE MODE=SIM
+         50
+         51    FLOWSHEET
+         52        BLOCK HPC IN=FEED OUT=D-TOP B-BOTTOM
+         53        BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+         54
+         55    PROPERTIES PENG-ROB
+         56        PROPERTIES NRTL
+         57
+         58    PROP-DATA NRTL-1
+         59        IN-UNITS ENG SHORT-LENGTH=in
+         60        PROP-LIST NRTL
+         61        BPVAL BENZENE M-XYLENE 0.0 -207.9702000 .3000000000 0.0  &
+         62            0.0 0.0 77.00000000 282.4520000
+         63        BPVAL M-XYLENE BENZENE 0.0 252.8013600 .3000000000 0.0 0.0  &
+         64            0.0 77.00000000 282.4520000
+         65        BPVAL BENZENE TOLUENE -2.885200000 2023.110180 .3000000000  &
+         66            0.0 0.0 0.0 104.0000000 231.3500000
+         67        BPVAL TOLUENE BENZENE 2.191100000 -1554.715440 .3000000000  &
+         68            0.0 0.0 0.0 104.0000000 231.3500000
+         69        BPVAL TOLUENE M-XYLENE 0.0 -353.5938000 .3000000000 0.0  &
+         70            0.0 0.0 231.0440000 282.4520000
+         71        BPVAL M-XYLENE TOLUENE 0.0 677.5857000 .3000000000 0.0 0.0  &
+         72            0.0 231.0440000 282.4520000
+         73
+         74    DEF-STREAMS LOAD
+         75
+         76    PROP-SET HEDESIGN CPMX-M KMX PCMX UNITS='J/kg-K' 'Watt/m-K'  &
+         77            'Pa' SUBSTREAM=MIXED PHASE=T L V
+         78
+         79    STREAM FEED
+         80        SUBSTREAM MIXED TEMP=386.5500000 PRES=1.00000000E+5
+         81        MOLE-FLOW BENZENE 14.80000000 / TOLUENE 38.00000000 /  &
+         82            M-XYLENE 47.20000000
+         83
+         84    STREAM FEED-LPC
+         85        SUBSTREAM MIXED TEMP=386.5500000 PRES=1.00000000E+5
+         86        MOLE-FLOW BENZENE 14.80000000 / TOLUENE 38.00000000 /  &
+         87            M-XYLENE 47.20000000
+         88
+         89    BLOCK HPC RADFRAC
+         90        SUBOBJECTS INTERNALS = CS-1
+         91        PARAM NSTAGE=20 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=25  &
+         92            DAMPING=NONE
+         93        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+         94        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+         95        FEEDS FEED 10
+         96        PRODUCTS D-TOP 1 L / B-BOTTOM 20 L
+         97        P-SPEC 1 1.00000000E+5
+         98        COL-SPECS MOLE-D=14.25000000 MOLE-RR=4.12
+         99        SPEC 1 Q1 -1299147.09 SPEC-DESCRIP="Condenser Duty"
+        100        SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=B-BOTTOM  &
+        101            SPEC-DESCRIP="TOLUENE RECOVERY"
+        102        VARY 1 MOLE-D 0.0 100.0000000
+        103        VARY 2 MOLE-RR 0. 100.
+        104        REPORT NOHYDRAULIC
+        105        CONVERGENCE EXTRA-ML=2
+        106        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        107            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        108            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        109            DC-WTOP-SIDE=83.95120172 <mm> DC-WBOT-SIDE=83.95120172 <mm>  &
+        110            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        111            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        112            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        113            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        114            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        115            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        116            MIN-PCT-DCA=.1000000000
+        117        TRAY-SIZE 1 2 3 SIEVE
+        118
+        119    BLOCK LPC RADFRAC
+        120        SUBOBJECTS INTERNALS = CS-1
+        121        PARAM NSTAGE=20 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=25  &
+        122            DAMPING=NONE
+        123        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        124        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        125        FEEDS FEED-LPC 10
+        126        PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+        127        P-SPEC 1 1.00000000E+5
+        128        COL-SPECS MOLE-D=14.25000000 MOLE-RR=4.12
+        129        SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+        130            SPEC-DESCRIP="BENZENE RECUPERATION"
+        131        SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+        132            SPEC-DESCRIP="TOLUENE RECOVERY"
+        133        VARY 1 MOLE-D 0.0 100.0000000
+        134        VARY 2 MOLE-RR 0. 100.
+        135        REPORT NOHYDRAULIC
+        136        CONVERGENCE EXTRA-ML=2
+        137        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        138            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        139            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        140            DC-WTOP-SIDE=121.4266356 <mm> DC-WBOT-SIDE=121.4266356 <mm>  &
+        141            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        142            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        143            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        144            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        145            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        146            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        147            MIN-PCT-DCA=.1000000000
+        148        TRAY-SIZE 1 2 3 SIEVE
+        149
+        150    EO-CONV-OPTI
+        151
+        152    STREAM-REPOR MOLEFLOW PROPERTIES=HEDESIGN
+        153
+        154    PROPERTY-REP PCES
+        155    ;
+        156    ;
+        157    ;
+        158    ;
+        159    ;
+
+   SIMULATION STARTED     MODULE USED: apmain  
+   LOCATED IN:C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\\xeq

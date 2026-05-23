@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3828hmt.inm
+MODNAME: apmain
+RUNID: _3828hmt
+NEW_RUNID: _3828hmt
+OLD_RUNID: _3828hmt
+PDF: _3828hmt.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3828hmt.ads

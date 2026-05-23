@@ -8,6 +8,7 @@
 #   0.2       28-Fev-2025        Alice Peccini              OptiProcess Code Structure Update
 #   0.3       27-Apr-2025        Mariana Mello              Add .txt file with Results of Examples
 #   0.4       13-May-2025        Mariana Mello              Update .txt file with Examples Results
+#   0.5       10-Jul-2025        Pamela Tomazim             Change the value of infeasible candidates to a very high number
 ##################################################################################################################
 # INPUT: No inputs allowed
 ##################################################################################################################
@@ -70,9 +71,11 @@ def Exhaustive_Enumeration(OF_NAME, constraint_lists, var_list, OF_VAR, candidat
 
     # Checking for feasible results
     if np.all(np.isnan(OF_SOL_array)):
-        save_result('No feasible candidates found in exhaustive enumeration')
-
-        sol_data[OF_NAME[0]] = {OF_VAR[0]: None}
+        save_result('⚠️  No feasible candidates found in exhaustive enumeration')
+        # Return solution as a very high value for infeasible candidates
+        sol_data[OF_NAME[0]] = {OF_VAR[0]: 1e20} # --> Changing the value to a very high number, because None creates problems in the code #Tomazim
+        return sol_data # --> The algorithm stops after detecting that no feasible candidates are available #Tomazim
+    
     else:
         min_index = np.nanargmin(OF_SOL_array)
         min_value = OF_SOL_array[min_index]

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2629jxk.inm
+MODNAME: apmain
+RUNID: _2629jxk
+NEW_RUNID: _2629jxk
+OLD_RUNID: _2629jxk
+PDF: _2629jxk.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2629jxk.ads

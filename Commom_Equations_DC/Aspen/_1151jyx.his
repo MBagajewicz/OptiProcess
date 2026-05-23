@@ -1,0 +1,496 @@
+
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + +                                                                         + +
+ + +                      ASPEN PLUS CALCULATION HISTORY                     + +
+ + +                                                                         + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+
+ ASPEN PLUS IS A TRADEMARK OF           HOTLINE:
+ ASPEN TECHNOLOGY, INC.                 U.S.A. 888/996-7100
+ 781/221-6400                           EUROPE (44) 1189-226555
+
+ PLATFORM: WIN-X64                                       JULY 3, 2025        
+ VERSION: 41.0   Build 609                               THURSDAY    
+ INSTALLATION:                                           12:12:04 A.M.       
+
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+      ASPEN PLUS (R) IS A PROPRIETARY PRODUCT OF ASPEN TECHNOLOGY, INC.
+      (ASPENTECH), AND MAY BE USED ONLY UNDER AGREEMENT WITH ASPENTECH.
+      RESTRICTED RIGHTS LEGEND:  USE, REPRODUCTION, OR DISCLOSURE BY THE
+      U.S. GOVERNMENT IS SUBJECT TO RESTRICTIONS SET FORTH IN 
+      (i) FAR 52.227-14, Alt. III, (ii) FAR 52.227-19, (iii) DFARS 
+      252.227-7013(c)(1)(ii), or (iv) THE ACCOMPANYING LICENSE AGREEMENT,
+      AS APPLICABLE. FOR PURPOSES OF THE FAR, THIS SOFTWARE SHALL BE DEEMED
+      TO BE "UNPUBLISHED" AND LICENSED WITH DISCLOSURE PROHIBITIONS.
+      CONTRACTOR/SUBCONTRACTOR: ASPEN TECHNOLOGY, INC. 20 CROSBY DRIVE,
+      BEDFORD, MA 01730.
+ *** INPUT SUMMARY ***
+
+ >>CURRENT RUN
+
+   ORIGINAL RUN                           JULY 3, 2025        
+   12:12:04 A.M.                          THURSDAY    
+   INPUT FILE: _1151jyx.inm
+   RUN ID : _1151jyx
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 41.0 at 00:12:03 Thu Jul 3, 2025
+          3    ;Directory   Runid METHANOL_H2O - Q_FIXO
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+         11            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+         12            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+         13            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+         14            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+         15            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+         16            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+         17            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+         18            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+         19
+         20    DEF-STREAMS CONVEN ALL
+         21
+         22    MODEL-OPTION
+         23
+         24    DESCRIPTION "
+         25        Chemical Simulation with English Units :
+         26        F, psi, lb/hr, lbmol/hr, Btu/hr, cuft/hr.
+         27
+         28        Property Method: NRTL
+         29
+         30        Flow basis for input: Mole
+         31
+         32        Stream report composition: Mole flow
+         33        "
+         34
+         35    DATABANKS 'APV150 PURE39' / 'APV150 AQUEOUS' / 'APV150 SOLIDS' &
+         36             / 'APV150 INORGANIC' / 'APESV150 AP-EOS' /  &
+         37            'NISTV150 NIST-TRC' / NOASPENPCD
+         38
+         39    PROP-SOURCES 'APV150 PURE39' / 'APV150 AQUEOUS' /  &
+         40            'APV150 SOLIDS' / 'APV150 INORGANIC' / 'APESV150 AP-EOS' &
+         41             / 'NISTV150 NIST-TRC'
+         42
+         43    COMPONENTS
+         44        BENZENE C6H6 /
+         45        TOLUENE C7H8 /
+         46        M-XYLENE C8H10-2 /
+         47        METHANOL CH4O /
+         48        WATER H2O
+         49
+         50    SOLVE
+         51        RUN-MODE MODE=SIM
+         52
+         53    FLOWSHEET
+         54        BLOCK HPC IN=FEED OUT=D-TOP B-BOTTOM
+         55        BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+         56        BLOCK B1 IN=FEED-B1 OUT=B1-TOP B2-BOT
+         57
+         58    PROPERTIES UNIQUAC
+         59        PROPERTIES NRTL / PENG-ROB
+         60
+         61    PROP-DATA NRTL-1
+         62        IN-UNITS ENG SHORT-LENGTH=in
+         63        PROP-LIST NRTL
+         64        BPVAL BENZENE M-XYLENE 0.0 -207.9702000 .3000000000 0.0  &
+         65            0.0 0.0 77.00000000 282.4520000
+         66        BPVAL M-XYLENE BENZENE 0.0 252.8013600 .3000000000 0.0 0.0  &
+         67            0.0 77.00000000 282.4520000
+         68        BPVAL BENZENE TOLUENE -2.885200000 2023.110180 .3000000000  &
+         69            0.0 0.0 0.0 104.0000000 231.3500000
+         70        BPVAL TOLUENE BENZENE 2.191100000 -1554.715440 .3000000000  &
+         71            0.0 0.0 0.0 104.0000000 231.3500000
+         72        BPVAL TOLUENE M-XYLENE 0.0 -353.5938000 .3000000000 0.0  &
+         73            0.0 0.0 231.0440000 282.4520000
+         74        BPVAL M-XYLENE TOLUENE 0.0 677.5857000 .3000000000 0.0 0.0  &
+         75            0.0 231.0440000 282.4520000
+         76        BPVAL BENZENE METHANOL 11.58010000 -5908.597200 .4000000000  &
+         77            0.0 0.0 0.0 131.0000000 176.1800000
+         78        BPVAL METHANOL BENZENE -1.708600000 1606.032720 .4000000000  &
+         79            0.0 0.0 0.0 131.0000000 176.1800000
+         80        BPVAL TOLUENE METHANOL 0.0 804.3742800 .3000000000 0.0 0.0  &
+         81            0.0 146.3000000 231.0800000
+         82        BPVAL METHANOL TOLUENE 0.0 667.9506600 .3000000000 0.0 0.0  &
+         83            0.0 146.3000000 231.0800000
+         84        BPVAL M-XYLENE METHANOL 0.0 751.2847200 .3000000000 0.0  &
+         85            0.0 0.0 148.3700000 282.2000000
+         86        BPVAL METHANOL M-XYLENE 0.0 798.8058000 .3000000000 0.0  &
+         87            0.0 0.0 148.3700000 282.2000000
+         88        BPVAL BENZENE WATER 49.63587177 1064.461680 .2000000000 0.0  &
+         89            -7.562900000 0.0 33.44000000 170.6000000
+         90        BPVAL WATER BENZENE 151.8580631 -10717.75278 .2000000000  &
+         91            0.0 -20.02540000 0.0 33.44000000 170.6000000
+         92        BPVAL TOLUENE WATER -7.235700000 7726.398480 .2000000000  &
+         93            0.0 0.0 0.0 32.09000000 661.0256600
+         94        BPVAL WATER TOLUENE 3.988400000 1794.065580 .2000000000 0.0  &
+         95            0.0 0.0 32.09000000 661.0256600
+         96        BPVAL M-XYLENE WATER -53.97642176 9034.155180 .2000000000  &
+         97            0.0 6.612300000 0.0 32.00000000 519.0800000
+         98        BPVAL WATER M-XYLENE 151.8123829 -9581.283180 .2000000000  &
+         99            0.0 -19.95500000 0.0 32.00000000 519.0800000
+        100        BPVAL METHANOL WATER -.6930000000 311.3767800 .3000000000  &
+        101            0.0 0.0 0.0 76.98200000 212.0000000
+        102        BPVAL WATER METHANOL 2.732200000 -1111.083660 .3000000000  &
+        103            0.0 0.0 0.0 76.98200000 212.0000000
+        104
+        105    PROP-DATA PRKBV-1
+        106        IN-UNITS ENG SHORT-LENGTH=in
+        107        PROP-LIST PRKBV
+        108        BPVAL METHANOL WATER -.0778000000 0.0 0.0 -459.6700000  &
+        109            1340.330000
+        110        BPVAL WATER METHANOL -.0778000000 0.0 0.0 -459.6700000  &
+        111            1340.330000
+        112
+        113    PROP-DATA UNIQ-1
+        114        IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+        115            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+        116            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+        117            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+        118            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+        119            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+        120            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+        121            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+        122            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+        123        PROP-LIST UNIQ
+        124        BPVAL BENZENE TOLUENE 1.337700000 -522.8772000 0.0 0.0  &
+        125            313.1500000 383.9000000 0.0
+        126        BPVAL TOLUENE BENZENE -1.082100000 424.1051000 0.0 0.0  &
+        127            313.1500000 383.9000000 0.0
+        128        BPVAL BENZENE M-XYLENE 0.0 62.26940000 0.0 0.0 298.1500000  &
+        129            412.2900000 0.0
+        130        BPVAL M-XYLENE BENZENE 0.0 -81.33250000 0.0 0.0  &
+        131            298.1500000 412.2900000 0.0
+        132        BPVAL BENZENE METHANOL -9.675100000 2620.773700 0.0 0.0  &
+        133            328.1500000 353.2500000 0.0
+        134        BPVAL METHANOL BENZENE 1.853400000 -576.2604000 0.0 0.0  &
+        135            328.1500000 353.2500000 0.0
+        136        BPVAL BENZENE WATER 0.0 -860.8100000 0.0 0.0 293.1500000  &
+        137            313.1500000 0.0
+        138        BPVAL WATER BENZENE 0.0 -369.0100000 0.0 0.0 293.1500000  &
+        139            313.1500000 0.0
+        140        BPVAL TOLUENE M-XYLENE 0.0 151.3338000 0.0 0.0 383.7300000  &
+        141            412.2900000 0.0
+        142        BPVAL M-XYLENE TOLUENE 0.0 -235.8953000 0.0 0.0  &
+        143            383.7300000 412.2900000 0.0
+        144        BPVAL TOLUENE METHANOL 0.0 -563.0126000 0.0 0.0  &
+        145            336.6500000 383.7500000 0.0
+        146        BPVAL METHANOL TOLUENE 0.0 27.83150000 0.0 0.0 336.6500000  &
+        147            383.7500000 0.0
+        148        BPVAL TOLUENE WATER 0.0 -950.6000000 0.0 0.0 293.1500000  &
+        149            313.1500000 0.0
+        150        BPVAL WATER TOLUENE 0.0 -350.2100000 0.0 0.0 293.1500000  &
+        151            313.1500000 0.0
+        152        BPVAL M-XYLENE METHANOL 0.0 -609.3802000 0.0 0.0  &
+        153            337.8000000 412.1500000 0.0
+        154        BPVAL METHANOL M-XYLENE 0.0 37.75860000 0.0 0.0  &
+        155            337.8000000 412.1500000 0.0
+        156        BPVAL M-XYLENE WATER 0.0 -969.4700000 0.0 0.0 293.1500000  &
+        157            313.1500000 0.0
+        158        BPVAL WATER M-XYLENE 0.0 -337.9100000 0.0 0.0 293.1500000  &
+        159            313.1500000 0.0
+        160        BPVAL METHANOL WATER -1.066200000 432.8785000 0.0 0.0  &
+        161            298.1400000 373.1500000 0.0
+        162        BPVAL WATER METHANOL .6437000000 -322.1312000 0.0 0.0  &
+        163            298.1400000 373.1500000 0.0
+        164
+        165    DEF-STREAMS LOAD
+        166
+        167    PROP-SET HEDESIGN CPMX-M KMX PCMX UNITS='J/kg-K' 'Watt/m-K'  &
+        168            'Pa' SUBSTREAM=MIXED PHASE=T L V
+        169
+        170    STREAM FEED
+        171        SUBSTREAM MIXED TEMP=386.55 PRES=100000.
+        172        MOLE-FLOW METHANOL 60. / WATER 40.
+        173
+        174    STREAM FEED-B1
+        175        SUBSTREAM MIXED TEMP=386.5500000 PRES=1.00000000E+5
+        176        MOLE-FLOW METHANOL 60. / WATER 40.
+        177
+        178    STREAM FEED-LPC
+        179        SUBSTREAM MIXED TEMP=386.5500000 PRES=100000.
+        180        MOLE-FLOW METHANOL 60. / WATER 40.
+        181
+        182    BLOCK B1 DSTWU
+        183        PARAM LIGHTKEY=METHANOL RECOVL=0.99 HEAVYKEY=WATER  &
+        184            RECOVH=0.01 PTOP=1500000. PBOT=1500000. NSTAGE=10
+        185
+        186    BLOCK HPC RADFRAC
+        187        PARAM NSTAGE=14 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=110  &
+        188            DAMPING=NONE
+        189        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        190        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        191        FEEDS FEED 7
+        192        PRODUCTS D-TOP 1 L / B-BOTTOM 14 L
+        193        P-SPEC 1 100000.
+        194        COL-SPECS MOLE-D=59.8 MOLE-RR=1.3
+        195        SPEC 1 Q1 -4591099.11 SPEC-ACTIVE=YES  &
+        196            SPEC-DESCRIP="Condenser Duty"
+        197        SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=B-BOTTOM  &
+        198            SPEC-DESCRIP="Bottom Purity"
+        199        VARY 1 MOLE-D 0. 100.
+        200        VARY 2 MOLE-RR 0. 100.
+        201        REPORT NOHYDRAULIC
+        202        CONVERGENCE EXTRA-ML=2
+        203
+        204    BLOCK LPC RADFRAC
+        205        SUBOBJECTS INTERNALS = CS-1
+        206        PARAM NSTAGE=20 ALGORITHM=STANDARD HYDRAULIC=NO MAXOL=25  &
+        207            DAMPING=NONE
+        208        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        209        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        210        FEEDS FEED-LPC 10
+        211        PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+        212        P-SPEC 1 100000.
+        213        COL-SPECS MOLE-D=59.8 MOLE-RR=1.55310458
+        214        SPEC 1 MOLE-FRAC 0.99 COMPS=METHANOL STREAMS=L-TOP  &
+        215            SPEC-DESCRIP="BENZENE RECUPERATION"
+        216        SPEC 2 MOLE-FRAC 0.005 COMPS=METHANOL STREAMS=L-BOTTOM  &
+        217            SPEC-DESCRIP="TOLUENE RECOVERY"
+        218        VARY 1 MOLE-D 0.0 100.0000000
+        219        VARY 2 MOLE-RR 0. 100.
+        220        REPORT NOHYDRAULIC
+        221        CONVERGENCE EXTRA-ML=2
+        222        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        223            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        224            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        225            DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+        226            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        227            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        228            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        229            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        230            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        231            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        232            MIN-PCT-DCA=.1000000000
+        233        TRAY-SIZE 1 2 3 SIEVE
+        234
+        235    EO-CONV-OPTI
+        236
+        237    CONV-OPTIONS
+        238        PARAM MSPEC-METHOD=BROYDEN SPEC-LOOP=INSIDE USER-LOOP=OUTSIDE
+        239
+        240    STREAM-REPOR MOLEFLOW PROPERTIES=HEDESIGN
+        241
+        242    PROPERTY-REP PCES
+        243    ;
+        244    ;
+        245    ;
+        246    ;
+        247    ;
+ *** INPUT TRANSLATOR MESSAGES ***
+
+      SQLLOCALDB.APESV150 : (DATAVERSION - 41.0.0.10)                         
+      SQLLOCALDB.APV150 : (DATAVERSION - 41.0.0.9)                            
+      SQLLOCALDB.FACTV150 : (DATAVERSION - 41.0.0.6)                          
+      SQLLOCALDB.NISTV150 : (DATAVERSION - 41.0.0.7)                          
+  *** THIS RUN USES THE PROPERTIES ENTERPRISE DATABASE ***
+ 
+ 
+
+ PDF updated                                                                      TIME =      1.98
+
+ *** CALCULATION TRACE ***
+
+
+ *** FLOWSHEET ANALYSIS MESSAGES ***
+
+ FLOWSHEET CONNECTIVITY BY STREAMS       
+
+   STREAM     SOURCE     DEST           STREAM     SOURCE     DEST
+   FEED       ----       HPC            FEED-LPC   ----       LPC     
+   FEED-B1    ----       B1             D-TOP      HPC        ----    
+   B-BOTTOM   HPC        ----           L-TOP      LPC        ----    
+   L-BOTTOM   LPC        ----           B1-TOP     B1         ----    
+   B2-BOT     B1         ----                                         
+
+ FLOWSHEET CONNECTIVITY BY BLOCKS        
+
+   BLOCK        INLETS                         OUTLETS
+   HPC          FEED                           D-TOP B-BOTTOM              
+   LPC          FEED-LPC                       L-TOP L-BOTTOM              
+   B1           FEED-B1                        B1-TOP B2-BOT               
+
+      COMPUTATION ORDER FOR THE FLOWSHEET IS:
+      B1 LPC HPC 
+
+Calculations begin                                                              time      0.02
+
+
+ SIMULATION CALCULATIONS BEGIN                                                    TIME =      0.02
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-B1 OF BLOCK B1                   TIME =      0.02
+      KODE = 2  NTRIAL =   5  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK B1       MODEL: DSTWU                                             TIME =      0.02
+       TD =   426.6    ,  TB =   468.1    ,  RMIN =   1.397    ,  RACT =   1.701    
+       MIN STAGES =   14.65    , ACT STAGES =   29.31    
+       ACT. # OF RECT. STAGES =   24.57    
+       REBOILER DUTY =  0.4596E+06
+       FEED QUALITY =   0.9262    
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-LPC OF BLOCK LPC                 TIME =      0.02
+      KODE = 2  NTRIAL =   5  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =      0.02
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1    6      275.12    
+          2   13  112      340.75    
+          3    7   44      157.94    
+          4    5   20      103.25    
+          5    7   21      8.4417    
+          6    5   14      2.3591    
+          7    7   30     0.82834    
+          8    3    5     0.49326    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.5960         0.0000         100.00    
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED OF BLOCK HPC                     TIME =      0.03
+      KODE = 2  NTRIAL =   5  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK HPC      MODEL: RADFRAC                                           TIME =      0.03
+
+       Convergence iterations:
+         OL   ML   IL     Err/Tol
+          1    1    5      120.53    
+          2    9   65      27.868    
+          3    7   42      14.547    
+          4    7   41      7.8902    
+          5    7   41      4.5630    
+          6    7   40      2.6939    
+          7    7   39      1.6286    
+          8    7   39     0.99040    
+          9    7   39     0.59308    
+         10    7   38     0.35167    
+         11    7   38     0.20935    
+         12    7   38     0.12033    
+         13    7   37     0.69006E-01
+         14    7   38     0.39991E-01
+         15    7   37     0.23179E-01
+         16    7   37     0.13612E-01
+         17    7   36     0.79514E-02
+         18    7   35     0.48893E-02
+         19    7   36     0.30268E-02
+         20    7   35     0.21973E-02
+         21    7   35     0.27266E-02
+         22    7   37     0.10286E-02
+         23    7   37     0.28595E-03
+         24    7   37     0.12367E-02
+         25    7   36     0.67109E-03
+         26    7   36     0.17915E-02
+         27    7   37     0.56357E-03
+         28    7   35     0.83932E-03
+         29    7   37     0.75912E-03
+         30    7   37     0.48342E-03
+         31    7   36     0.14091E-03
+         32    7   35     0.75433E-03
+         33    7   35     0.29411E-03
+         34    7   36     0.46140E-03
+         35    7   37     0.19055E-02
+         36    7   36     0.14250E-02
+         37    7   35     0.17996E-02
+         38    7   33     0.27110E-02
+         39    7   34     0.26569E-02
+         40    7   37     0.15485E-02
+         41    7   38     0.71227E-03
+         42    7   37     0.11636E-02
+         43    7   38     0.68238E-03
+         44    7   38     0.39950E-03
+         45    7   37     0.65697E-03
+         46    7   35     0.16543E-02
+         47    7   37     0.87938E-03
+         48    7   36     0.12582E-02
+         49    7   37     0.83463E-03
+         50    7   37     0.66689E-03
+         51    7   37     0.59239E-03
+         52    7   37     0.17384E-03
+         53    7   36     0.87166E-03
+         54    7   35     0.31825E-02
+         55    7   36     0.15005E-02
+         56    7   37     0.32925E-03
+         57    7   36     0.12441E-02
+         58    7   35     0.15406E-02
+         59    7   37     0.10942E-02
+         60    7   38     0.47774E-03
+         61    7   36     0.16196E-02
+         62    7   36     0.27003E-02
+         63    7   37     0.23517E-02
+         64    7   37     0.11132E-02
+         65    7   37     0.47752E-03
+         66    7   37     0.73560E-03
+         67    7   37     0.16310E-02
+         68    7   36     0.18733E-02
+         69    7   34     0.86349E-03
+         70    7   35     0.42066E-03
+         71    7   35     0.72445E-03
+         72    7   35     0.13131E-02
+         73    7   36     0.73944E-03
+         74    7   36     0.57683E-03
+         75    7   36     0.24461E-02
+         76    7   34     0.13822E-02
+         77    7   35     0.31300E-02
+         78    7   36     0.19823E-02
+         79    7   37     0.15506E-02
+         80    7   36     0.38732E-03
+         81    7   36     0.88847E-03
+         82    7   37     0.92149E-03
+         83    7   37     0.23035E-02
+         84    7   37     0.93236E-03
+         85    7   37     0.20929E-02
+         86    7   35     0.50999E-03
+         87    7   36     0.77828E-03
+         88    7   36     0.15664E-02
+         89    7   35     0.83324E-03
+         90    7   37     0.15679E-02
+         91    7   37     0.57416E-03
+         92    7   36     0.64928E-03
+         93    7   36     0.13126E-02
+         94    7   35     0.79811E-03
+         95    7   35     0.62386E-03
+         96    7   36     0.34464E-03
+         97    7   36     0.10023E-02
+         98    7   35     0.10560E-02
+         99    7   37     0.19428E-02
+        100    7   38     0.13986E-02
+        101    7   37     0.65434E-03
+        102    7   35     0.41020E-03
+        103    7   37     0.51115E-03
+        104    7   35     0.14867E-02
+        105    7   38     0.11241E-02
+        106    7   36     0.84433E-03
+        107    7   36     0.66211E-03
+        108    7   37     0.27995E-03
+        109    7   36     0.99815E-03
+        110    7   37     0.37712E-03
+
+  **  ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "HPC" (MODEL: "RADFRAC")     
+                                                               (UDL03.1)        
+      OUTSIDE LOOP TOLERANCE WAS SATISFIED BUT DESIGN SPEC ITERATION            
+      (MIDDLE LOOP) FAILED TO CONVERGE.                                         
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16611E-01     0.0000        0.27778E-01
+         2          1.3000         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      0.05
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      0.05
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08
+      STREAM B1-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 426.5755  P = 1.500000E+06  V =  0.00000      Q =  0.00000    
+      STREAM B2-BOT WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   6  T = 468.1120  P = 1.500000E+06  V =  0.00000      Q =-1.131495E-08

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4323kpg.inm
+MODNAME: apmain
+RUNID: _4323kpg
+NEW_RUNID: _4323kpg
+OLD_RUNID: _4323kpg
+PDF: _4323kpg.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+DBCONN: _4323kpg.ads

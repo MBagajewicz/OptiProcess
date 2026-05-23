@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5316ewa.inm
+MODNAME: apmain
+RUNID: _5316ewa
+NEW_RUNID: _5316ewa
+OLD_RUNID: _5316ewa
+PDF: _5316ewa.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5316ewa.ads

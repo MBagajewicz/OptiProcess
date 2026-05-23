@@ -1,0 +1,1257 @@
+
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + +                                                                         + +
+ + +                      ASPEN PLUS CALCULATION HISTORY                     + +
+ + +                                                                         + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+
+ ASPEN PLUS IS A TRADEMARK OF           HOTLINE:
+ ASPEN TECHNOLOGY, INC.                 U.S.A. 888/996-7100
+ 781/221-6400                           EUROPE (44) 1189-226555
+
+ PLATFORM: WIN-X64                                       SEPTEMBER 7, 2025   
+ VERSION: 41.0   Build 609                               SUNDAY      
+ INSTALLATION:                                           11:39:49 P.M.       
+
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+      ASPEN PLUS (R) IS A PROPRIETARY PRODUCT OF ASPEN TECHNOLOGY, INC.
+      (ASPENTECH), AND MAY BE USED ONLY UNDER AGREEMENT WITH ASPENTECH.
+      RESTRICTED RIGHTS LEGEND:  USE, REPRODUCTION, OR DISCLOSURE BY THE
+      U.S. GOVERNMENT IS SUBJECT TO RESTRICTIONS SET FORTH IN 
+      (i) FAR 52.227-14, Alt. III, (ii) FAR 52.227-19, (iii) DFARS 
+      252.227-7013(c)(1)(ii), or (iv) THE ACCOMPANYING LICENSE AGREEMENT,
+      AS APPLICABLE. FOR PURPOSES OF THE FAR, THIS SOFTWARE SHALL BE DEEMED
+      TO BE "UNPUBLISHED" AND LICENSED WITH DISCLOSURE PROHIBITIONS.
+      CONTRACTOR/SUBCONTRACTOR: ASPEN TECHNOLOGY, INC. 20 CROSBY DRIVE,
+      BEDFORD, MA 01730.
+ *** INPUT SUMMARY ***
+
+ >>CURRENT RUN
+
+   ORIGINAL RUN                           SEPTEMBER 7, 2025   
+   11:39:49 P.M.                          SUNDAY      
+   INPUT FILE: _3758jjq.inm
+   RUN ID : _3758jjq
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 41.0 at 23:39:49 Sun Sep 7, 2025
+          3    ;Directory   Runid BENZENE_TOLUENE - Q_FIXO
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+         11            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+         12            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+         13            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+         14            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+         15            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+         16            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+         17            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+         18            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+         19
+         20    DEF-STREAMS CONVEN ALL
+         21
+         22    MODEL-OPTION
+         23        RADFRAC MAXOL=30 ALGORITHM=NEWTON
+         24
+         25    DESCRIPTION "
+         26        Chemical Simulation with English Units :
+         27        F, psi, lb/hr, lbmol/hr, Btu/hr, cuft/hr.
+         28
+         29        Property Method: NRTL
+         30
+         31        Flow basis for input: Mole
+         32
+         33        Stream report composition: Mole flow
+         34        "
+         35
+         36    DATABANKS 'APV150 PURE39' / 'APV150 AQUEOUS' / 'APV150 SOLIDS' &
+         37             / 'APV150 INORGANIC' / 'APESV150 AP-EOS' /  &
+         38            'NISTV150 NIST-TRC' / NOASPENPCD
+         39
+         40    PROP-SOURCES 'APV150 PURE39' / 'APV150 AQUEOUS' /  &
+         41            'APV150 SOLIDS' / 'APV150 INORGANIC' / 'APESV150 AP-EOS' &
+         42             / 'NISTV150 NIST-TRC'
+         43
+         44    COMPONENTS
+         45        BENZENE C6H6 /
+         46        TOLUENE C7H8 /
+         47        M-XYLENE C8H10-2 /
+         48        METHANOL CH4O /
+         49        WATER H2O
+         50
+         51    SOLVE
+         52        RUN-MODE MODE=SIM
+         53
+         54    FLOWSHEET
+         55        BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+         56
+         57    PROPERTIES UNIQUAC
+         58        PROPERTIES NRTL / PENG-ROB
+         59
+         60    PROP-DATA NRTL-1
+         61        IN-UNITS ENG SHORT-LENGTH=in
+         62        PROP-LIST NRTL
+         63        BPVAL BENZENE M-XYLENE 0.0 -207.9702000 .3000000000 0.0  &
+         64            0.0 0.0 77.00000000 282.4520000
+         65        BPVAL M-XYLENE BENZENE 0.0 252.8013600 .3000000000 0.0 0.0  &
+         66            0.0 77.00000000 282.4520000
+         67        BPVAL BENZENE TOLUENE -2.885200000 2023.110180 .3000000000  &
+         68            0.0 0.0 0.0 104.0000000 231.3500000
+         69        BPVAL TOLUENE BENZENE 2.191100000 -1554.715440 .3000000000  &
+         70            0.0 0.0 0.0 104.0000000 231.3500000
+         71        BPVAL TOLUENE M-XYLENE 0.0 -353.5938000 .3000000000 0.0  &
+         72            0.0 0.0 231.0440000 282.4520000
+         73        BPVAL M-XYLENE TOLUENE 0.0 677.5857000 .3000000000 0.0 0.0  &
+         74            0.0 231.0440000 282.4520000
+         75        BPVAL BENZENE METHANOL 11.58010000 -5908.597200 .4000000000  &
+         76            0.0 0.0 0.0 131.0000000 176.1800000
+         77        BPVAL METHANOL BENZENE -1.708600000 1606.032720 .4000000000  &
+         78            0.0 0.0 0.0 131.0000000 176.1800000
+         79        BPVAL TOLUENE METHANOL 0.0 804.3742800 .3000000000 0.0 0.0  &
+         80            0.0 146.3000000 231.0800000
+         81        BPVAL METHANOL TOLUENE 0.0 667.9506600 .3000000000 0.0 0.0  &
+         82            0.0 146.3000000 231.0800000
+         83        BPVAL M-XYLENE METHANOL 0.0 751.2847200 .3000000000 0.0  &
+         84            0.0 0.0 148.3700000 282.2000000
+         85        BPVAL METHANOL M-XYLENE 0.0 798.8058000 .3000000000 0.0  &
+         86            0.0 0.0 148.3700000 282.2000000
+         87        BPVAL BENZENE WATER 49.63587177 1064.461680 .2000000000 0.0  &
+         88            -7.562900000 0.0 33.44000000 170.6000000
+         89        BPVAL WATER BENZENE 151.8580631 -10717.75278 .2000000000  &
+         90            0.0 -20.02540000 0.0 33.44000000 170.6000000
+         91        BPVAL TOLUENE WATER -7.235700000 7726.398480 .2000000000  &
+         92            0.0 0.0 0.0 32.09000000 661.0256600
+         93        BPVAL WATER TOLUENE 3.988400000 1794.065580 .2000000000 0.0  &
+         94            0.0 0.0 32.09000000 661.0256600
+         95        BPVAL M-XYLENE WATER -53.97642176 9034.155180 .2000000000  &
+         96            0.0 6.612300000 0.0 32.00000000 519.0800000
+         97        BPVAL WATER M-XYLENE 151.8123829 -9581.283180 .2000000000  &
+         98            0.0 -19.95500000 0.0 32.00000000 519.0800000
+         99        BPVAL METHANOL WATER -.6930000000 311.3767800 .3000000000  &
+        100            0.0 0.0 0.0 76.98200000 212.0000000
+        101        BPVAL WATER METHANOL 2.732200000 -1111.083660 .3000000000  &
+        102            0.0 0.0 0.0 76.98200000 212.0000000
+        103
+        104    PROP-DATA PRKBV-1
+        105        IN-UNITS ENG SHORT-LENGTH=in
+        106        PROP-LIST PRKBV
+        107        BPVAL METHANOL WATER -.0778000000 0.0 0.0 -459.6700000  &
+        108            1340.330000
+        109        BPVAL WATER METHANOL -.0778000000 0.0 0.0 -459.6700000  &
+        110            1340.330000
+        111
+        112    PROP-DATA UNIQ-1
+        113        IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+        114            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+        115            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+        116            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+        117            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+        118            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+        119            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+        120            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+        121            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+        122        PROP-LIST UNIQ
+        123        BPVAL BENZENE TOLUENE 1.337700000 -522.8772000 0.0 0.0  &
+        124            313.1500000 383.9000000 0.0
+        125        BPVAL TOLUENE BENZENE -1.082100000 424.1051000 0.0 0.0  &
+        126            313.1500000 383.9000000 0.0
+        127        BPVAL BENZENE M-XYLENE 0.0 62.26940000 0.0 0.0 298.1500000  &
+        128            412.2900000 0.0
+        129        BPVAL M-XYLENE BENZENE 0.0 -81.33250000 0.0 0.0  &
+        130            298.1500000 412.2900000 0.0
+        131        BPVAL BENZENE METHANOL -9.675100000 2620.773700 0.0 0.0  &
+        132            328.1500000 353.2500000 0.0
+        133        BPVAL METHANOL BENZENE 1.853400000 -576.2604000 0.0 0.0  &
+        134            328.1500000 353.2500000 0.0
+        135        BPVAL BENZENE WATER 0.0 -860.8100000 0.0 0.0 293.1500000  &
+        136            313.1500000 0.0
+        137        BPVAL WATER BENZENE 0.0 -369.0100000 0.0 0.0 293.1500000  &
+        138            313.1500000 0.0
+        139        BPVAL TOLUENE M-XYLENE 0.0 151.3338000 0.0 0.0 383.7300000  &
+        140            412.2900000 0.0
+        141        BPVAL M-XYLENE TOLUENE 0.0 -235.8953000 0.0 0.0  &
+        142            383.7300000 412.2900000 0.0
+        143        BPVAL TOLUENE METHANOL 0.0 -563.0126000 0.0 0.0  &
+        144            336.6500000 383.7500000 0.0
+        145        BPVAL METHANOL TOLUENE 0.0 27.83150000 0.0 0.0 336.6500000  &
+        146            383.7500000 0.0
+        147        BPVAL TOLUENE WATER 0.0 -950.6000000 0.0 0.0 293.1500000  &
+        148            313.1500000 0.0
+        149        BPVAL WATER TOLUENE 0.0 -350.2100000 0.0 0.0 293.1500000  &
+        150            313.1500000 0.0
+        151        BPVAL M-XYLENE METHANOL 0.0 -609.3802000 0.0 0.0  &
+        152            337.8000000 412.1500000 0.0
+        153        BPVAL METHANOL M-XYLENE 0.0 37.75860000 0.0 0.0  &
+        154            337.8000000 412.1500000 0.0
+        155        BPVAL M-XYLENE WATER 0.0 -969.4700000 0.0 0.0 293.1500000  &
+        156            313.1500000 0.0
+        157        BPVAL WATER M-XYLENE 0.0 -337.9100000 0.0 0.0 293.1500000  &
+        158            313.1500000 0.0
+        159        BPVAL METHANOL WATER -1.066200000 432.8785000 0.0 0.0  &
+        160            298.1400000 373.1500000 0.0
+        161        BPVAL WATER METHANOL .6437000000 -322.1312000 0.0 0.0  &
+        162            298.1400000 373.1500000 0.0
+        163
+        164    DEF-STREAMS LOAD
+        165
+        166    PROP-SET HEDESIGN CPMX-M KMX PCMX UNITS='J/kg-K' 'Watt/m-K'  &
+        167            'Pa' SUBSTREAM=MIXED PHASE=T L V
+        168
+        169    STREAM FEED-LPC
+        170        SUBSTREAM MIXED TEMP=386.55 PRES=100000.
+        171        MOLE-FLOW BENZENE 60. / TOLUENE 40.
+        172
+        173    BLOCK LPC RADFRAC
+        174        SUBOBJECTS INTERNALS = CS-1
+        175        PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+        176            DAMPING=NONE
+        177        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+        178        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+        179        FEEDS FEED-LPC 3
+        180        PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+        181        P-SPEC 1 100000.
+        182        COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+        183        SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+        184            SPEC-DESCRIP="BENZENE RECUPERATION"
+        185        SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+        186            SPEC-DESCRIP="TOLUENE RECOVERY"
+        187        VARY 1 MOLE-D 0. 100.
+        188        VARY 2 MOLE-RR 0. 100.
+        189        REPORT NOHYDRAULIC
+        190        CONVERGENCE EXTRA-ML=2
+        191        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        192            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        193            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        194            DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+        195            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        196            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        197            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        198            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        199            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        200            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        201            MIN-PCT-DCA=.1000000000
+        202        TRAY-SIZE 1 2 3 SIEVE
+        203
+        204    EO-CONV-OPTI
+        205
+        206    CONV-OPTIONS
+        207        PARAM MSPEC-METHOD=BROYDEN SPEC-LOOP=INSIDE USER-LOOP=OUTSIDE
+        208
+        209    STREAM-REPOR MOLEFLOW PROPERTIES=HEDESIGN
+        210
+        211    PROPERTY-REP PCES
+        212    ;
+        213    ;
+        214    ;
+        215    ;
+        216    ;
+ *** INPUT TRANSLATOR MESSAGES ***
+
+      SQLLOCALDB.APESV150 : (DATAVERSION - 41.0.0.10)                         
+      SQLLOCALDB.APV150 : (DATAVERSION - 41.0.0.9)                            
+      SQLLOCALDB.FACTV150 : (DATAVERSION - 41.0.0.6)                          
+      SQLLOCALDB.NISTV150 : (DATAVERSION - 41.0.0.7)                          
+  *** THIS RUN USES THE PROPERTIES ENTERPRISE DATABASE ***
+ 
+ 
+
+ PDF updated                                                                      TIME =      2.39
+
+ *** CALCULATION TRACE ***
+
+
+ *** FLOWSHEET ANALYSIS MESSAGES ***
+
+ FLOWSHEET CONNECTIVITY BY STREAMS       
+
+   STREAM     SOURCE     DEST           STREAM     SOURCE     DEST
+   FEED-LPC   ----       LPC            L-TOP      LPC        ----    
+   L-BOTTOM   LPC        ----                                         
+
+ FLOWSHEET CONNECTIVITY BY BLOCKS        
+
+   BLOCK        INLETS                         OUTLETS
+   LPC          FEED-LPC                       L-TOP L-BOTTOM              
+
+      COMPUTATION ORDER FOR THE FLOWSHEET IS:
+      LPC 
+
+Calculations begin                                                              time      0.02
+
+
+ SIMULATION CALCULATIONS BEGIN                                                    TIME =      0.02
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-LPC OF BLOCK LPC                 TIME =      0.02
+      KODE = 2  NTRIAL =   3  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =      0.02
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0      93208.    
+              0     0.30095E+06
+              1     0.44271E+06
+              2     0.48281E+06
+              3     0.49556E+06
+              4     0.50725E+06
+              5     0.50386E+06
+              6     0.18902E+06
+              7     0.22863E+06
+              8     0.24284E+06
+              9     0.25787E+06
+             10     0.25240E+06
+             11     0.35864E+06
+             12     0.37601E+06
+             13     0.38102E+06
+             14     0.38968E+06
+             15     0.38464E+06
+             16     0.43009E+06
+             17     0.42977E+06
+             18     0.43048E+06
+             19     0.43209E+06
+             20     0.43142E+06
+             21     0.45497E+06
+             22     0.45547E+06
+             23     0.49570E+06
+             24     0.47321E+06
+             25     0.46533E+06
+             26     0.47911E+06
+             27     0.48515E+06
+             28     0.49101E+06
+             29     0.48955E+06
+             30     0.52343E+06
+             31     0.53949E+06
+             32     0.60498E+06
+             33     0.65210E+06
+             34     0.74753E+06
+             35     0.83316E+06
+             36     0.53949E+06
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.3)       
+      MATERIAL AND ENERGY BALANCES FAILED TO CONVERGE: CHECK COL-SPECS          
+      OR SUPPLY BETTER TEMPERATURE AND COMPOSITION ESTIMATES.                   
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.4)       
+      THE FOLLOWING STAGES DRIED UP:                                            
+        3    4    5    6    7    8    9   10   11   12   13   14   15   16      
+      A LIMIT OF  0.10000E-04 * SUM OF FEEDS WAS IMPOSED ON THE FLOW RATES.     
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.23626E-01     0.0000        0.27778E-01
+         2         0.99836E-01     0.0000         100.00    
+
+
+  **  ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL: "RADFRAC")     
+                                                               (BALMAS.1)       
+      BLOCK LPC IS NOT IN MASS BALANCE:                                         
+      MASS INLET FLOW = 0.23256776E+01, MASS OUTLET FLOW = 0.21070848E+01       
+      RELATIVE DIFFERENCE = 0.10374180E+00                                      
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO STREAM       FEED-LPC 09/07/2025   23:40:02:99 
+ STREAM FEED-LPC
+     SUBSTREAM MIXED TEMP=386.55 PRES=100000. MOLE-FLOW=100.
+     MOLE-FLOW BENZENE 60. / TOLUENE 40.
+
+ PDF updated                                                                      TIME =     10.40
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time     10.41
+
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-LPC OF BLOCK LPC                 TIME =     10.41
+      KODE = 2  NTRIAL =   3  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =     10.41
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.38689E+07
+              1     0.23530E+07
+              2     0.26175E+07
+              3     0.16200E+07
+              4     0.23843E+07
+              5     0.19092E+07
+              6     0.20733E+06
+              7     0.27873E+06
+              8     0.34364E+06
+              9     0.49714E+06
+             10     0.62510E+06
+             11     0.90702E+06
+             12     0.10562E+07
+             13     0.11755E+07
+             14     0.13430E+07
+             15     0.15821E+07
+             16     0.11356E+07
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.3)       
+      MATERIAL AND ENERGY BALANCES FAILED TO CONVERGE: CHECK COL-SPECS          
+      OR SUPPLY BETTER TEMPERATURE AND COMPOSITION ESTIMATES.                   
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.4)       
+      THE FOLLOWING STAGES DRIED UP:                                            
+        2    3    4    5    6    7    8    9   10   11   12   13   14   15      
+      A LIMIT OF  0.10000E-04 * SUM OF FEEDS WAS IMPOSED ON THE FLOW RATES.     
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.27035E-01     0.0000        0.27778E-01
+         2         0.75670E-01     0.0000         100.00    
+
+
+  **  ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL: "RADFRAC")     
+                                                               (BALMAS.1)       
+      BLOCK LPC IS NOT IN MASS BALANCE:                                         
+      MASS INLET FLOW = 0.23256776E+01, MASS OUTLET FLOW = 0.22762889E+01       
+      RELATIVE DIFFERENCE = 0.21697001E-01                                      
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (FPEPRT.8)       
+      FORTRAN INVALID OPERATION ENCOUNTERED.                                    
+
+  *** SEVERE ERROR WHILE IN SEQUENCE MONITOR                   (FPEPRT.8)       
+      FORTRAN INVALID OPERATION ENCOUNTERED.                                    
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ STREAM       FEED-LPC IS GENERATED BECAUSE OF OTHER CHANGES 09/07/2025   23:40:17:99 
+ STREAM FEED-LPC
+     SUBSTREAM MIXED TEMP=386.55 PRES=100000. MOLE-FLOW=100.
+     MOLE-FLOW BENZENE 60. / TOLUENE 40.
+
+ PDF updated                                                                      TIME =     25.28
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time     25.29
+
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-LPC OF BLOCK LPC                 TIME =     25.29
+      KODE = 2  NTRIAL =   3  T = 386.5500  P =  100000.      V =  1.00000      Q =  0.00000    
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =     25.29
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.49019E+07
+              1     0.23463E+07
+              2     0.22421E+07
+              3     0.21467E+07
+              4     0.24484E+07
+              5     0.20874E+07
+              6     0.92788E+06
+              7     0.91570E+06
+              8     0.11641E+07
+              9     0.12907E+07
+             10     0.13392E+07
+             11     0.14121E+07
+             12     0.13919E+07
+             13     0.13707E+07
+             14     0.13701E+07
+             15     0.13700E+07
+             16     0.13700E+07
+             17     0.13700E+07
+             18     0.13700E+07
+             19     0.13700E+07
+             20     0.13700E+07
+             21     0.13700E+07
+             22     0.13700E+07
+             23     0.13700E+07
+             24     0.13700E+07
+             25     0.13700E+07
+             26     0.13700E+07
+             27     0.13700E+07
+             28     0.13700E+07
+             29     0.13700E+07
+             30     0.13700E+07
+             31     0.13700E+07
+             32     0.13700E+07
+             33     0.13700E+07
+             34     0.13700E+07
+             35     0.13700E+07
+             36     0.13700E+07
+             37     0.13700E+07
+             38     0.13700E+07
+             39     0.13700E+07
+             40     0.13700E+07
+             41     0.13700E+07
+             42     0.13700E+07
+             43     0.13700E+07
+             44     0.13700E+07
+             45     0.13700E+07
+             46     0.13700E+07
+             47     0.13700E+07
+             48     0.13700E+07
+             49     0.13700E+07
+             50     0.13700E+07
+             51     0.13700E+07
+             52     0.13700E+07
+             53     0.13700E+07
+             54     0.13700E+07
+             55     0.13700E+07
+             56     0.13700E+07
+             57     0.13700E+07
+             58     0.13700E+07
+             59     0.13700E+07
+             60     0.13700E+07
+             61     0.13700E+07
+             62     0.13700E+07
+             63     0.13700E+07
+             64     0.13700E+07
+             65     0.13700E+07
+             66     0.13700E+07
+             67     0.13700E+07
+             68     0.13700E+07
+             69     0.13700E+07
+             70     0.13700E+07
+             71     0.13700E+07
+             72     0.13700E+07
+             73     0.13700E+07
+             74     0.13700E+07
+             75     0.13700E+07
+             76     0.13700E+07
+             77     0.13700E+07
+             78     0.13700E+07
+             79     0.13700E+07
+             80     0.13700E+07
+             81     0.13700E+07
+             82     0.13700E+07
+             83     0.13700E+07
+             84     0.13700E+07
+             85     0.13700E+07
+             86     0.13700E+07
+             87     0.13700E+07
+             88     0.13700E+07
+             89     0.13700E+07
+             90     0.13700E+07
+             91     0.13700E+07
+             92     0.13700E+07
+             93     0.13700E+07
+             94     0.13700E+07
+             95     0.13700E+07
+             96     0.13700E+07
+             97     0.13700E+07
+             98     0.13700E+07
+             99     0.13700E+07
+            100     0.13700E+07
+            101     0.13700E+07
+            102     0.13700E+07
+            103     0.13700E+07
+            104     0.13700E+07
+            105     0.13700E+07
+            106     0.13700E+07
+            107     0.13700E+07
+            108     0.13700E+07
+            109     0.13700E+07
+            110     0.13700E+07
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.3)       
+      MATERIAL AND ENERGY BALANCES FAILED TO CONVERGE: CHECK COL-SPECS          
+      OR SUPPLY BETTER TEMPERATURE AND COMPOSITION ESTIMATES.                   
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.4)       
+      THE FOLLOWING STAGES DRIED UP:                                            
+        3    4    5    6    7    8    9   10   11   12   13   14   15   16      
+      A LIMIT OF  0.10000E-04 * SUM OF FEEDS WAS IMPOSED ON THE FLOW RATES.     
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.27035E-01     0.0000        0.27778E-01
+         2         0.75670E-01     0.0000         100.00    
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (FPEPRT.8)       
+      FORTRAN INVALID OPERATION ENCOUNTERED.                                    
+
+  *** SEVERE ERROR WHILE IN SEQUENCE MONITOR                   (FPEPRT.8)       
+      FORTRAN INVALID OPERATION ENCOUNTERED.                                    
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:40:26:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 4
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     34.21
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time     34.35
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =     34.35
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.48562E+07
+              1     0.32233E+07
+              2     0.22320E+07
+              3     0.14326E+07
+              4     0.15030E+07
+              5     0.20584E+07
+              6     0.10003E+07
+              7     0.12976E+07
+              8     0.15993E+07
+              9     0.17814E+07
+             10     0.20342E+07
+             11     0.11422E+07
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.3)       
+      MATERIAL AND ENERGY BALANCES FAILED TO CONVERGE: CHECK COL-SPECS          
+      OR SUPPLY BETTER TEMPERATURE AND COMPOSITION ESTIMATES.                   
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.4)       
+      THE FOLLOWING STAGES DRIED UP:                                            
+        4    5    6    7   10   11                                              
+      A LIMIT OF  0.10000E-04 * SUM OF FEEDS WAS IMPOSED ON THE FLOW RATES.     
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.27533E-01     0.0000        0.27778E-01
+         2         0.71465E-01     0.0000         100.00    
+
+
+  **  ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL: "RADFRAC")     
+                                                               (BALMAS.1)       
+      BLOCK LPC IS NOT IN MASS BALANCE:                                         
+      MASS INLET FLOW = 0.23256776E+01, MASS OUTLET FLOW = 0.23179427E+01       
+      RELATIVE DIFFERENCE = 0.33369615E-02                                      
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:40:32:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 7
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     40.36
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time     40.51
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =     40.51
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.50539E+07
+              1     0.22967E+07
+              2     0.12658E+07
+              3     0.78645E+06
+              4     0.43106E+06
+              5     0.34290E+06
+              6     0.17622E+06
+              7     0.24632E+06
+              8     0.29314E+06
+              9     0.31288E+06
+             10     0.34529E+06
+             11     0.17622E+06
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.3)       
+      MATERIAL AND ENERGY BALANCES FAILED TO CONVERGE: CHECK COL-SPECS          
+      OR SUPPLY BETTER TEMPERATURE AND COMPOSITION ESTIMATES.                   
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.4)       
+      THE FOLLOWING STAGES DRIED UP:                                            
+        7    8                                                                  
+      A LIMIT OF  0.10000E-04 * SUM OF FEEDS WAS IMPOSED ON THE FLOW RATES.     
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.27533E-01     0.0000        0.27778E-01
+         2         0.70950E-01     0.0000         100.00    
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:41:17:09 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 7
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=50. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     85.05
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time     85.22
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =     85.22
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.59394E+07
+              1     0.20028E+07
+              2     0.19111E+07
+              3     0.14720E+07
+              4     0.16812E+07
+              5     0.15204E+07
+              6     0.47298E+06
+              7     0.97466E+06
+              8     0.49558E+06
+              9     0.49813E+06
+             10     0.34779E+06
+             11     0.43955E+06
+             12     0.54509E+06
+             13     0.64144E+06
+             14     0.68901E+06
+             15     0.39305E+06
+             16     0.52017E+06
+             17     0.74213E+06
+             18     0.10810E+07
+             19     0.82500E+06
+             20     0.89743E+06
+             21     0.12621E+07
+             22     0.13539E+07
+             23     0.13447E+07
+             24     0.43024E+07
+             25     0.24368E+07
+             26     0.29670E+07
+             27     0.28801E+07
+             28     0.26605E+07
+             29     0.25850E+07
+             30     0.26974E+07
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (REINIT.1)       
+      COLUMN NOT IN MASS BALANCE.                                               
+      CHECK FEEDS, PRODUCTS, COL-SPECS, AND VARY SKWS.                          
+             31     0.18973E+07
+             32     0.20760E+07
+             33     0.19320E+07
+             34     0.15131E+07
+             35     0.41535E+07
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.1)       
+      CMBAL CALCULATIONS FAILURE: RERUN WITH CHANGES SUGGESTED                  
+      IF THERE ARE ANY.                                                         
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.3)       
+      MATERIAL AND ENERGY BALANCES FAILED TO CONVERGE: CHECK COL-SPECS          
+      OR SUPPLY BETTER TEMPERATURE AND COMPOSITION ESTIMATES.                   
+
+  *** SEVERE ERROR WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL:         
+      "RADFRAC")                                               (UDL03K.4)       
+      THE FOLLOWING STAGES DRIED UP:                                            
+        6    7    8    9   10   11   12   13   14   17   18   19   20           
+      A LIMIT OF  0.10000E-04 * SUM OF FEEDS WAS IMPOSED ON THE FLOW RATES.     
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.14730E-01     0.0000        0.27778E-01
+         2         0.84294E-01     0.0000         100.00    
+
+      FILLING OUTLET STREAMS BASED ON VAPOR/LIQUID SPLIT FROM
+      COMPOSITE FEED FLASH.
+
+  *   WARNING WHILE EXECUTING UNIT OPERATIONS BLOCK: "LPC" (MODEL: "RADFRAC")   
+                                                               (UDL3II.7200)    
+      REST OF BLOCK BYPASSED DUE TO SEVERE ERROR.                               
+      STREAM L-TOP WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 2  NTRIAL =   3  T = 361.9765  P =  100000.      V =  0.00000      Q =-6.071064E-05
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:41:24:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 7
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =     92.62
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time     92.74
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =     92.74
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.46253E+06
+              0     0.23444E+06
+              1     0.29049E+06
+              2     0.25933E+06
+              3     0.28203E+06
+              4     0.33429E+06
+              5     0.36372E+06
+              6     0.36962E+06
+              7     0.15290E+06
+              8     0.13954E+06
+              9      96287.    
+             10      32613.    
+             11      2739.3    
+             12      8.0230    
+             13     0.86600E-04
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          3.7629         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     92.75
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =     92.75
+
+ Report Writer entered                                                            Time =    102.81
+
+ Results generated                                                                Time =    102.82
+
+ Report Writer entered                                                            Time =    109.25
+
+ Results generated                                                                Time =    109.26
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:41:47:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 8
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =    115.63
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time    115.80
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =    115.80
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.50435E+06
+              0     0.40170E+06
+              1     0.22005E+06
+              2      32528.    
+              3      251.95    
+              4     0.67701E-01
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          3.0685         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    115.81
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    115.81
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:41:54:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 3
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =    122.67
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time    122.83
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =    122.83
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.35830E+06
+              0     0.22487E+06
+              1     0.27251E+06
+              2     0.38690E+06
+              3     0.28298E+07
+              4     0.53266E+07
+              5     0.47454E+07
+              6     0.35096E+07
+              7     0.52225E+06
+              8      20443.    
+              9      27.135    
+             10     0.57735E-04
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          43.227         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    122.83
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    122.83
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:42:03:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 4
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =    131.89
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time    132.09
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =    132.09
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.75867E+06
+              0     0.63855E+06
+              1     0.40858E+07
+              2     0.74600E+06
+              3      22451.    
+              4      36.294    
+              5     0.92558E-04
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          18.354         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    132.10
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    132.10
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:42:10:99 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 5
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =    138.62
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time    138.86
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =    138.86
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.72232E+06
+              0     0.60401E+06
+              1     0.13732E+07
+              2     0.25886E+06
+              3      18190.    
+              4      87.491    
+              5     0.28825E-02
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          8.9211         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    138.86
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    138.86
+
+
+*** INPUT SPECIFICATION MESSAGES ***
+
+ CHANGES WERE MADE TO BLOCK        LPC      09/07/2025   23:42:17:09 
+ BLOCK LPC RADFRAC
+     SUBOBJECTS INTERNALS = CS-1
+     PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         DAMPING=NONE
+     PARAM2 STATIC-DP=YES OLD-SULZER=NO
+     COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+     FEEDS FEED-LPC 6
+     PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+     P-SPEC 1 100000.
+     COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+     SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         SPEC-DESCRIP="BENZENE RECUPERATION"
+     SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+         SPEC-DESCRIP="TOLUENE RECOVERY"
+     VARY 1 MOLE-D 0. 100.
+     VARY 2 MOLE-RR 0. 100.
+     REPORT NOHYDRAULIC
+     CONVERGENCE EXTRA-ML=2
+     INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+         NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+         WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+         DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+         HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+         FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+         PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+         MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+         MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+         MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+         MIN-PCT-DCA=.1000000000
+     TRAY-SIZE 1 2 3 SIEVE
+
+ PDF updated                                                                      TIME =    145.12
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+Calculations begin                                                              time    145.34
+
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =    145.34
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0     0.66541E+06
+              0     0.55220E+06
+              1     0.62817E+06
+              2      89181.    
+              3      523.46    
+              4     0.23809    
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          5.2834         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    145.35
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =    145.35

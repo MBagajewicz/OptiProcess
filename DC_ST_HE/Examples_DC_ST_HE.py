@@ -88,8 +88,8 @@ Example1 = {
             'F_f' :  100,               # Feed flow (kmol/h)
             'T_f' :  113.4 + 273.15,    # Feed temperature (K)
             # Separation Task Specification 
-            'xB_TOP' : 0.99,                    # Top benzene purity
-            'xB_BOTTOM' : 0.005,                # Bottom benzene purity       
+            'SPEC_1' : 0.99,                    # Top benzene purity
+            'SPEC_2' : 0.005,                # Bottom benzene purity       
             # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
             'Comp_name' : ['BENZENE', 'TOLUENE', 'M-XYLENE'],      
 

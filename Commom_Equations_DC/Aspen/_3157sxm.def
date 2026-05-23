@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3157sxm.inm
+MODNAME: apmain
+RUNID: _3157sxm
+NEW_RUNID: _3157sxm
+OLD_RUNID: _3157sxm
+PDF: _3157sxm.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3157sxm.ads

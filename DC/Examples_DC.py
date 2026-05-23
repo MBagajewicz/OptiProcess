@@ -135,10 +135,10 @@ Example1 = {
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
             'Discrete_Values_of_Variables': [
     
-                            list(range(3, 41)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                            list(range(3, 61)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
                                                 # and a rectifying section)
                                                 # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
-                            list(range(5, 43))  # Ns (Stages and not trays, as in Aspen Plus)
+                            list(range(5, 63))  # Ns (Stages and not trays, as in Aspen Plus)
                                                 # Ns = 5 means: condenser + 3 stages within the column + reboiler
                                                 # Ns = 42 means: condenser + 40 stages within the column + reboiler                
                                     ],
@@ -147,7 +147,7 @@ Example1 = {
             'Type_Enumeration': 'Smart',  
             
             # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
-            'Segmentation_Parameters' : ['Ns', 6, 0.5], 
+            'Segmentation_Parameters' : [], 
                                     # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
                                     #                             given in 'List_of_Variables'
                                     # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
@@ -167,17 +167,17 @@ Example1 = {
             # Problem Data
             # ---------------------------
             # General Data
-            'Nc' : 3,                   # Number of components
-            'Nsmin' : 13,               # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
-            'Nfmin' : 3,                # Minimum feed tray
-            'Pcol' : 1e5,               # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            'Nc' : 3,                           # Number of components
+            'Nsmin' : 13,                       # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 3,                        # Minimum feed tray
+            'Pcol' : 1e5,                       # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
             # Feed Data 
-            'z_f' : [0.14, 0.39, 0.47], # Feed molar composition [Benzene, Toluene, m-Xylene]
-            'F_f' :  100,               # Feed flow (kmol/h)
-            'T_f' :  113.4 + 273.15,    # Feed temperature (K)
+            'z_f' : [0.14, 0.39, 0.47],         # Feed molar composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  100,                       # Feed flow (kmol/h)
+            'T_f' :  113.4 + 273.15,            # Feed temperature (K)
             # Separation Task Specification 
-            'xB_TOP' : 0.99,                    # Top benzene purity
-            'xB_BOTTOM' : 0.005,                # Bottom benzene purity       
+            'SPEC_1' : 0.99,                    # Top benzene purity
+            'SPEC_2' : 0.005,                # Bottom benzene purity       
             # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
             'Comp_name' : ['BENZENE', 'TOLUENE', 'M-XYLENE'],      
 
@@ -234,32 +234,19 @@ Example1 = {
 Example1_Fix_1 = copy.deepcopy(Example1)
 
 Example1_Fix_1['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Exhaustive'
-Example1_Fix_1['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables'] = [[14],[33]]
+Example1_Fix_1['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables'] = [[13],[32]]
 
 # endregion
 ###################################################################################################################
 ###################################################################################################################
 
-
 ###################################################################################################################
-# region INPUT EXAMPLE 1 WITH PAYBACK PERIOD OF 10 YEARS INSTEAD OF 3
+# region INPUT EXAMPLE 1 WITH FIXED SOLUTION FOR PRINT RESULTS (uncomment prints on TAC_OF in file Model>Constraints_and_OF)
 
-Example2 = copy.deepcopy(Example1)
+Example1_Fix_2 = copy.deepcopy(Example1)
 
-Example2['Equipment1']['Model_Parameters']['Pb'] = 10
-
-# endregion
-###################################################################################################################
-###################################################################################################################
-
-
-###################################################################################################################
-# region INPUT EXAMPLE 2 WITH FIXED SOLUTION FOR PRINT RESULTS (uncomment prints on TAC_OF in file Model>Constraints_and_OF)
-
-Example2_Fix_1 = copy.deepcopy(Example2)
-
-Example2_Fix_1['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Exhaustive'
-Example2_Fix_1['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables'] = [[15],[38]]
+Example1_Fix_2['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Exhaustive'
+Example1_Fix_2['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables'] = [[14],[33]]
 
 # endregion
 ###################################################################################################################
@@ -369,4 +356,689 @@ Example6_Fix_1['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables
 ###################################################################################################################
 ###################################################################################################################
 
+###################################################################################################################
+# region INPUT EXAMPLE 3 - Methanol-Water DISTILLATION COLUMN
 
+Example3 = {
+
+    'Number_of_Equipment': 1,
+    # If there is only 1 piece of equipment, add the information as 'Equipment1'.
+
+    'Equipment1': {
+
+        'Model_Declarations': {
+
+            # Type of Equipment - Models_List
+            'Type_Equipment': 'DC',
+
+            # Discrete_Values_of_Variables
+            # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
+            'Discrete_Values_of_Variables': [
+    
+                            list(range(5, 21)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                                                # and a rectifying section)
+                                                # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
+                            list(range(8, 25))  # Ns (Stages and not trays, as in Aspen Plus)
+                                                # Ns = 5 means: condenser + 3 stages within the column + reboiler
+                                                # Ns = 42 means: condenser + 40 stages within the column + reboiler                
+                                    ],
+
+            # Enumeration type (Options are 'Exhaustive', 'Smart' or 'Segmental_Smart' ---> Default is 'Smart')
+            'Type_Enumeration': 'Smart',  
+            
+            # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
+            'Segmentation_Parameters' : [], 
+                                    # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
+                                    #                             given in 'List_of_Variables'
+                                    # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
+                                    #                             -> If too small --> Excessive n° of intervals
+                                    #                             -> If too large --> Candidates cutting may not be as effective
+                                    # Segmentation_Parameters[2]: Correction factor to avoid small interval at the last segment
+
+
+        },
+
+         # These Problem_Parameters are used for the computation of Constraint and Objective function values
+         #                                                                      in "Constraints_and_OF.py"
+        'Model_Parameters': {
+
+
+            # --------------------------- 
+            # Problem Data
+            # ---------------------------
+            # General Data
+            'Nc' : 3,                           # Number of components
+            'Nsmin' : 13,                       # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 3,                        # Minimum feed tray
+            'Pcol' : 1e5,                       # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            # Feed Data 
+            'z_f' : [0.6, 0.4],         # Feed molar composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  100,                       # Feed flow (kmol/h)
+            'T_f' :  113.4 + 273.15,            # Feed temperature (K)
+            # Separation Task Specification 
+            'xB_TOP' : 0.99,                    # Top benzene purity
+            'xB_BOTTOM' : 0.005,                # Bottom benzene purity       
+            # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
+            'Comp_name' : ['METHANOL', 'WATER'],      
+
+            # --------------------------- 
+            # Thermal Utilities Data
+            # ---------------------------
+            # Global heat exchange coefficient (W/m²K) - Cheng - 2009 and Douglas book
+            'Ur' : 250/0.17611,         # Reboiler
+            'Uc' : 150/0.17611,         # Condenser
+            # Utilities temperatures (K)
+            'Tlpst' : 160 + 273.15,     # Low pressure steam 
+            'Tcwin' : 303.15,           # Cooling water inlet 
+            'Tcwout' : 323.15,          # Cooling water outlet 
+
+            # --------------------------- 
+            # Costing Data
+            # ---------------------------
+            'Ccw' : 0.378e-6,                           # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'Clpst' : 2.78e-6,                          # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'hours' : 8150,                             # Number of operation hours in a year (considering 7% of idle capacity)
+            'Pb' : 3,                                   # Payback period (years)
+            'lt' : 0.6096,                              # Tray spacing
+            'roshell' : 7900,                           # roshell (kg/m³)
+
+            # --------------------------- 
+            # Aspen Related Data
+            # ---------------------------
+            # File, block and streams - ATTENTION: THIS NAMES ARE CASE SENSITIVE, MUST BE THE SAME AS IN ASPEN FILE
+            'file_name' : ['Methanol_H2O_LPC.bkp'],
+            'block_name' : ['LPC'],
+            'stream_names': ['FEED-LPC', 'L-TOP', 'L-BOTTOM'],
+            # Bounds for manipulated variables within Aspen Active Specs
+            'reflux_ratio_bounds': [0,100],             # Reflux ratio 
+            'distillate_rate_bounds': [0,100]           # Distillate rate 
+
+        }
+    },
+    
+}
+
+# endregion
+###################################################################################################################
+###################################################################################################################
+
+
+
+# region INPUT EXAMPLE 10 - METHANOL-WATER DISTILLATION COLUMN
+
+Example10 = {
+
+    'Number_of_Equipment': 1,
+
+    'Equipment1': {
+
+        'Model_Declarations': {
+
+            # Type of Equipment - Models_List
+            'Type_Equipment': 'DC_DC_Double_Effect',
+
+            # Discretized_Values_of_Variables
+            # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
+            'Discrete_Values_of_Variables': [
+    
+                            list(range(5, 21)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                                                # and a rectifying section)
+                                                # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
+                            list(range(8, 25))  # Ns (Stages and not trays, as in Aspen Plus)
+                                                # Ns = 5 means: condenser + 3 stages within the column + reboiler
+                                                # Ns = 42 means: condenser + 40 stages within the column + reboiler                  
+                                    ],
+
+            # Enumeration type (Options are 'Exhaustive', 'Smart' or 'Segmental_Smart' ---> Default is 'Smart')
+            'Type_Enumeration': 'Smart',  
+            
+            # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
+            'Segmentation_Parameters' : [], 
+                                    # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
+                                    #                             given in 'List_of_Variables'
+                                    # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
+                                    #                             -> If too small --> Excessive n° of intervals
+                                    #                             -> If too large --> Candidates cutting may not be as effective
+                                    # Segmentation_Parameters[2]: Correction factor to avoid small interval at the last segment
+
+        },
+
+         # These Problem_Parameters are used for the computation of Constraint and Objective function values
+         #                                                                      in "Constraints_and_OF.py"
+        'Model_Parameters': {
+
+
+            # --------------------------- 
+            # Problem Data
+            # ---------------------------
+            # General Data
+            'Nc' : 3,                   # Number of components
+            'Nsmin' : 13,               # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 3,                # Minimum feed tray
+            'Pcol' : 1e5,               # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            # Feed Data 
+            'z_f' : [0.6, 0.4],         # Feed composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  100,               # Feed flow (kmol/h)
+            'Split' : 0.5,               # Split fraction of the molar flow in the first column
+            'T_f' :  113.4 + 273.15,    # Feed temperature (K)
+            # Separation Task Specification 
+            'xB_TOP' : 0.99,                    # Top benzene purity
+            'xB_BOTTOM' : 0.005,                # Bottom benzene purity       
+            # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
+            'Comp_name' : ['METHANOL', 'WATER'],         
+
+            # --------------------------- 
+            # Thermal Utilities Data
+            # ---------------------------
+            # Global heat exchange coefficient (W/m²K) - Cheng - 2009 and Douglas book
+            'Ur' : 250/0.17611,         # Reboiler
+            'Uc' : 150/0.17611,         # Condenser
+            # Utilities temperatures (K)
+            'Tlpst' : 160 + 273.15,     # Low pressure steam 
+            'Tcwin' : 303.15,           # Cooling water inlet 
+            'Tcwout' : 323.15,          # Cooling water outlet 
+
+            # --------------------------- 
+            # Costing Data
+            # ---------------------------
+            'Ccw' : 0.378e-6,                           # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'Clpst' : 2.78e-6,                          # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'hours' : 8150,                             # Number of operation hours in a year (considering 7% of idle capacity)
+            'Pb' : 3,                                   # Payback period (years)
+            'lt' : 0.6096,                              # Tray spacing
+            'roshell' : 7900,                           # roshell (kg/m³)
+            
+            # --------------------------- 
+            # Reflux Drum Data
+            # ---------------------------
+            'L_D': 4,                                   # L/D ratio
+            'TRL_min': 5,                              # Reflux Drum residence time (min)
+
+            # --------------------------- 
+            # Aspen Related Data
+            # ---------------------------
+            # File, block and streams - ATTENTION: THIS NAMES ARE CASE SENSITIVE, MUST BE THE SAME AS IN ASPEN FILE
+            'file_name' : ['Methanol_H2O - LPC.bkp'],
+            'block_name' : ['LPC'],
+            'stream_names': ['FEED-LPC', 'L-TOP', 'L-BOTTOM'],
+            # Bounds for manipulated variables within Aspen Active Specs
+            'reflux_ratio_bounds': [0,100],             # Reflux ratio 
+            'distillate_rate_bounds': [0,100],           # Distillate rate 
+
+            # --------------------------- 
+            # Lower Bound Generation Data
+            # ---------------------------
+            'Dcmin' : 0.6096,
+            'ltmin' : 0.1524,
+            'roshell' : 7900  # roshell (kg/m3)
+
+        }
+    },
+ 
+}
+
+# endregion
+###################################################################################################################
+###################################################################################################################
+
+
+
+
+###################################################################################################################
+# region INPUT EXAMPLE 1 - Methanol-Water DISTILLATION COLUMN WITH CONDENSER DUTY SPECIFICATION
+
+Example11 = {
+
+    'Number_of_Equipment': 1,
+    # If there is only 1 piece of equipment, add the information as 'Equipment1'.
+
+    'Equipment1': {
+
+        'Model_Declarations': {
+
+            # Type of Equipment - Models_List
+            'Type_Equipment': 'DC',
+
+            # Discrete_Values_of_Variables
+            # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
+            'Discrete_Values_of_Variables': [
+    
+                            list(range(1, 22)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                                                # and a rectifying section)
+                                                # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
+                            list(range(20, 21))  # Ns (Stages and not trays, as in Aspen Plus)
+                                                # Ns = 5 means: condenser + 3 stages within the column + reboiler
+                                                # Ns = 42 means: condenser + 40 stages within the column + reboiler                
+                                    ],
+
+            # Enumeration type (Options are 'Exhaustive', 'Smart' or 'Segmental_Smart' ---> Default is 'Smart')
+            'Type_Enumeration': 'Exhaustive',  
+            
+            # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
+            'Segmentation_Parameters' : [], 
+                                    # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
+                                    #                             given in 'List_of_Variables'
+                                    # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
+                                    #                             -> If too small --> Excessive n° of intervals
+                                    #                             -> If too large --> Candidates cutting may not be as effective
+                                    # Segmentation_Parameters[2]: Correction factor to avoid small interval at the last segment
+
+
+        },
+
+         # These Problem_Parameters are used for the computation of Constraint and Objective function values
+         #                                                                      in "Constraints_and_OF.py"
+        'Model_Parameters': {
+
+
+            # --------------------------- 
+            # Problem Data
+            # ---------------------------
+            # General Data
+            'Nc' : 3,                           # Number of components
+            'Nsmin' : 13,                       # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 3,                        # Minimum feed tray
+            'Pcol' : 1e5,                       # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            # Feed Data 
+            'z_f' : [0.6, 0.4],                 # Feed molar composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  100,                       # Feed flow (kmol/h)
+            'T_f' :  113.4 + 273.15,            # Feed temperature (K)
+            # Separation Task Specification 
+            'SPEC_1' : -5548807.1,			    # Condenser duty (kJ/h) (Negative value means condenser duty)
+            'SPEC_2' : 0.005,                   # Bottom product purity  
+            'Purity' : 0.99,                    # Top product purity
+            # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
+            'Comp_name' : ['METHANOL', 'WATER'],      
+
+            # --------------------------- 
+            # Thermal Utilities Data
+            # ---------------------------
+            # Global heat exchange coefficient (W/m²K) - Cheng - 2009 and Douglas book
+            'Ur' : 1050,                # Reboiler
+            'Uc' : 850,                 # Condenser
+            # Utilities temperatures (K)
+            'Tlpst' : 160 + 273.15,     # Low pressure steam 
+            'Tcwin' : 303.15,           # Cooling water inlet 
+            'Tcwout' : 323.15,          # Cooling water outlet 
+
+            # --------------------------- 
+            # Costing Data
+            # ---------------------------
+            'Ccw' : 0.378e-6,                           # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'Clpst' : 2.78e-6,                          # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'hours' : 8150,                             # Number of operation hours in a year (considering 7% of idle capacity)
+            'Pb' : 3,                                   # Payback period (years)
+            'lt' : 0.6096,                              # Tray spacing
+            'roshell' : 7900,                           # roshell (kg/m³)
+
+            # --------------------------- 
+            # Reflux Drum Data
+            # ---------------------------
+            'L_D': 4,                                   # L/D ratio
+            'TRL_min': 5,                              # Reflux Drum residence time (min)
+
+            # --------------------------- 
+            # Aspen Related Data
+            # ---------------------------
+            # File, block and streams - ATTENTION: THIS NAMES ARE CASE SENSITIVE, MUST BE THE SAME AS IN ASPEN FILE
+            'file_name' : ['Methanol_H2O - Q_Fixo.bkp'],
+            # Main Column (Specification is the Condenser Duty)
+            'block_name' : ['HPC'],
+            'stream_names': ['FEED-HPC', 'H-TOP', 'H-BOTTOM'],
+            # Secondary Column (Specification is the Top Product Concentration)
+            'block_name_2' : ['LPC'],
+            'feed_name' : ['FEED-LPC'],
+            # Bounds for manipulated variables within Aspen Active Specs
+            'reflux_ratio_bounds': [0,100],             # Reflux ratio 
+            'distillate_rate_bounds': [0,100]           # Distillate rate 
+
+        }
+    },
+    
+}
+
+# endregion
+###################################################################################################################
+###################################################################################################################
+# region INPUT EXAMPLE 12 - Methanol-Water DISTILLATION COLUMN WITH X_TOP SPECIFICATION
+
+Example12 = {
+
+    'Number_of_Equipment': 1,
+    # If there is only 1 piece of equipment, add the information as 'Equipment1'.
+
+    'Equipment1': {
+
+        'Model_Declarations': {
+
+            # Type of Equipment - Models_List
+            'Type_Equipment': 'DC',
+
+            # Discrete_Values_of_Variables
+            # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
+            'Discrete_Values_of_Variables': [
+    
+                            list(range(11, 12)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                                                # and a rectifying section)
+                                                # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
+                            list(range(18, 21))  # Ns (Stages and not trays, as in Aspen Plus)
+                                                # Ns = 5 means: condenser + 3 stages within the column + reboiler
+                                                # Ns = 42 means: condenser + 40 stages within the column + reboiler                
+                                    ],
+
+            # Enumeration type (Options are 'Exhaustive', 'Smart' or 'Segmental_Smart' ---> Default is 'Smart')
+            'Type_Enumeration': 'Smart',  
+            
+            # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
+            'Segmentation_Parameters' : [], 
+                                    # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
+                                    #                             given in 'List_of_Variables'
+                                    # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
+                                    #                             -> If too small --> Excessive n° of intervals
+                                    #                             -> If too large --> Candidates cutting may not be as effective
+                                    # Segmentation_Parameters[2]: Correction factor to avoid small interval at the last segment
+
+
+        },
+
+         # These Problem_Parameters are used for the computation of Constraint and Objective function values
+         #                                                                      in "Constraints_and_OF.py"
+        'Model_Parameters': {
+
+
+            # --------------------------- 
+            # Problem Data
+            # ---------------------------
+            # General Data
+            'Nc' : 3,                           # Number of components
+            'Nsmin' : 13,                       # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 3,                        # Minimum feed tray
+            'Pcol' : 1e5,                       # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            # Feed Data 
+            'z_f' : [0.6, 0.4],                 # Feed molar composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  100,                       # Feed flow (kmol/h)
+            'T_f' :  113.4 + 273.15,            # Feed temperature (K)
+            # Separation Task Specification 
+            'SPEC_1' : 0.99,			    # Condenser duty (kJ/h) (Negative value means condenser duty)
+            'SPEC_2' : 0.005,                   # Bottom product purity  
+            #'Purity' : 0.99,                    # Top product purity
+            # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
+            'Comp_name' : ['METHANOL', 'WATER'],      
+
+            # --------------------------- 
+            # Thermal Utilities Data
+            # ---------------------------
+            # Global heat exchange coefficient (W/m²K) - Cheng - 2009 and Douglas book
+            'Ur' : 1050,                # Reboiler
+            'Uc' : 850,                 # Condenser
+            # Utilities temperatures (K)
+            'Tlpst' : 160 + 273.15,     # Low pressure steam 
+            'Tcwin' : 303.15,           # Cooling water inlet 
+            'Tcwout' : 323.15,          # Cooling water outlet 
+
+            # --------------------------- 
+            # Costing Data
+            # ---------------------------
+            'Ccw' : 0.378e-6,                           # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'Clpst' : 2.78e-6,                          # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'hours' : 8150,                             # Number of operation hours in a year (considering 7% of idle capacity)
+            'Pb' : 3,                                   # Payback period (years)
+            'lt' : 0.6096,                              # Tray spacing
+            'roshell' : 7900,                           # roshell (kg/m³)
+
+            # --------------------------- 
+            # Reflux Drum Data
+            # ---------------------------
+            'L_D': 4,                                   # L/D ratio
+            'TRL_min': 5,                              # Reflux Drum residence time (min)
+
+            # --------------------------- 
+            # Aspen Related Data
+            # ---------------------------
+            # File, block and streams - ATTENTION: THIS NAMES ARE CASE SENSITIVE, MUST BE THE SAME AS IN ASPEN FILE
+            'file_name' : ['Methanol_H2O - Q_Fixo.bkp'],
+            # Main Column (Specification is the Condenser Duty)
+            'block_name' : ['LPC'],
+            'stream_names': ['FEED-LPC', 'L-TOP', 'L-BOTTOM'],
+            # Secondary Column (Specification is the Top Product Concentration)
+            'block_name_2' : ['LPC'],
+            'feed_name' : ['FEED-LPC'],
+            # Bounds for manipulated variables within Aspen Active Specs
+            'reflux_ratio_bounds': [0,100],             # Reflux ratio 
+            'distillate_rate_bounds': [0,100]           # Distillate rate 
+
+        }
+    },
+    
+}
+
+# endregion
+###################################################################################################################
+###################################################################################################################
+
+###################################################################################################################
+# region INPUT EXAMPLE 13 - Benzene-Toluene DISTILLATION COLUMN WITH CONDENSER DUTY SPECIFICATION
+
+Example13 = {
+
+    'Number_of_Equipment': 1,
+    # If there is only 1 piece of equipment, add the information as 'Equipment1'.
+
+    'Equipment1': {
+
+        'Model_Declarations': {
+
+            # Type of Equipment - Models_List
+            'Type_Equipment': 'DC',
+
+            # Discrete_Values_of_Variables
+            # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
+            'Discrete_Values_of_Variables': [
+    
+                            list(range(1, 22)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                                                # and a rectifying section)
+                                                # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
+                            list(range(20, 21))  # Ns (Stages and not trays, as in Aspen Plus)
+                                                # Ns = 5 means: condenser + 3 stages within the column + reboiler
+                                                # Ns = 42 means: condenser + 40 stages within the column + reboiler                
+                                    ],
+
+            # Enumeration type (Options are 'Exhaustive', 'Smart' or 'Segmental_Smart' ---> Default is 'Smart')
+            'Type_Enumeration': 'Exhaustive',  
+            
+            # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
+            'Segmentation_Parameters' : [], 
+                                    # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
+                                    #                             given in 'List_of_Variables'
+                                    # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
+                                    #                             -> If too small --> Excessive n° of intervals
+                                    #                             -> If too large --> Candidates cutting may not be as effective
+                                    # Segmentation_Parameters[2]: Correction factor to avoid small interval at the last segment
+
+
+        },
+
+         # These Problem_Parameters are used for the computation of Constraint and Objective function values
+         #                                                                      in "Constraints_and_OF.py"
+        'Model_Parameters': {
+
+
+            # --------------------------- 
+            # Problem Data
+            # ---------------------------
+            # General Data
+            'Nc' : 3,                           # Number of components
+            'Nsmin' : 1,                       # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 1,                        # Minimum feed tray
+            'Pcol' : 1e5,                       # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            # Feed Data 
+            'z_f' : [0.6, 0.4],                 # Feed molar composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  100,                       # Feed flow (kmol/h)
+            'T_f' :  50 + 273.15,            # Feed temperature (K)
+            # Separation Task Specification 
+            'SPEC_1' : 0.99,			    # Condenser duty (kJ/h) (Negative value means condenser duty)
+            'SPEC_2' : 0.005,                   # Bottom product purity  
+            # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
+            'Comp_name' : ['BENZENE', 'TOLUENE'],      
+
+            # --------------------------- 
+            # Thermal Utilities Data
+            # ---------------------------
+            # Global heat exchange coefficient (W/m²K) - Cheng - 2009 and Douglas book
+            'Ur' : 1050,                # Reboiler
+            'Uc' : 850,                 # Condenser
+            # Utilities temperatures (K)
+            'Tlpst' : 160 + 273.15,     # Low pressure steam 
+            'Tcwin' : 303.15,           # Cooling water inlet 
+            'Tcwout' : 323.15,          # Cooling water outlet 
+
+            # --------------------------- 
+            # Costing Data
+            # ---------------------------
+            'Ccw' : 0.378e-6,                           # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'Clpst' : 2.78e-6,                          # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'hours' : 8150,                             # Number of operation hours in a year (considering 7% of idle capacity)
+            'Pb' : 3,                                   # Payback period (years)
+            'lt' : 0.6096,                              # Tray spacing
+            'roshell' : 7900,                           # roshell (kg/m³)
+
+            # --------------------------- 
+            # Reflux Drum Data
+            # ---------------------------
+            'L_D': 4,                                   # L/D ratio
+            'TRL_min': 5,                              # Reflux Drum residence time (min)
+
+            # --------------------------- 
+            # Aspen Related Data
+            # ---------------------------
+            # File, block and streams - ATTENTION: THIS NAMES ARE CASE SENSITIVE, MUST BE THE SAME AS IN ASPEN FILE
+            'file_name' : ['Benzene_Toluene - Q_Fixo.bkp'],
+            # Main Column (Specification is the TOP Product Concentration)
+            'block_name' : ['LPC'],
+            'stream_names': ['FEED-LPC', 'L-TOP', 'L-BOTTOM'],
+            # Bounds for manipulated variables within Aspen Active Specs
+            'reflux_ratio_bounds': [0,100],             # Reflux ratio 
+            'distillate_rate_bounds': [0,100]           # Distillate rate 
+
+        }
+    },
+    
+}
+
+# endregion
+###################################################################################################################
+###################################################################################################################
+
+
+###################################################################################################################
+# region INPUT EXAMPLE 14 - Methanol-Water DISTILLATION COLUMN WITH CONDENSER DUTY SPECIFICATION
+
+Example14 = {
+
+    'Number_of_Equipment': 1,
+    # If there is only 1 piece of equipment, add the information as 'Equipment1'.
+
+    'Equipment1': {
+
+        'Model_Declarations': {
+
+            # Type of Equipment - Models_List
+            'Type_Equipment': 'DC',
+
+            # Discrete_Values_of_Variables
+            # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
+            'Discrete_Values_of_Variables': [
+    
+                            list(range(1, 26)), # Nf (Feed considered from stage 3 to 40, considering there are always a stripping 
+                                                # and a rectifying section)
+                                                # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
+                            list(range(25, 26))  # Ns (Stages and not trays, as in Aspen Plus)
+                                                # Ns = 5 means: condenser + 3 stages within the column + reboiler
+                                                # Ns = 42 means: condenser + 40 stages within the column + reboiler                
+                                    ],
+
+            # Enumeration type (Options are 'Exhaustive', 'Smart' or 'Segmental_Smart' ---> Default is 'Smart')
+            'Type_Enumeration': 'Exhaustive',  
+            
+            # Segmentation parameters - to be used when Segmental Smart Enumeration is true --> Leave it empty otherwise []
+            'Segmentation_Parameters' : [], 
+                                    # Segmentation_Parameters[0]: The name of the discrete variable needs to mach one of the variables 
+                                    #                             given in 'List_of_Variables'
+                                    # Segmentation_Parameters[1]: Increment (n° of values in each segment) 
+                                    #                             -> If too small --> Excessive n° of intervals
+                                    #                             -> If too large --> Candidates cutting may not be as effective
+                                    # Segmentation_Parameters[2]: Correction factor to avoid small interval at the last segment
+
+
+        },
+
+         # These Problem_Parameters are used for the computation of Constraint and Objective function values
+         #                                                                      in "Constraints_and_OF.py"
+        'Model_Parameters': {
+
+
+            # --------------------------- 
+            # Problem Data
+            # ---------------------------
+            # General Data
+            'Nc' : 3,                           # Number of components
+            'Nsmin' : 13,                       # Minimum number of stages (Condenser + 11 stages within the column + Reboiler)
+            'Nfmin' : 3,                        # Minimum feed tray
+            'Pcol' : 5e5,                       # Column Pressure (Pa) - constant throughout the column --> Pendência: consider some pressure drop
+            # Feed Data 
+            'z_f' : [0.6, 0.4],                 # Feed molar composition [Benzene, Toluene, m-Xylene]
+            'F_f' :  18.79,                       # Feed flow (kmol/h)
+            'T_f' :  113.4 + 273.15,            # Feed temperature (K)
+            # Separation Task Specification 
+            'SPEC_1' : 0.99,			    # Condenser duty (kJ/h) (Negative value means condenser duty)
+            'SPEC_2' : 0.005,                   # Bottom product purity  
+            # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
+            'Comp_name' : ['METHANOL', 'WATER'],      
+
+            # --------------------------- 
+            # Thermal Utilities Data
+            # ---------------------------
+            # Global heat exchange coefficient (W/m²K) - Cheng - 2009 and Douglas book
+            'Ur' : 250/0.17611,         # Reboiler
+            'Uc' : 250/0.17611,         # Condenser
+            # Utilities temperatures (K)
+            'Tlpst' : 160 + 273.15,     # Low pressure steam 
+            'Tcwin' : 303.15,           # Cooling water inlet 
+            'Tcwout' : 323.15,          # Cooling water outlet 
+
+            # --------------------------- 
+            # Costing Data
+            # ---------------------------
+            'Ccw' : 0.378e-6,                           # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'Clpst' : 2.78e-6,                          # Utilities costs ($/kJ) from Turton -> page 245 5ed 
+            'hours' : 8150,                             # Number of operation hours in a year (considering 7% of idle capacity)
+            'Pb' : 3,                                   # Payback period (years)
+            'lt' : 0.6096,                              # Tray spacing
+            'roshell' : 7900,                           # roshell (kg/m³)
+
+            # --------------------------- 
+            # Reflux Drum Data
+            # ---------------------------
+            'L_D': 4,                                   # L/D ratio
+            'TRL_min': 10,                              # Reflux Drum residence time (min)
+
+            # --------------------------- 
+            # Aspen Related Data
+            # ---------------------------
+            # File, block and streams - ATTENTION: THIS NAMES ARE CASE SENSITIVE, MUST BE THE SAME AS IN ASPEN FILE
+            'file_name' : ['Methanol_H2O - Q_Fixo.bkp'],
+            # Main Column (Specification is the TOP Product Concentration)
+            'block_name' : ['LPC'],
+            'stream_names': ['FEED-LPC', 'L-TOP', 'L-BOTTOM'],
+            # Bounds for manipulated variables within Aspen Active Specs
+            'reflux_ratio_bounds': [0,100],             # Reflux ratio 
+            'distillate_rate_bounds': [0,500]           # Distillate rate 
+
+        }
+    },
+    
+}
+
+# endregion
+###################################################################################################################
+###################################################################################################################

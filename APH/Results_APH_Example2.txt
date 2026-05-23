@@ -1,0 +1,18 @@
+********** Normal Set Trimming running **********
+
+************ Initial Set = Primordial Set with 34020 candidates ************
+
+
+******************** Starting Execution for APH_Example2 ********************
+
+The solution of Equipment1 "APH" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming produced an empty set using constraint: Areq
+The problem has no solution
+Candidate set cardinality after each trimming [34020, 29484, 29484, 29484, 8982, 8982, 3574, 3574, 1576, 1576, 1576, 1576, 1508, 1508, 0]
+{'TAC_OF': {'TAC': 1e+20}}
+Elapsed time for Equipment1 "APH": 1.34 seconds 
+
+OF Solution total ($/year) 1e+20
+Total time elapsed: 1.44104 seconds
+

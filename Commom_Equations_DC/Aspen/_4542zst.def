@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4542zst.inm
+MODNAME: apmain
+RUNID: _4542zst
+NEW_RUNID: _4542zst
+OLD_RUNID: _4542zst
+PDF: _4542zst.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4542zst.ads

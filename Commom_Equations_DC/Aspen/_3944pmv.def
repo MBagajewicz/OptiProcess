@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3944pmv.inm
+MODNAME: apmain
+RUNID: _3944pmv
+NEW_RUNID: _3944pmv
+OLD_RUNID: _3944pmv
+PDF: _3944pmv.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3944pmv.ads
