@@ -36,6 +36,8 @@ def fun_vt(Ds, dte, Npt, rp, lay, m_t,rol,rov,fluid_type, thk):
     elif fluid_type == 2:
         qt = m_t/rov
     vt = (qt/Ntp)/(pi*dti**2/4)
+    print('vt = ', vt)
+    print('mt = ', m_t)
     return vt
 
 # Tube side Reynolds number

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2959drc.inm
+MODNAME: apmain
+RUNID: _2959drc
+NEW_RUNID: _2959drc
+OLD_RUNID: _2959drc
+PDF: _2959drc.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2959drc.ads

@@ -1,0 +1,10 @@
+INPUT: Methanol_H2O - LPC - Uniquac.inm
+MODNAME: apmain
+RUNID: Methanol_H2O - LPC - Uniquac
+NEW_RUNID: Methanol_H2O - LPC - Uniquac
+OLD_RUNID: Methanol_H2O - LPC - Uniquac
+PDF: Methanol_H2O - LPC - Uniquac.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:
+DBCONN: _1431kez.ads

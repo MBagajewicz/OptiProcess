@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3304dnk.inm
+MODNAME: apmain
+RUNID: _3304dnk
+NEW_RUNID: _3304dnk
+OLD_RUNID: _3304dnk
+PDF: _3304dnk.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3304dnk.ads

@@ -16,6 +16,7 @@
 #   0.13       19-Mar-2025      Alice Peccini              Correction on Feasibility check
 #   0.14       27-Apr-2025      Mariana Mello              Add .txt file with Results of Examples
 #   0.15       13-May-2025      Mariana Mello              Update .txt file with Examples Results
+#   0.16       10-Jul-2025      Pamela Tomazim             Added check for infeasible candidates
 ##################################################################################################################
 # INPUT: No inputs allowed
 ##################################################################################################################
@@ -73,7 +74,6 @@ def Smart_Enumeration(OF_NAME, LB_NAME, Fobj_within_LB, INC_OBJ, INC_VAR, constr
         for cont, value in zip(var_list, INC_VAR):
             sol_data[cont] = value
 
-
     # ------------------------------------- Organizing Smart Enumeration ------------------------------------- #
     # Total number of candidates
     number_of_candidates = candidates.shape[1]
@@ -85,6 +85,7 @@ def Smart_Enumeration(OF_NAME, LB_NAME, Fobj_within_LB, INC_OBJ, INC_VAR, constr
     COND = True
     k = 0
     iicount = 0
+    ##found_feasible_solution = False #Tomazim
 
     # ------------------------------------- Executing Smart Enumeration ------------------------------------- #
     while COND:
@@ -92,8 +93,10 @@ def Smart_Enumeration(OF_NAME, LB_NAME, Fobj_within_LB, INC_OBJ, INC_VAR, constr
         # Creating a multidimensional array containing just the candidate for simulation
         i = Ranking_position[k]
         candidate_tested = candidates[:, i].reshape(np.size(candidates[:, i]), 1)
-        # print (candidate_tested)
+
         # Evaluating the candidate
+        flat = candidate_tested.flatten().tolist()
+        save_result("Solving candidate", var_list, " = ", flat, ':')
 
         Candidate_evaluation = Constraint_Eval.Constraint_Eval(OF_NAME[0], candidate_tested, problem_data, 
                                                                Type_Equipment, Active_Models_Constraints)
@@ -116,6 +119,7 @@ def Smart_Enumeration(OF_NAME, LB_NAME, Fobj_within_LB, INC_OBJ, INC_VAR, constr
 
         # If the objective function of the candidate is smaller than the current one the incumbent is updated
         if Feasibility and OF_VAL < Incumbent_Value:
+            ##found_feasible_solution = True #Tomazim
             # Storing the candidate objective function at the variable sol_data
             OF_Min_sol = np.copy(OF_VAL)
             sol_data[OF_NAME[0]] = {OF_VAR[0]: OF_Min_sol}
@@ -146,7 +150,15 @@ def Smart_Enumeration(OF_NAME, LB_NAME, Fobj_within_LB, INC_OBJ, INC_VAR, constr
             save_result("All", k, "candidates were evaluated - Smart Enumeration became exhaustive")
             save_result("#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             COND = False
-
+            
+    ''' ## Tomazim
+    # If no feasible solution was found, the sol_data is updated with high values
+    if not found_feasible_solution:
+        save_result('⚠️   No feasible candidates found in Smart Enumeration')
+        sol_data[OF_NAME[0]] = {OF_VAR[0]: 1e20}
+        for cont in var_list:
+            sol_data[cont] = None
+    '''
     # If there is more than one Objective Function, evaluate others
     if len(OF_NAME) > 1:
         # Recriate candidate

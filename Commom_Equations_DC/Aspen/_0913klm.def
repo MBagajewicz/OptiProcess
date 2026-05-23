@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0913klm.inm
+MODNAME: apmain
+RUNID: _0913klm
+NEW_RUNID: _0913klm
+OLD_RUNID: _0913klm
+PDF: _0913klm.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0913klm.ads

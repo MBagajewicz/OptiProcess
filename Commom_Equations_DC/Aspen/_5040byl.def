@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5040byl.inm
+MODNAME: apmain
+RUNID: _5040byl
+NEW_RUNID: _5040byl
+OLD_RUNID: _5040byl
+PDF: _5040byl.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5040byl.ads

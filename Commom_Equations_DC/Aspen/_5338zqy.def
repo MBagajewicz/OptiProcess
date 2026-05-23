@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5338zqy.inm
+MODNAME: apmain
+RUNID: _5338zqy
+NEW_RUNID: _5338zqy
+OLD_RUNID: _5338zqy
+PDF: _5338zqy.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5338zqy.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0137tdy.inm
+MODNAME: apmain
+RUNID: _0137tdy
+NEW_RUNID: _0137tdy
+OLD_RUNID: _0137tdy
+PDF: _0137tdy.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0137tdy.ads

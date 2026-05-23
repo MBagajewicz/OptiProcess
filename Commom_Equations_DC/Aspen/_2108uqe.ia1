@@ -1,0 +1,53 @@
+
+ FEED-LPC L-BOTTOM L-TOP                 
+ -----------------------
+
+ STREAM ID               FEED-LPC   L-BOTTOM   L-TOP   
+ FROM :                  ----       LPC        LPC     
+ TO   :                  LPC        ----       ----    
+
+ SUBSTREAM: MIXED   
+ PHASE:                  VAPOR      LIQUID     LIQUID 
+ COMPONENTS: KMOL/HR         
+   BENZENE                0.0        0.0        0.0   
+   TOLUENE                0.0        0.0        0.0   
+   M-XYLENE               0.0        0.0        0.0   
+   METHANOL              60.0000     0.1980    59.8020
+   WATER                 40.0000    39.3959     0.6041
+ TOTAL FLOW:         
+   KMOL/HR              100.0000    39.5939    60.4061
+   KG/HR               2643.1408   716.0722  1927.0686
+   L/MIN               5.2998+04    13.0356    43.0751
+ STATE VARIABLES:    
+   TEMP   K             386.5500   373.3140   337.0357
+   PRES   PA           1.0000+05  1.0000+05  1.0000+05
+   VFRAC                  1.0000     0.0        0.0   
+   LFRAC                  0.0        1.0000     1.0000
+   SFRAC                  0.0        0.0        0.0   
+ ENTHALPY:           
+   KJ/KMOL            -2.1369+05 -2.8133+05 -2.3732+05
+   KJ/KG              -8084.7573 -1.5555+04 -7439.1053
+   KJ/HR              -2.1369+07 -1.1139+07 -1.4336+07
+ ENTROPY:            
+   KJ/MOL-K           -7.9113-02    -0.1497    -0.2343
+   KJ/KG-K               -2.9931    -8.2763    -7.3455
+ DENSITY:            
+   MOL/CC              3.1448-05  5.0623-02  2.3372-02
+   GM/CC               8.3121-04     0.9155     0.7456
+ AVG MW                  26.4314    18.0854    31.9019
+
+ MIXED    SUBSTREAM PROPERTIES:
+
+ ***  ALL PHASES   ***
+ CPMX-M   J/KG-K       1681.3854  4596.5450  3658.4923
+ PCMX     PA           1.3676+07  2.1994+07  8.2238+06
+
+ *** VAPOR PHASE   ***
+ CPMX-M   J/KG-K       1681.3854    MISSING    MISSING
+ KMX      WATT/M-K     2.4840-02    MISSING    MISSING
+ PCMX     PA           1.3676+07    MISSING    MISSING
+
+ *** LIQUID PHASE  ***
+ CPMX-M   J/KG-K         MISSING  4596.5450  3658.4923
+ KMX      WATT/M-K       MISSING     0.6398     0.1895
+ PCMX     PA             MISSING  2.1994+07  8.2238+06

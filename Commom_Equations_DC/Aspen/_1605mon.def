@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _1605mon.inm
+MODNAME: apmain
+RUNID: _1605mon
+NEW_RUNID: _1605mon
+OLD_RUNID: _1605mon
+PDF: _1605mon.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _1605mon.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4507lub.inm
+MODNAME: apmain
+RUNID: _4507lub
+NEW_RUNID: _4507lub
+OLD_RUNID: _4507lub
+PDF: _4507lub.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4507lub.ads

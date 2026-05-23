@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0559wiu.inm
+MODNAME: apmain
+RUNID: _0559wiu
+NEW_RUNID: _0559wiu
+OLD_RUNID: _0559wiu
+PDF: _0559wiu.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0559wiu.ads

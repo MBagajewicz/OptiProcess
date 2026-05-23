@@ -1,0 +1,336 @@
+
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + +                                                                         + +
+ + +                      ASPEN PLUS CALCULATION HISTORY                     + +
+ + +                                                                         + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+
+ ASPEN PLUS IS A TRADEMARK OF           HOTLINE:
+ ASPEN TECHNOLOGY, INC.                 U.S.A. 888/996-7100
+ 781/221-6400                           EUROPE (44) 1189-226555
+
+ PLATFORM: WIN-X64                                       SEPTEMBER 28, 2025  
+ VERSION: 41.0   Build 609                               SUNDAY      
+ INSTALLATION:                                           9:16:42 P.M.        
+
+ THIS COPY OF ASPEN PLUS LICENSED TO UNIVERSIDADE ESTADUAL DE        
+
+
+      ASPEN PLUS (R) IS A PROPRIETARY PRODUCT OF ASPEN TECHNOLOGY, INC.
+      (ASPENTECH), AND MAY BE USED ONLY UNDER AGREEMENT WITH ASPENTECH.
+      RESTRICTED RIGHTS LEGEND:  USE, REPRODUCTION, OR DISCLOSURE BY THE
+      U.S. GOVERNMENT IS SUBJECT TO RESTRICTIONS SET FORTH IN 
+      (i) FAR 52.227-14, Alt. III, (ii) FAR 52.227-19, (iii) DFARS 
+      252.227-7013(c)(1)(ii), or (iv) THE ACCOMPANYING LICENSE AGREEMENT,
+      AS APPLICABLE. FOR PURPOSES OF THE FAR, THIS SOFTWARE SHALL BE DEEMED
+      TO BE "UNPUBLISHED" AND LICENSED WITH DISCLOSURE PROHIBITIONS.
+      CONTRACTOR/SUBCONTRACTOR: ASPEN TECHNOLOGY, INC. 20 CROSBY DRIVE,
+      BEDFORD, MA 01730.
+ *** INPUT SUMMARY ***
+
+ >>CURRENT RUN
+
+   ORIGINAL RUN                           SEPTEMBER 28, 2025  
+   9:16:42 P.M.                           SUNDAY      
+   INPUT FILE: _1611tdp.inm
+   RUN ID : _1611tdp
+          1    ;
+          2    ;Input file created by Aspen Plus Rel. 41.0 at 21:16:42 Sun Sep 28, 2025
+          3    ;Directory   Runid BENZENE_TOLUENE - Q_FIXO
+          4    ;
+          5
+          6
+          7    DYNAMICS
+          8        DYNAMICS RESULTS=ON
+          9
+         10    IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+         11            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+         12            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+         13            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+         14            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+         15            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+         16            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+         17            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+         18            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+         19
+         20    DEF-STREAMS CONVEN ALL
+         21
+         22    SIM-OPTIONS MASS-BAL-CHE=YES EMISSION-CAL=NO
+         23
+         24    MODEL-OPTION
+         25        RADFRAC MAXOL=30 ALGORITHM=NEWTON
+         26
+         27    DESCRIPTION "
+         28        Chemical Simulation with English Units :
+         29        F, psi, lb/hr, lbmol/hr, Btu/hr, cuft/hr.
+         30
+         31        Property Method: NRTL
+         32
+         33        Flow basis for input: Mole
+         34
+         35        Stream report composition: Mole flow
+         36        "
+         37
+         38    DATABANKS 'APV150 PURE39' / 'APV150 AQUEOUS' / 'APV150 SOLIDS' &
+         39             / 'APV150 INORGANIC' / 'APESV150 AP-EOS' /  &
+         40            'NISTV150 NIST-TRC' / NOASPENPCD
+         41
+         42    PROP-SOURCES 'APV150 PURE39' / 'APV150 AQUEOUS' /  &
+         43            'APV150 SOLIDS' / 'APV150 INORGANIC' / 'APESV150 AP-EOS' &
+         44             / 'NISTV150 NIST-TRC'
+         45
+         46    COMPONENTS
+         47        BENZENE C6H6 /
+         48        TOLUENE C7H8 /
+         49        M-XYLENE C8H10-2 /
+         50        METHANOL CH4O /
+         51        WATER H2O
+         52
+         53    SOLVE
+         54        RUN-MODE MODE=SIM
+         55
+         56    FLOWSHEET
+         57        BLOCK LPC IN=FEED-LPC OUT=L-TOP L-BOTTOM
+         58        BLOCK DSTWU IN=FEED OUT=DIST BOTTOM
+         59
+         60    PROPERTIES PENG-ROB
+         61
+         62    PROP-DATA PRKBV-1
+         63        IN-UNITS ENG SHORT-LENGTH=in
+         64        PROP-LIST PRKBV
+         65        BPVAL METHANOL WATER -.0778000000 0.0 0.0 -459.6700000  &
+         66            1340.330000
+         67        BPVAL WATER METHANOL -.0778000000 0.0 0.0 -459.6700000  &
+         68            1340.330000
+         69
+         70    DEF-STREAMS LOAD
+         71
+         72    PROP-SET HEDESIGN CPMX-M KMX PCMX UNITS='J/kg-K' 'Watt/m-K'  &
+         73            'Pa' SUBSTREAM=MIXED PHASE=T L V
+         74
+         75    STREAM FEED
+         76        SUBSTREAM MIXED TEMP=320. PRES=100000. MOLE-FLOW=100.
+         77        MOLE-FLOW BENZENE 60. / TOLUENE 40.
+         78
+         79    STREAM FEED-LPC
+         80        SUBSTREAM MIXED TEMP=320. PRES=100000. MOLE-FLOW=100.
+         81        MOLE-FLOW BENZENE 60. / TOLUENE 40.
+         82
+         83    BLOCK DSTWU DSTWU
+         84        PARAM LIGHTKEY=BENZENE RECOVL=0.99 HEAVYKEY=TOLUENE  &
+         85            RECOVH=0.005 PTOP=1. <atm> PBOT=1. <atm> NSTAGE=20
+         86
+         87    BLOCK LPC RADFRAC
+         88        SUBOBJECTS INTERNALS = CS-1
+         89        PARAM NSTAGE=20 ALGORITHM=NEWTON HYDRAULIC=NO MAXOL=110  &
+         90            DAMPING=NONE
+         91        PARAM2 STATIC-DP=YES OLD-SULZER=NO
+         92        COL-CONFIG CONDENSER=TOTAL CA-CONFIG=INT-1
+         93        FEEDS FEED-LPC 10
+         94        PRODUCTS L-TOP 1 L / L-BOTTOM 20 L
+         95        P-SPEC 1 100000.
+         96        COL-SPECS MOLE-D=40. MOLE-RR=1.55310458
+         97        SPEC 1 MOLE-FRAC 0.99 COMPS=BENZENE STREAMS=L-TOP  &
+         98            SPEC-DESCRIP="BENZENE RECUPERATION"
+         99        SPEC 2 MOLE-FRAC 0.005 COMPS=BENZENE STREAMS=L-BOTTOM  &
+        100            SPEC-DESCRIP="TOLUENE RECOVERY"
+        101        VARY 1 MOLE-D 0. 100.
+        102        VARY 2 MOLE-RR 0. 100.
+        103        REPORT NOHYDRAULIC
+        104        CONVERGENCE EXTRA-ML=2
+        105        INTERNALS CS-1 STAGE1=2 STAGE2=3 P-UPDATE=NO TRAYTYPE=SIEVE  &
+        106            NPASS=1 SYSFAC=1.000000000 OVER-DESIGN=1.000000000  &
+        107            WEIR-HT=50.80000000 <mm> DC-CLEAR=38.10000000 <mm>  &
+        108            DC-WTOP-SIDE=135.4140823 <mm> DC-WBOT-SIDE=135.4140823 <mm>  &
+        109            HOLE-DIAM=12.70000000 <mm> HOLE-AREA=.1000000000  &
+        110            FLOOD-METH=GLITSCH6 DECK-THICK=0.134 <IN>  &
+        111            PCT-FLOOD-FA=80.00000000 AER-PARAM-M=1.000000000  &
+        112            MAX-DC-LOAD=GLITSCH MAX-ACC-DP=2500.000000  &
+        113            MAX-PCT-DCB=100.0000000 MAX-PCT-ENT=10.00000000  &
+        114            MIN-WEIR-LD=4.470981863 MAX-WEIR-LD=117.3721131  &
+        115            MIN-PCT-DCA=.1000000000
+        116        TRAY-SIZE 1 2 3 SIEVE
+        117
+        118    EO-CONV-OPTI
+        119
+        120    CONV-OPTIONS
+        121        PARAM MSPEC-METHOD=BROYDEN SPEC-LOOP=INSIDE USER-LOOP=OUTSIDE
+        122
+        123    STREAM-REPOR MOLEFLOW PROPERTIES=HEDESIGN
+        124
+        125    PROPERTY-REP PCES
+        126
+        127    PROP-TABLE BINRY-1 FLASHCURVE
+        128        IN-UNITS MET ENTHALPY='J/kmol' ENTROPY='kJ/kmol-K'  &
+        129            ENTHALPY-FLO='kJ/hr' MOLE-HEAT-CA='kJ/kmol-K'  &
+        130            HEAT-TRANS-C='kJ/sec-sqm-K' PRESSURE=Pa  &
+        131            MOLE-ENTHALP='kJ/kmol' MASS-ENTHALP='kJ/kg'  &
+        132            MOLE-ENTROPY='kJ/mol-K' MASS-ENTROPY='kJ/kg-K'  &
+        133            MASS-HEAT-CA='kJ/kg-K' UA='kJ/sec-K' HEAT=kJ  &
+        134            MASS-CONC='gm/cc' PDROP=Pa VOL-HEAT-CAP='kJ/cum-K'  &
+        135            HEAT-FLUX='kJ/hr-m' INVERSE-HT-C='sec-sqm-K/kJ'  &
+        136            VOL-ENTHALPY='kJ/cum' SHORT-LENGTH=mm
+        137        PROPERTIES PENG-ROB FREE-WATER=STEAM-TA SOLU-WATER=3  &
+        138            TRUE-COMPS=YES
+        139        MOLE-FLOW BENZENE 1 /  TOLUENE  1
+        140        STATE VFRAC=0.0
+        141        ANALYSIS ANAL-TYPE=TXY
+        142        VARY PRES
+        143        RANGE LIST=1.01325000E+5
+        144        VARY MOLEFRAC COMP=BENZENE
+        145        RANGE VARVALUE=RANGE LOWER=0.0 UPPER=1.0 NPOINT=50
+        146        PARAM NPHASE=3
+        147        TABULATE PROPERTIES=HEDESIGN
+        148    ;
+        149    ;
+        150    ;
+        151    ;
+        152    ;
+ *** INPUT TRANSLATOR MESSAGES ***
+
+      SQLLOCALDB.APESV150 : (DATAVERSION - 41.0.0.10)                         
+      SQLLOCALDB.APV150 : (DATAVERSION - 41.0.0.9)                            
+      SQLLOCALDB.FACTV150 : (DATAVERSION - 41.0.0.6)                          
+      SQLLOCALDB.NISTV150 : (DATAVERSION - 41.0.0.7)                          
+  *** THIS RUN USES THE PROPERTIES ENTERPRISE DATABASE ***
+ 
+ 
+
+ PDF updated                                                                      TIME =      3.01
+
+ *** CALCULATION TRACE ***
+
+
+ *** FLOWSHEET ANALYSIS MESSAGES ***
+
+ FLOWSHEET CONNECTIVITY BY STREAMS       
+
+   STREAM     SOURCE     DEST           STREAM     SOURCE     DEST
+   FEED-LPC   ----       LPC            FEED       ----       DSTWU   
+   L-TOP      LPC        ----           L-BOTTOM   LPC        ----    
+   DIST       DSTWU      ----           BOTTOM     DSTWU      ----    
+
+ FLOWSHEET CONNECTIVITY BY BLOCKS        
+
+   BLOCK        INLETS                         OUTLETS
+   LPC          FEED-LPC                       L-TOP L-BOTTOM              
+   DSTWU        FEED                           DIST BOTTOM                 
+
+      COMPUTATION ORDER FOR THE FLOWSHEET IS:
+      DSTWU LPC 
+
+Calculations begin                                                              time      0.27
+
+
+ SIMULATION CALCULATIONS BEGIN                                                    TIME =      0.27
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED OF BLOCK DSTWU                   TIME =      0.27
+      KODE = 2  NTRIAL =   3  T = 320.0000  P =  100000.      V =  0.00000      Q =  0.00000    
+
+      UOS BLOCK DSTWU    MODEL: DSTWU                                             TIME =      0.27
+       TD =   353.4    ,  TB =   384.6    ,  RMIN =   1.062    ,  RACT =   1.543    
+       MIN STAGES =   10.94    , ACT STAGES =   20.00    
+       ACT. # OF RECT. STAGES =   10.31    
+       REBOILER DUTY =  0.1482E+07
+       FEED QUALITY =  -0.1922    
+
+      ENTHALPY CALCULATION FOR INLET STREAM FEED-LPC OF BLOCK LPC                 TIME =      0.27
+      KODE = 2  NTRIAL =   3  T = 320.0000  P =  100000.      V =  0.00000      Q =  0.00000    
+
+      UOS BLOCK LPC      MODEL: RADFRAC                                           TIME =      0.27
+
+       Convergence iterations:
+           Iter     Err/Tol
+              0      32747.    
+              0      97888.    
+              1      86454.    
+              2      87047.    
+              3     0.14209E+06
+              4     0.13796E+06
+              5      96984.    
+              6      33071.    
+              7      3283.0    
+              8      18.558    
+              9     0.42445E-03
+
+      RESULTS FOR MANIPULATED VARIABLES:
+      VARIABLE     FINAL VALUE    LOWER BOUND    UPPER BOUND
+         1         0.16779E-01     0.0000        0.27778E-01
+         2          1.5281         0.0000         100.00    
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      0.28
+
+      CHECKING PHASE EQUILIBRIUM RESULTS                                          TIME =      0.28
+
+ Report Writer entered                                                            Time =      0.29
+      STREAM BOTTOM WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 384.5642  P =  101325.      V =  0.00000      Q =-4.598664E-10
+      STREAM DIST WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   4  T = 353.3661  P =  101325.      V =  0.00000      Q =-2.182035E-07
+      STREAM BOTTOM WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   5  T = 384.5642  P =  101325.      V =  0.00000      Q =-4.598664E-10
+      STREAM DIST WILL BE FLASHED FOR PROPERTY CALCULATIONS.
+      KODE = 3  NTRIAL =   4  T = 353.3661  P =  101325.      V =  0.00000      Q =-2.182035E-07
+
+      BEGIN CALCULATIONS FOR PROP-TABLE BINRY-1                                   TIME =      0.35
+      KODE = 3  NTRIAL =   5  T = 385.2956  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   7  T = 384.3133  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   7  T = 383.3521  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   7  T = 382.4112  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   7  T = 381.4902  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 380.5885  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 379.7054  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 378.8406  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 377.9933  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 377.1633  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 376.3499  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 375.5526  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 374.7711  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 374.0049  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 373.2534  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 372.5164  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 371.7933  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 371.0838  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 370.3875  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 369.7041  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 369.0331  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 368.3743  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 367.7272  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 367.0916  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 366.4671  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 365.8534  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 365.2503  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 364.6574  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 364.0744  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 363.5012  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 362.9373  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 362.3826  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 361.8369  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 361.2998  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 360.7712  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 360.2508  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 359.7384  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 359.2338  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 358.7368  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 358.2471  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 357.7647  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 357.2892  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 356.8206  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 356.3586  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 355.9030  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 355.4538  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 355.0106  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 354.5734  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 354.1420  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   6  T = 353.7163  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+      KODE = 3  NTRIAL =   5  T = 353.2960  P =  101325.      V =  0.00000      BETA =  1.00000      Q =  0.00000    
+
+ Results generated                                                                Time =      0.37
+
+RUN SAVED
+
+
+
+ NO ERRORS OR WARNINGS GENERATED

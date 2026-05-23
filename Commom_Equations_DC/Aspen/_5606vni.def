@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5606vni.inm
+MODNAME: apmain
+RUNID: _5606vni
+NEW_RUNID: _5606vni
+OLD_RUNID: _5606vni
+PDF: _5606vni.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5606vni.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4440nza.inm
+MODNAME: apmain
+RUNID: _4440nza
+NEW_RUNID: _4440nza
+OLD_RUNID: _4440nza
+PDF: _4440nza.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4440nza.ads

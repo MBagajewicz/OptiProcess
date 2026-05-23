@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5934ogo.inm
+MODNAME: apmain
+RUNID: _5934ogo
+NEW_RUNID: _5934ogo
+OLD_RUNID: _5934ogo
+PDF: _5934ogo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5934ogo.ads

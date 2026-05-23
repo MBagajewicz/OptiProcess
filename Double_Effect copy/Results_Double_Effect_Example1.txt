@@ -1,0 +1,223 @@
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00000 seconds
+
+Primordial Set Trimming time:  0.00000 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [27, 12, 12]
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00000 seconds
+
+Primordial Set Trimming time:  0.00000 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [27, 12, 12]
+
+******************** Starting Execution for Double_Effect_Example1 ********************
+
+The solution of Equipment1 "Double_Effect" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [ 66652.51363527  66805.70587863  67402.35241444  66958.50722738
+  67555.1537632   69069.19086203  67110.94009302  67707.58662883
+  69221.62372766 123400.84096418 124039.96867619 125662.26599728]
+Incumbent value: 123400.84096417803
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 3.95 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.38 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.49 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0060613155364990234
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.30 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.11 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.27 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.35 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.20 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0015826225280761719
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.25 seconds 
+
+OF Solution total ($/year) 1e+20
+The solution of Equipment1 "DC_Q_Condenser" is presented below:
+Set trimming and Enumeration activated. Performing Set Trimming First, followed by Selected Enumeration
+Set Trimming successful - The candidates solution set is not empty
+Set Trimming Solution {'trimmed_candidates': array([[18, 18, 19, 18, 19, 20, 18, 19, 20, 18, 19, 20],
+       [20, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24]]), 'candidate_set_cardinality_after_each_trimming': [12]}
+Elapsed time Set Trimming: 0.0
+Performing Smart Enumeration now
+Lower bound values [1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20 1.e+20
+ 1.e+20 1.e+20]
+Incumbent value: 1e+20
+##################################
+Exit at candidate: 0
+Lower Bound: 1e+20 Candidate: 0
+⚠️   No feasible candidates found in Smart Enumeration
+Solution after Smart Enumeration {'TAC_OF': {'TAC': 1e+20}, 'Nf': None, 'Ns': None}
+Elapsed time for Equipment1 "DC_Q_Condenser": 5.52 seconds 
+
+OF Solution total ($/year) 1e+20
+##################################
+Exit at candidate: 9
+Lower Bound: 123400.84096417803 Candidate: 9
+Solution after Smart Enumeration {'TAC_OF': {'TAC': np.float64(123400.84096417803)}, 'Nf': 18, 'Ns': np.int64(24), 'Next_Level': [np.float64(59604.171867343655), [18, np.int64(24)]]}
+Elapsed time for Equipment1 "Double_Effect": 85.13 seconds 
+
+OF Solution total ($/year) 123400.84096417803
+Total time elapsed: 128.46027 seconds
+

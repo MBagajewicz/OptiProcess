@@ -1,0 +1,351 @@
+
+ BLOCK:  COLUMN1  MODEL: RADFRAC         
+ -------------------------------
+    INLETS   - FEED     STAGE   6
+    OUTLETS  - D-TOP    STAGE   1
+               B-BOTTOM STAGE  42
+   PROPERTY OPTION SET:   PENG-ROB  STANDARD PR EQUATION OF STATE               
+
+                      ***  MASS AND ENERGY BALANCE  ***
+                                    IN              OUT        RELATIVE DIFF.
+    TOTAL BALANCE
+       MOLE(KMOL/HR )            100.000         100.000         0.00000    
+       MASS(KG/HR   )            9676.94         9676.94       -0.258555E-11
+       ENTHALPY(KJ/HR   )       0.156705E+07    0.167920E+07   -0.667874E-01
+
+                      ***  CO2 EQUIVALENT SUMMARY ***
+    FEED STREAMS CO2E             0.00000      KG/HR           
+    PRODUCT STREAMS CO2E          0.00000      KG/HR           
+    NET STREAMS CO2E PRODUCTION   0.00000      KG/HR           
+    UTILITIES CO2E PRODUCTION     0.00000      KG/HR           
+    TOTAL CO2E PRODUCTION         0.00000      KG/HR           
+
+
+
+                         **********************
+                         ****  INPUT DATA  ****
+                         **********************
+
+   ****   INPUT PARAMETERS   ****
+
+    NUMBER OF STAGES                                        42
+    ALGORITHM OPTION                                      STANDARD    
+    ABSORBER OPTION                                       NO      
+    INITIALIZATION OPTION                                 STANDARD    
+    HYDRAULIC PARAMETER CALCULATIONS                      NO      
+    INSIDE LOOP CONVERGENCE METHOD                        BROYDEN 
+    DESIGN SPECIFICATION METHOD                           NESTED  
+    MAXIMUM NO. OF OUTSIDE LOOP ITERATIONS                  25
+    MAXIMUM NO. OF INSIDE LOOP ITERATIONS                   10
+    MAXIMUM NUMBER OF FLASH ITERATIONS                      30
+    FLASH TOLERANCE                                          0.000100000
+    OUTSIDE LOOP CONVERGENCE TOLERANCE                       0.000100000
+
+   ****   COL-SPECS   ****
+
+    MOLAR VAPOR DIST / TOTAL DIST                            0.0        
+    MOLAR REFLUX RATIO                                       4.12000    
+    MOLAR DISTILLATE RATE          KMOL/HR                  14.2500     
+
+   ****    PROFILES   ****
+
+    P-SPEC          STAGE   1  PRES, PA                100,000.         
+
+                          *******************
+                          ****  RESULTS  ****
+                          *******************
+
+
+   ***   COMPONENT SPLIT FRACTIONS   ***
+
+                             OUTLET STREAMS 
+                             --------------
+                  D-TOP        B-BOTTOM
+    COMPONENT:
+    BENZENE     .96921       .30787E-01
+    TOLUENE     .34686E-02   .99653    
+    M-XYLENE    .38352E-04   .99996    
+
+ 
+   ***    SUMMARY OF KEY RESULTS    ***
+
+    TOP STAGE TEMPERATURE          K                       353.072      
+    BOTTOM STAGE TEMPERATURE       K                       397.046      
+    TOP STAGE LIQUID FLOW          KMOL/HR                 129.470      
+    BOTTOM STAGE LIQUID FLOW       KMOL/HR                  86.2939     
+    TOP STAGE VAPOR FLOW           KMOL/HR                   0.0        
+    BOILUP VAPOR FLOW              KMOL/HR                 126.819      
+    MOLAR REFLUX RATIO                                       9.44621    
+    MOLAR BOILUP RATIO                                       1.46962    
+    CONDENSER DUTY (W/O SUBCOOL)   KJ/HR            -4,370,490.         
+    REBOILER DUTY                  KJ/HR             4,482,640.         
+
+
+   ****   MANIPULATED VARIABLES   ****
+
+                                                 BOUNDS             CALCULATED
+                                          LOWER         UPPER         VALUE
+   MOLAR DISTILLATE RATE      KMOL/HR     0.0000        100.00        13.706    
+   MOLAR REFLUX RATIO                     0.0000        100.00        9.4462    
+
+   ****    DESIGN SPECIFICATIONS   **** 
+
+ NO  SPEC-TYPE     QUALIFIERS              UNIT       SPECIFIED     CALCULATED
+                                                        VALUE         VALUE
+  1  MOLE-FRAC     STREAMS: D-TOP                      0.99000       0.99000    
+                   COMPS:   BENZENE      
+  2  MOLE-FRAC     STREAMS: B-BOTTOM                   0.50000E-02   0.49948E-02
+                   COMPS:   BENZENE      
+
+   ****   MAXIMUM FINAL RELATIVE ERRORS   ****
+
+    DEW POINT                       0.83316E-04  STAGE= 33
+    BUBBLE POINT                    0.67290E-05  STAGE= 36
+    COMPONENT MASS BALANCE          0.41160E-07  STAGE=  6 COMP=M-XYLENE
+    ENERGY BALANCE                  0.43477E-04  STAGE= 28
+
+
+   ****    PROFILES   ****
+
+   **NOTE** REPORTED VALUES FOR STAGE LIQUID AND VAPOR RATES ARE THE FLOWS
+            FROM THE STAGE INCLUDING ANY SIDE PRODUCT.
+
+                                          ENTHALPY
+ STAGE TEMPERATURE   PRESSURE             KJ/KMOL            HEAT DUTY
+       K             PA             LIQUID       VAPOR        KJ/HR   
+
+   1   353.07       0.10000E+06    56838.       87526.      -.43705+07
+   2   353.41       0.10000E+06    56298.       87363.                
+   3   354.23       0.10000E+06    54978.       86976.                
+   5   361.09       0.10000E+06    43960.       83705.                
+   6   370.95       0.10000E+06    30307.       78174.                
+   7   370.95       0.10000E+06    30307.       78174.                
+  41   393.89       0.10000E+06    13751.       54373.                
+  42   397.05       0.10000E+06    10432.       51358.       .44826+07
+
+ STAGE     FLOW RATE                  FEED RATE               PRODUCT RATE
+            KMOL/HR                    KMOL/HR                  KMOL/HR 
+       LIQUID     VAPOR       LIQUID    VAPOR    MIXED      LIQUID    VAPOR
+   1  143.2      0.000                                       13.7060          
+   2  129.0      143.2                                                        
+   3  127.8      142.7                                                        
+   5  119.2      138.7                                                        
+   6  215.8      132.9       100.0000                                         
+   7  215.8      129.5                                                        
+  41  213.1      128.0                                                        
+  42  86.29      126.8                                       86.2939          
+
+    ****  MASS FLOW PROFILES  ****
+
+ STAGE     FLOW RATE                  FEED RATE               PRODUCT RATE
+            KG/HR                      KG/HR                    KG/HR   
+       LIQUID     VAPOR       LIQUID    VAPOR    MIXED      LIQUID    VAPOR
+   1 0.1120E+05  0.000                                     1072.5780          
+   2 0.1012E+05 0.1120E+05                                                    
+   3 0.1011E+05 0.1120E+05                                                    
+   5  9988.     0.1113E+05                                                    
+   6 0.1938E+05 0.1106E+05  9676.9390                                         
+   7 0.1938E+05 0.1078E+05                                                    
+  41 0.2091E+05 0.1221E+05                                                    
+  42  8604.     0.1231E+05                                 8604.3609          
+
+                         ****   MOLE-X-PROFILE     ****
+   STAGE     BENZENE       TOLUENE       M-XYLENE
+      1    0.99000       0.98697E-02   0.13151E-03
+      2    0.97414       0.25070E-01   0.79453E-03
+      3    0.93726       0.58445E-01   0.42924E-02
+      5    0.68413       0.22674       0.89132E-01
+      6    0.43146       0.30275       0.26579    
+      7    0.43146       0.30275       0.26579    
+     41    0.11242E-01   0.55087       0.43789    
+     42    0.49948E-02   0.45038       0.54463    
+
+                         ****   MOLE-Y-PROFILE     ****
+   STAGE     BENZENE       TOLUENE       M-XYLENE
+      1    0.99613       0.38442E-02   0.21516E-04
+      2    0.99000       0.98697E-02   0.13151E-03
+      3    0.97566       0.23610E-01   0.73085E-03
+      5    0.86726       0.11351       0.19221E-01
+      6    0.71568       0.20437       0.79953E-01
+      7    0.71568       0.20437       0.79953E-01
+     41    0.32510E-01   0.69918       0.26831    
+     42    0.15493E-01   0.61925       0.36526    
+
+                         ****   K-VALUES           ****
+   STAGE     BENZENE       TOLUENE       M-XYLENE
+      1     1.0062       0.38949       0.16360    
+      2     1.0163       0.39368       0.16553    
+      3     1.0410       0.40397       0.17026    
+      5     1.2677       0.50065       0.21565    
+      6     1.6587       0.67505       0.30083    
+      7     1.6587       0.67505       0.30083    
+     41     2.8918        1.2692       0.61274    
+     42     3.1019        1.3750       0.67066    
+
+                         ****   MASS-X-PROFILE     ****
+   STAGE     BENZENE       TOLUENE       M-XYLENE
+      1    0.98820       0.11621E-01   0.17842E-03
+      2    0.96949       0.29431E-01   0.10747E-02
+      3    0.92612       0.68120E-01   0.57647E-02
+      5    0.63775       0.24932       0.11293    
+      6    0.37524       0.31059       0.31417    
+      7    0.37524       0.31059       0.31417    
+     41    0.89495E-02   0.51727       0.47378    
+     42    0.39130E-02   0.41619       0.57990    
+
+                         ****   MASS-Y-PROFILE     ****
+   STAGE     BENZENE       TOLUENE       M-XYLENE
+      1    0.99544       0.45313E-02   0.29223E-04
+      2    0.98820       0.11621E-01   0.17842E-03
+      3    0.97129       0.27725E-01   0.98887E-03
+      5    0.84423       0.13034       0.25430E-01
+      6    0.67174       0.22627       0.10200    
+      7    0.67174       0.22627       0.10200    
+     41    0.26606E-01   0.67495       0.29845    
+     42    0.12471E-01   0.58794       0.39959    
+
+
+
+
+                    ********************************
+                    ***** HYDRAULIC PARAMETERS *****
+                    ********************************
+
+
+       *** DEFINITIONS ***
+
+        MARANGONI INDEX = SIGMA - SIGMATO
+        FLOW PARAM = (ML/MV)*SQRT(RHOV/RHOL)
+        QR = QV*SQRT(RHOV/(RHOL-RHOV))
+        F FACTOR = QV*SQRT(RHOV)
+          WHERE:
+          SIGMA IS THE SURFACE TENSION OF LIQUID FROM THE STAGE
+          SIGMATO IS THE SURFACE TENSION OF LIQUID TO THE STAGE
+          ML IS THE MASS FLOW OF LIQUID FROM THE STAGE
+          MV IS THE MASS FLOW OF VAPOR TO THE STAGE
+          RHOL IS THE MASS DENSITY OF LIQUID FROM THE STAGE
+          RHOV IS THE MASS DENSITY OF VAPOR TO THE STAGE
+          QV IS THE VOLUMETRIC FLOW RATE OF VAPOR TO THE STAGE
+
+
+                     TEMPERATURE
+                         K   
+ STAGE       LIQUID FROM       VAPOR TO
+    1         353.07            353.41    
+    2         353.41            354.23    
+    3         354.23            356.24    
+    5         361.09            370.95    
+    6         370.95            370.95    
+    7         370.95            370.95    
+   41         393.89            397.05    
+   42         397.05            397.05    
+
+
+             MASS FLOW                VOLUME FLOW         MOLECULAR WEIGHT
+              KG/HR                    L/MIN   
+ STAGE LIQUID FROM  VAPOR TO   LIQUID FROM  VAPOR TO   LIQUID FROM  VAPOR TO
+    1   11204.      11204.      229.25      68083.      78.256      78.256    
+    2   10125.      11198.      207.30      68017.      78.488      78.465    
+    3   10106.      11179.      207.24      67848.      79.054      78.977    
+    5   9987.9      11060.      207.31      66323.      83.795      83.223    
+    6   19380.      10776.      408.00      64617.      89.817      83.223    
+    7   19380.      10776.      408.00      64617.      89.817      83.223    
+   41   20912.      12307.      452.09      67417.      98.125      97.047    
+   42   8604.4      0.0000      186.67      0.0000      99.710    
+
+
+               DENSITY                  VISCOSITY         SURFACE TENSION
+               GM/CC                     CP                  DYNE/CM 
+ STAGE LIQUID FROM  VAPOR TO     LIQUID FROM  VAPOR TO      LIQUID FROM
+    1  0.81457      0.27428E-02  0.32066      0.90082E-02    20.443    
+    2  0.81403      0.27438E-02  0.31956      0.90173E-02    20.434    
+    3  0.81276      0.27460E-02  0.31699      0.90396E-02    20.416    
+    5  0.80296      0.27794E-02  0.29798      0.91697E-02    20.243    
+    6  0.79169      0.27794E-02  0.27575      0.91697E-02    19.821    
+    7  0.79169      0.27794E-02  0.27575      0.91697E-02    19.821    
+   41  0.77093      0.30426E-02  0.23258      0.90459E-02    18.070    
+   42  0.76822                   0.22979                     17.907    
+
+
+       MARANGONI INDEX   FLOW PARAM          QR          REDUCED F-FACTOR
+ STAGE    DYNE/CM                          L/MIN         (GM-L)**.5/MIN  
+    1                    0.58028E-01       3957.4          0.11276E+06
+    2   -.84841E-02      0.52496E-01       3955.5          0.11267E+06
+    3   -.18949E-01      0.52549E-01       3950.4          0.11243E+06
+    5   -.12869          0.53129E-01       3908.9          0.11057E+06
+    6   0.32746          0.10656           3835.4          0.10773E+06
+    7   -.11114E-05      0.10656           3835.4          0.10773E+06
+   41   -.11264          0.10674           4243.7          0.11760E+06
+   42   -.16273                            0.0000           0.0000    
+
+
+
+
+                 ************************************ 
+                 ***** TRAY SIZING CALCULATIONS ***** 
+                 ************************************ 
+
+
+    *******************
+    *** SECTION   1 ***
+    *******************
+
+    STARTING STAGE NUMBER                                         2
+    ENDING STAGE NUMBER                                           3
+    FLOODING CALCULATION METHOD                               GLITSCH6
+
+    DESIGN PARAMETERS             
+    -----------------             
+    PEAK CAPACITY FACTOR                                      1.00000    
+    SYSTEM FOAMING FACTOR                                     1.00000    
+    FLOODING FACTOR                                           0.80000    
+    MINIMUM COLUMN DIAMETER         METER                     0.30480    
+    MINIMUM DC AREA/COLUMN AREA                               0.100000   
+    HOLE AREA/ACTIVE AREA                                     0.100000   
+    DOWNCOMER DESIGN BASIS                           EQUAL FLOW PATH LENGTH
+
+    TRAY SPECIFICATIONS        
+    -------------------        
+    TRAY TYPE                                                 SIEVE       
+    NUMBER OF PASSES                                              1
+    TRAY SPACING                    METER                     0.60960    
+
+
+            ***** SIZING RESULTS @ STAGE WITH MAXIMUM DIAMETER *****
+
+    STAGE WITH MAXIMUM DIAMETER                                   2
+    COLUMN DIAMETER                 METER                     0.99588    
+    DC AREA/COLUMN AREA                                       0.14352    
+    DOWNCOMER VELOCITY              M/SEC                     0.030906   
+    FLOW PATH LENGTH PER PANEL      METER                     0.59530    
+    SIDE DOWNCOMER WIDTH            METER                     0.20029    
+    SIDE WEIR LENGTH                METER                     0.79836    
+    CENTER DOWNCOMER WIDTH          METER                     0.0        
+    CENTER WEIR LENGTH              METER                     MISSING    
+    OFF-CENTER DOWNCOMER WIDTH      METER                     0.0        
+    OFF-CENTER SHORT WEIR LENGTH    METER                     MISSING    
+    OFF-CENTER LONG WEIR LENGTH     METER                     MISSING    
+    TRAY CENTER TO OCDC CENTER      METER                     0.0        
+
+
+                          **** SIZING PROFILES ****
+
+       STAGE    DIAMETER      TOTAL AREA   ACTIVE AREA   SIDE DC AREA
+                  METER         SQM          SQM            SQM     
+          2      0.99588       0.77893      0.55536       0.11179    
+          3      0.99588       0.77893      0.55536       0.11179    
+
+
+               **** ADDITIONAL SIZING PROFILES ****
+
+       FLOODING                            DC BACKUP/
+ STAGE FACTOR      PRES. DROP  DC BACKUP   (TSPC+WHT)
+                    PA          METER   
+   2     89.22       1293.      0.3063       46.38    
+   3     89.11       1288.      0.3058       46.31    
+
+       HEIGHT      DC REL      TR LIQ REL  FRA APPR TO
+ STAGE OVER WEIR   FROTH DENS  FROTH DENS  SYS LIMIT
+        METER   
+   2    0.6557E-01  0.6077      0.1658       58.31    
+   3    0.6552E-01  0.6077      0.1659       58.22    

@@ -1,0 +1,10 @@
+INPUT: Benzene_Toluene - Q_Fixo.inm
+MODNAME: apmain
+RUNID: Benzene_Toluene - Q_Fixo
+NEW_RUNID: Benzene_Toluene - Q_Fixo
+OLD_RUNID: Benzene_Toluene - Q_Fixo
+PDF: Benzene_Toluene - Q_Fixo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:
+DBCONN: _1611tdp.ads

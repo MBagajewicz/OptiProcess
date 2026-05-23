@@ -72,7 +72,7 @@ def fun_hs(Ds, dte, Npt, rp, lay, L, Q, BR, Pc, Fp, hnc):
     return hs
 
 # Tube side convective heat transfer coefficient
-def fun_ht(L, rol, rov, g, k_t, m_t, mil, miv, fluid_type, dte,thk,kl_t,Ds,Npt, rp, lay,Cpt):
+def fun_ht(Ds, dte, Npt, rp, lay, L, rol, rov, g, k_t, m_t, mil, miv, fluid_type,thk,kl_t,Cpt):
     Ntt=Calculations_Kettle_3_Geometry.fun_Ntt(Ds, dte, Npt, rp, lay)
     if fluid_type == 1:
     
@@ -94,7 +94,7 @@ def fun_ht(L, rol, rov, g, k_t, m_t, mil, miv, fluid_type, dte,thk,kl_t,Ds,Npt, 
 # Heat flux
 def fun_q(Q,A):
     q = Q/A
-   
+    print('Q = ', Q ) 
     return q
 
 # Maximum thermal flux
@@ -109,7 +109,7 @@ def fun_qb_max(Ds, dte, Npt, rp, lay, L, q1_max):
 # Overall heat transfer coefficient
 def fun_U(Ds, dte, Npt, rp, lay, L, thk, rol, rov, g, k_t, m_t,mil, miv, Q, BR, Pc, Fp, hnc, Rft, Rfs, ktube, fluid_type, kl_t, Cpt ):
     dti = Calculations_Kettle_3_Geometry.fun_dti(dte,thk)
-    ht = fun_ht(L, rol, rov, g, k_t, m_t, mil, miv, fluid_type, dte,thk,kl_t,Ds,Npt, rp, lay,Cpt)
+    ht = fun_ht(Ds, dte, Npt, rp, lay, L, rol, rov, g, k_t, m_t, mil, miv, fluid_type,thk,kl_t,Cpt)
     hs = fun_hs(Ds, dte, Npt, rp, lay, L, Q, BR, Pc, Fp, hnc)
     U = 1 / (1/ht*(dte/dti) + Rft*(dte/dti) + dte*np.log(dte/dti)/(2*ktube) + Rfs + 1/hs)
     print('U =',U)

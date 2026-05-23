@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0751zga.inm
+MODNAME: apmain
+RUNID: _0751zga
+NEW_RUNID: _0751zga
+OLD_RUNID: _0751zga
+PDF: _0751zga.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0751zga.ads

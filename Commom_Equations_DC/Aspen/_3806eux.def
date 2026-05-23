@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3806eux.inm
+MODNAME: apmain
+RUNID: _3806eux
+NEW_RUNID: _3806eux
+OLD_RUNID: _3806eux
+PDF: _3806eux.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

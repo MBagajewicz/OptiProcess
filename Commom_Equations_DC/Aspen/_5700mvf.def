@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5700mvf.inm
+MODNAME: apmain
+RUNID: _5700mvf
+NEW_RUNID: _5700mvf
+OLD_RUNID: _5700mvf
+PDF: _5700mvf.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _5700mvf.ads

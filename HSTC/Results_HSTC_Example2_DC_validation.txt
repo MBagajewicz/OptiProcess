@@ -1,0 +1,18 @@
+Set Trimming successful - The candidates solution set is not empty
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [403200, 288000, 288000, 273600, 207600]
+
+******************** Starting Execution for HSTC_Example2_DC_validation ********************
+
+The solution of Equipment1 "HSTC" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [207600, 144240, 120400, 26396, 25308, 25308, 25308, 19726, 16408, 15974]
+{'Cost_OF': {'HE_CAPEX': 28556.718711371654, 'Number_of_solutions': 14}, 'Area_OF': {'HE_Area': 6.988249176513559, 'Number_of_solutions': 14}, 'Ds': 0.43815, 'dte': 0.038, 'Npt': 4.0, 'rp': 1.5, 'lay': 2.0, 'L': 1.8293, 'Nb': 4.0}
+Elapsed time for Equipment1 "HSTC": 0.04 seconds 
+
+OF Solution total ($) 28556.718711371654
+Total elapsed time: 0.09 seconds
+

@@ -28,7 +28,7 @@ from Commom_Equations_DC import Calculations_DC_Column_Sizing
 
 # Transition mass
 def f_Wshell_trans(DSTRIP, DRECT, roshell):  
-    Atrans = pi*abs(DSTRIP - DRECT)/2
+    Atrans = pi*abs(DSTRIP**2 - DRECT**2)/2
     twall = Calculations_DC_Column_Sizing.f_twall(np.maximum(DRECT,DSTRIP))
     Wshell = roshell*twall*Atrans
     return Wshell

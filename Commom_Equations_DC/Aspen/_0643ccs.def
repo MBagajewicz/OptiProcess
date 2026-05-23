@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0643ccs.inm
+MODNAME: apmain
+RUNID: _0643ccs
+NEW_RUNID: _0643ccs
+OLD_RUNID: _0643ccs
+PDF: _0643ccs.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+DBCONN: _0643ccs.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2620qoh.inm
+MODNAME: apmain
+RUNID: _2620qoh
+NEW_RUNID: _2620qoh
+OLD_RUNID: _2620qoh
+PDF: _2620qoh.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2620qoh.ads

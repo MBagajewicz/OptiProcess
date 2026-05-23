@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2227wvs.inm
+MODNAME: apmain
+RUNID: _2227wvs
+NEW_RUNID: _2227wvs
+OLD_RUNID: _2227wvs
+PDF: _2227wvs.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _2227wvs.ads

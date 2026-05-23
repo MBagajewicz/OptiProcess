@@ -1,0 +1,23 @@
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.02137 seconds
+
+Primordial Set Trimming time:  0.03258 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [403200, 288000, 288000, 273600, 207600]
+
+******************** Starting Execution for HSTC_Example1 ********************
+
+The solution of Equipment1 "HSTC" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [207600, 203440, 75440, 50499, 32529, 32529, 32529, 23816, 19991, 6376]
+{'Cost_OF': {'HE_CAPEX': 41690.45643711245, 'Number_of_solutions': 3}, 'Area_OF': {'HE_Area': 100.77515462865162, 'Number_of_solutions': 3}, 'Ds': 0.635, 'dte': 0.016, 'Npt': 2.0, 'rp': 1.33, 'lay': 1.0, 'L': 3.6585, 'Nb': 5.0}
+Elapsed time for Equipment1 "HSTC": 0.04 seconds 
+
+OF Solution total ($) 41690.45643711245
+Total time elapsed: 0.09878 seconds
+

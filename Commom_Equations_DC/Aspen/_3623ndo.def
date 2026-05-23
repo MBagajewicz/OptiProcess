@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3623ndo.inm
+MODNAME: apmain
+RUNID: _3623ndo
+NEW_RUNID: _3623ndo
+OLD_RUNID: _3623ndo
+PDF: _3623ndo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3623ndo.ads

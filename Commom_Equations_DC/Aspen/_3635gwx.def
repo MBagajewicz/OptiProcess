@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3635gwx.inm
+MODNAME: apmain
+RUNID: _3635gwx
+NEW_RUNID: _3635gwx
+OLD_RUNID: _3635gwx
+PDF: _3635gwx.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3635gwx.ads

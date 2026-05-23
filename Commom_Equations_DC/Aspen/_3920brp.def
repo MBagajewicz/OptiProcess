@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3920brp.inm
+MODNAME: apmain
+RUNID: _3920brp
+NEW_RUNID: _3920brp
+OLD_RUNID: _3920brp
+PDF: _3920brp.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3920brp.ads

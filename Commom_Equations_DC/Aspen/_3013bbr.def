@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3013bbr.inm
+MODNAME: apmain
+RUNID: _3013bbr
+NEW_RUNID: _3013bbr
+OLD_RUNID: _3013bbr
+PDF: _3013bbr.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3013bbr.ads

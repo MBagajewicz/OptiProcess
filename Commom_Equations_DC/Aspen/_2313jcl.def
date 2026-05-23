@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2313jcl.inm
+MODNAME: apmain
+RUNID: _2313jcl
+NEW_RUNID: _2313jcl
+OLD_RUNID: _2313jcl
+PDF: _2313jcl.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

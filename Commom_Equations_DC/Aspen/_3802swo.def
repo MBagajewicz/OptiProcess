@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _3802swo.inm
+MODNAME: apmain
+RUNID: _3802swo
+NEW_RUNID: _3802swo
+OLD_RUNID: _3802swo
+PDF: _3802swo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _3802swo.ads

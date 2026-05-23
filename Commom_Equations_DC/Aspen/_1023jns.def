@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _1023jns.inm
+MODNAME: apmain
+RUNID: _1023jns
+NEW_RUNID: _1023jns
+OLD_RUNID: _1023jns
+PDF: _1023jns.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _1023jns.ads

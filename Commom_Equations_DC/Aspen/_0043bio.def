@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0043bio.inm
+MODNAME: apmain
+RUNID: _0043bio
+NEW_RUNID: _0043bio
+OLD_RUNID: _0043bio
+PDF: _0043bio.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0043bio.ads

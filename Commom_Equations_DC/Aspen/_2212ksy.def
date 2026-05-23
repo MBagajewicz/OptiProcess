@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _2212ksy.inm
+MODNAME: apmain
+RUNID: _2212ksy
+NEW_RUNID: _2212ksy
+OLD_RUNID: _2212ksy
+PDF: _2212ksy.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _1450nce.inm
+MODNAME: apmain
+RUNID: _1450nce
+NEW_RUNID: _1450nce
+OLD_RUNID: _1450nce
+PDF: _1450nce.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+DBCONN: _1450nce.ads

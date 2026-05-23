@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _4815gzf.inm
+MODNAME: apmain
+RUNID: _4815gzf
+NEW_RUNID: _4815gzf
+OLD_RUNID: _4815gzf
+PDF: _4815gzf.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _4815gzf.ads

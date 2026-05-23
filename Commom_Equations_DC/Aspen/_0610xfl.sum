@@ -1,0 +1,38 @@
+ IDSET ID_17 (PROPERTIES) (8 *2 <13> 7 *2 <13> 62 *2 <13> 14 *2 13 *2 <22> 12   
+ *2 <22> 60 *2 54 *2 <11> 55 *2 <11> 56 *2 <11> 57 *2 <11> 149 *2 <13> 150 *2   
+ 1137 *2 <11> 1138 *2 <11> 1139 *2 1140 *2 <11> 1141 *2 1142 *2 <11> 1143 *2    
+ <11> 1144 *2 <10> 1145 *2 <10> 1146 *2 1147 *2 <10> 1148 *2 1149 *2 <10> 1150  
+ *2 <10> 1151 *2 <12> 1152 *2 <12> 1153 *2 1154 *2 <12> 1155 *2 1156 *2 <12>    
+ 1157 *2 <12> 1158 *2 1159 *2 <20> 1160 *2 <20> 1161 *2 <75> 1162 *2 <75> 1163  
+ *2 <75> 1164 *2 <13> 41024 *2 41025 *2 41026 *2 41027 *2 41028 *2 41029 *2 )   
+ LSET L_6 (%ID_RXBAL %ID_17)                                                    
+ IDSET ID_18 (PROPERTIES) (263 *6 313 *1 )                                      
+ IDSET ID_19 (IN_STR) (1)                                                       
+ LSET L_7 ( %ID_18 & %ID_19 )                                                   
+ DSET BLOCK RADFRAC LPC INLETS @L_7 ( "FEED-LPC" 1 )                            
+ IDSET ID_20 (OUT_STR) (1)                                                      
+ LSET L_8 ( %ID_18 & %ID_20 )                                                   
+ DSET BLOCK RADFRAC LPC OUTLETS @L_8 ( "L-TOP" 1 )                              
+ IDSET ID_21 (OUT_STR) (2)                                                      
+ LSET L_9 ( %ID_18 & %ID_21 )                                                   
+ DSET BLOCK RADFRAC LPC OUTLETS @L_9 ( "L-BOTTOM" 20 )                          
+ DSET BLOCK RADFRAC LPC BLKSTAT @BLKSTAT (1 0)                                  
+ DSET BLOCK RADFRAC LPC COMPSTAT @L1 (1)                                        
+ DSET BLOCK RADFRAC LPC SYNCSTAT @L1 (0)                                        
+ DSET BLOCK RADFRAC LPC BLKMSG @BLKMSG (                                        
+ "INPUT ERROR - INCONSISTENT INFORMATION OR SPECIFICATIONS" )                   
+ IDSET ID_22 (NPOINTS) ( #10)                                                   
+ IDSET ID_23 (PROPERTIES) (747 *6)                                              
+ LSET L_10 (%ID_23 & %ID_22)                                                    
+ DSET BLOCK RADFRAC LPC ERRTXT @L_10 (                                          
+ "*  WARNING"                                                                   
+ "   FEED PRESSURE  0.10000E+06 (N/SQM) OF STREAM FEED-LPC"                     
+ "   IS LOWER THAN STAGE   1 PRESSURE  0.30000E+06 (N/SQM)."                    
+ ""                                                                             
+ "***SEVERE ERROR"                                                              
+ "   COLUMN SPECS RESULT IN NEG. OR ZERO"                                       
+ "   INTERNAL FLOW TO TOP OR BOTTOM STAGE."                                     
+ ""                                                                             
+ "*  WARNING"                                                                   
+ "   REST OF BLOCK BYPASSED DUE TO SEVERE ERROR."                               
+ )                                                                              

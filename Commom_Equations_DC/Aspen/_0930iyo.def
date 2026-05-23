@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _0930iyo.inm
+MODNAME: apmain
+RUNID: _0930iyo
+NEW_RUNID: _0930iyo
+OLD_RUNID: _0930iyo
+PDF: _0930iyo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+DBCONN: _0930iyo.ads

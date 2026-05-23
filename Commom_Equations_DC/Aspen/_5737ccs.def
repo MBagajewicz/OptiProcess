@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _5737ccs.inm
+MODNAME: apmain
+RUNID: _5737ccs
+NEW_RUNID: _5737ccs
+OLD_RUNID: _5737ccs
+PDF: _5737ccs.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V14.0\Engine\xeq\apmain
+SPONLY:

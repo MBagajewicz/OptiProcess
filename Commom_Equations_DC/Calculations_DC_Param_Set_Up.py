@@ -17,7 +17,7 @@
 
 ##################################################################################################################
 #region Import Library
-from Commom_Equations_DC import Calculations_DC_Aspen
+from Commom_Equations_DC import (Calculations_DC_Aspen, Calculations_DC_2FEEDS_Aspen)
 from HSTC.Model import Parameters_Update_HSTC
 from Kettle_2.Model import Parameters_Update_Kettle_2
 from Reflux_Drum.Model import Parameters_Update_Reflux_Drum
@@ -40,6 +40,28 @@ def call_initial_Aspen(m_p):
     F_feed = m_p['F_f']         # Feed molar flow for each component
     T_feed = m_p['T_f']         # Feed temperature 
     P_col = m_p['Pcol']         # Column pressure
+    SPEC_1 = m_p['SPEC_1']      # Specification 1 - Example: Top Fraction Product or Condenser Duty
+    SPEC_2 = m_p['SPEC_2']      # Specification 2 - Example: Bottom Fraction Product or Reboiler Duty
+    D_LB = m_p['distillate_rate_bounds'][0]   
+    D_UB = m_p['distillate_rate_bounds'][1]
+    RR_LB = m_p['reflux_ratio_bounds'][0]
+    RR_UB = m_p['reflux_ratio_bounds'][1]
+
+    m_p['Aspen_engine'] = Calculations_DC_Aspen.fun_initial_Aspen(file_name, stream_name, block_name, comp_name,  
+                                        z_feed, F_feed, T_feed, P_col, SPEC_1, SPEC_2, D_LB, D_UB, RR_LB, RR_UB)
+    
+    return m_p
+
+def call_initial_Aspen_2FEEDS(m_p):
+
+    file_name = m_p['file_name'][0]
+    stream_name = m_p['stream_names']
+    block_name = m_p['block_name'][0]
+    comp_name = m_p['Comp_name']
+    z_feed = m_p['z_f']         # Feed molar fractions
+    F_feed = m_p['F_f']         # Feed molar flow for each component
+    T_feed = m_p['T_f']         # Feed temperature 
+    P_col = m_p['Pcol']         # Column pressure
     x_TOP = m_p['xB_TOP']       # Top product purity
     x_BOTTOM = m_p['xB_BOTTOM'] # Bottom product purity
     D_LB = m_p['distillate_rate_bounds'][0]   
@@ -47,7 +69,7 @@ def call_initial_Aspen(m_p):
     RR_LB = m_p['reflux_ratio_bounds'][0]
     RR_UB = m_p['reflux_ratio_bounds'][1]
 
-    m_p['Aspen_engine'] = Calculations_DC_Aspen.fun_initial_Aspen(file_name, stream_name, block_name, comp_name,  
+    m_p['Aspen_engine'] = Calculations_DC_2FEEDS_Aspen.fun_initial_Aspen(file_name, stream_name, block_name, comp_name,  
                                         z_feed, F_feed, T_feed, P_col, x_TOP, x_BOTTOM, D_LB, D_UB, RR_LB, RR_UB)
     
     return m_p

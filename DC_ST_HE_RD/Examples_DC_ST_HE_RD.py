@@ -55,10 +55,10 @@ Example1_Pb_10 = {
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
             'Discrete_Values_of_Variables': [
     
-                            list(range(3, 51)), # Nf (Feed considered from stage 3 to 50, considering there are always a stripping 
+                            list(range(3, 41)), # Nf (Feed considered from stage 3 to 50, considering there are always a stripping 
                                                 # and a rectifying section)
                                                 # Nf is interpreted regarding stages and not trays (same as in Aspen Plus)
-                            list(range(5, 53))  # Ns (Stages and not trays, as in Aspen Plus)
+                            list(range(5, 43))  # Ns (Stages and not trays, as in Aspen Plus)
                                                 # Ns = 5 means: condenser + 3 stages within the column + reboiler
                                                 # Ns = 52 means: condenser + 50 stages within the column + reboiler                  
                                     ],
@@ -96,8 +96,8 @@ Example1_Pb_10 = {
             'F_f' :  100,               # Feed flow (kmol/h)
             'T_f' :  113.4 + 273.15,    # Feed temperature (K)
             # Separation Task Specification 
-            'xB_TOP' : 0.99,                    # Top benzene purity
-            'xB_BOTTOM' : 0.005,                # Bottom benzene purity       
+            'SPEC_1' : 0.99,                    # Top benzene purity
+            'SPEC_2' : 0.005,                # Bottom benzene purity       
             # Components - NAMES MUST BE THE SAME AS SET IN ASPEN PLUS (if Aspen is to be used)!! CASE SENSITIVE 
             'Comp_name' : ['BENZENE', 'TOLUENE', 'M-XYLENE'],      
 
@@ -376,7 +376,6 @@ Example1_Pb_2['Equipment1']['Model_Parameters']['Pb'] = 2
 Example2_Pb_10 = copy.deepcopy(Example1_Pb_10)
 Example2_Pb_10['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables'] = [list(range(3, 41)),list(range(5, 43))]
 Example2_Pb_10['Equipment1']['Model_Parameters']['z_f'] = [0.10, 0.25, 0.65]
-Example2_Pb_10['Equipment1']['Model_Parameters']['F_f'] = 50
 
 # endregion
 ###################################################################################################################
@@ -386,7 +385,6 @@ Example2_Pb_10['Equipment1']['Model_Parameters']['F_f'] = 50
 # region INPUT EXAMPLE 2 - BTX DISTILLATION COLUMN FOR PECCINI ET AL 2025 - PAYBACK PERIOD = 2 YEARS
 
 Example2_Pb_2 = copy.deepcopy(Example2_Pb_10)
-Example2_Pb_2['Equipment1']['Model_Declarations']['Discrete_Values_of_Variables'] = [list(range(3, 41)),list(range(5, 43))]
 Example2_Pb_2['Equipment1']['Model_Parameters']['Pb'] = 2
 
 
@@ -394,9 +392,17 @@ Example2_Pb_2['Equipment1']['Model_Parameters']['Pb'] = 2
 ###################################################################################################################
 ###################################################################################################################
 
+Example1_Pb_2_Seg_10 = copy.deepcopy(Example1_Pb_2)
+Example1_Pb_2_Seg_10['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Segmental_Smart'
 
+Example1_Pb_10_Seg_10 = copy.deepcopy(Example1_Pb_10)
+Example1_Pb_10_Seg_10['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Segmental_Smart'
 
+Example2_Pb_2_Seg_10 = copy.deepcopy(Example2_Pb_2)
+Example2_Pb_2_Seg_10['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Segmental_Smart'
 
+Example2_Pb_10_Seg_10 = copy.deepcopy(Example2_Pb_10)
+Example2_Pb_10_Seg_10['Equipment1']['Model_Declarations']['Type_Enumeration'] = 'Segmental_Smart'
 
 
 

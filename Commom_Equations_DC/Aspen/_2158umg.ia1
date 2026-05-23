@@ -1,0 +1,106 @@
+
+ B-BOTTOM B1-TOP B2-BOT D-TOP FEED       
+ ---------------------------------
+
+ STREAM ID               B-BOTTOM   B1-TOP     B2-BOT     D-TOP      FEED    
+ FROM :                  HPC        B1         B1         HPC        ----    
+ TO   :                  ----       ----       ----       ----       HPC     
+
+ SUBSTREAM: MIXED   
+ PHASE:                  LIQUID     LIQUID     LIQUID     LIQUID     VAPOR  
+ COMPONENTS: KMOL/HR         
+   BENZENE                0.0        0.0        0.0        0.0        0.0   
+   TOLUENE                0.0        0.0        0.0        0.0        0.0   
+   M-XYLENE               0.0        0.0        0.0        0.0        0.0   
+   METHANOL               0.2009    59.4000     0.6000    59.7991    60.0000
+   WATER                 39.9775     0.4000    39.6000  2.2507-02    40.0000
+ TOTAL FLOW:         
+   KMOL/HR               40.1784    59.8000    40.2000    59.8216   100.0000
+   KG/HR                726.6427  1910.5104   732.6304  1916.4981  2643.1408
+   L/MIN                 13.2063    51.9506    15.2564    42.9054  5.3565+04
+ STATE VARIABLES:    
+   TEMP   K             371.8936   426.5755   468.1120   337.3563   386.5500
+   PRES   PA           1.0000+05  1.5000+06  1.5000+06  1.0000+05  1.0000+05
+   VFRAC                  0.0        0.0        0.0        0.0        1.0000
+   LFRAC                  1.0000     1.0000     1.0000     1.0000     0.0   
+   SFRAC                  0.0        0.0        0.0        0.0        0.0   
+ ENTHALPY:           
+   KJ/KMOL            -2.7984+05 -2.2261+05 -2.7044+05 -2.3448+05 -2.1359+05
+   KJ/KG              -1.5473+04 -6967.8340 -1.4839+04 -7318.9342 -8080.9846
+   KJ/HR              -1.1244+07 -1.3312+07 -1.0872+07 -1.4027+07 -2.1359+07
+ ENTROPY:            
+   KJ/MOL-K              -0.1463    -0.1985    -0.1265    -0.2284 -7.8942-02
+   KJ/KG-K               -8.0906    -6.2137    -6.9425    -7.1291    -2.9867
+ DENSITY:            
+   MOL/CC              5.0706-02  1.9185-02  4.3916-02  2.3238-02  3.1115-05
+   GM/CC                  0.9170     0.6129     0.8004     0.7445  8.2241-04
+ AVG MW                  18.0854    31.9483    18.2246    32.0369    26.4314
+
+ MIXED    SUBSTREAM PROPERTIES:
+
+ ***  ALL PHASES   ***
+ CPMX-M   J/KG-K       4546.6908  5195.7298  5806.4542  3464.0793  1665.7894
+ PCMX     PA           2.1994+07  8.1775+06  2.1855+07  8.0893+06  1.3676+07
+
+ *** VAPOR PHASE   ***
+ CPMX-M   J/KG-K         MISSING    MISSING    MISSING    MISSING  1665.7894
+ KMX      WATT/M-K       MISSING    MISSING    MISSING    MISSING  2.4840-02
+ PCMX     PA             MISSING    MISSING    MISSING    MISSING  1.3676+07
+
+ *** LIQUID PHASE  ***
+ CPMX-M   J/KG-K       4546.6908  5195.7298  5806.4542  3464.0793    MISSING
+ KMX      WATT/M-K        0.6394     0.1641     0.5497     0.1889    MISSING
+ PCMX     PA           2.1994+07  8.1775+06  2.1855+07  8.0893+06    MISSING
+
+ FEED-B1 FEED-LPC L-BOTTOM L-TOP         
+ -------------------------------
+
+ STREAM ID               FEED-B1    FEED-LPC   L-BOTTOM   L-TOP   
+ FROM :                  ----       ----       LPC        LPC     
+ TO   :                  B1         LPC        ----       ----    
+
+ SUBSTREAM: MIXED   
+ PHASE:                  VAPOR      VAPOR      LIQUID     LIQUID 
+ COMPONENTS: KMOL/HR         
+   BENZENE                0.0        0.0        0.0        0.0   
+   TOLUENE                0.0        0.0        0.0        0.0   
+   M-XYLENE               0.0        0.0        0.0        0.0   
+   METHANOL              60.0000    60.0000     0.1980    59.8020
+   WATER                 40.0000    40.0000    39.3959     0.6041
+ TOTAL FLOW:         
+   KMOL/HR              100.0000   100.0000    39.5939    60.4061
+   KG/HR               2643.1408  2643.1408   716.0722  1927.0686
+   L/MIN               5.3565+04  5.3565+04    13.0141    43.1097
+ STATE VARIABLES:    
+   TEMP   K             386.5500   386.5500   371.8936   337.5010
+   PRES   PA           1.0000+05  1.0000+05  1.0000+05  1.0000+05
+   VFRAC                  1.0000     1.0000     0.0        0.0   
+   LFRAC                  0.0        0.0        1.0000     1.0000
+   SFRAC                  0.0        0.0        0.0        0.0   
+ ENTHALPY:           
+   KJ/KMOL            -2.1359+05 -2.1359+05 -2.7984+05 -2.3495+05
+   KJ/KG              -8080.9846 -8080.9846 -1.5473+04 -7364.6791
+   KJ/HR              -2.1359+07 -2.1359+07 -1.1080+07 -1.4192+07
+ ENTROPY:            
+   KJ/MOL-K           -7.8942-02 -7.8942-02    -0.1463    -0.2273
+   KJ/KG-K               -2.9867    -2.9867    -8.0906    -7.1250
+ DENSITY:            
+   MOL/CC              3.1115-05  3.1115-05  5.0706-02  2.3354-02
+   GM/CC               8.2241-04  8.2241-04     0.9170     0.7450
+ AVG MW                  26.4314    26.4314    18.0854    31.9019
+
+ MIXED    SUBSTREAM PROPERTIES:
+
+ ***  ALL PHASES   ***
+ CPMX-M   J/KG-K       1665.7894  1665.7894  4546.6908  3473.4190
+ PCMX     PA           1.3676+07  1.3676+07  2.1994+07  8.2238+06
+
+ *** VAPOR PHASE   ***
+ CPMX-M   J/KG-K       1665.7894  1665.7894    MISSING    MISSING
+ KMX      WATT/M-K     2.4840-02  2.4840-02    MISSING    MISSING
+ PCMX     PA           1.3676+07  1.3676+07    MISSING    MISSING
+
+ *** LIQUID PHASE  ***
+ CPMX-M   J/KG-K         MISSING    MISSING  4546.6908  3473.4190
+ KMX      WATT/M-K       MISSING    MISSING     0.6394     0.1894
+ PCMX     PA             MISSING    MISSING  2.1994+07  8.2238+06

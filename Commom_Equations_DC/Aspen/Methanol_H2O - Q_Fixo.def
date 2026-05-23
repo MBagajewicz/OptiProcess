@@ -1,0 +1,10 @@
+INPUT: Methanol_H2O - Q_Fixo.inm
+MODNAME: apmain
+RUNID: Methanol_H2O - Q_Fixo
+NEW_RUNID: Methanol_H2O - Q_Fixo
+OLD_RUNID: Methanol_H2O - Q_Fixo
+PDF: Methanol_H2O - Q_Fixo.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:
+DBCONN: _1639xun.ads

@@ -1,0 +1,10 @@
+SLAVE:
+INPUT: _1151bil.inm
+MODNAME: apmain
+RUNID: _1151bil
+NEW_RUNID: _1151bil
+OLD_RUNID: _1151bil
+PDF: _1151bil.appdf
+USERNAME: pamel
+XMOD: C:\Program Files\AspenTech\Aspen Plus V15.0\Engine\xeq\apmain
+SPONLY:

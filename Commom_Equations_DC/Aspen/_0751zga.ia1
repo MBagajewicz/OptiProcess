@@ -1,0 +1,347 @@
+
+ BLOCK:  LPC      MODEL: RADFRAC         
+ -------------------------------
+    INLETS   - FEED-LPC STAGE  18
+    OUTLETS  - L-TOP    STAGE   1
+               L-BOTTOM STAGE  23
+   PROPERTY OPTION SET:   UNIQUAC   UNIQUAC / IDEAL GAS                         
+
+                      ***  MASS AND ENERGY BALANCE  ***
+                                    IN              OUT        RELATIVE DIFF.
+    TOTAL BALANCE
+       MOLE(KMOL/HR )            70.0000         70.0000        0.149661E-11
+       MASS(KG/HR   )            1850.20         1850.20        0.180638E-11
+       ENTHALPY(KJ/HR   )      -0.149514E+08   -0.176906E+08    0.154837    
+
+                      ***  CO2 EQUIVALENT SUMMARY ***
+    FEED STREAMS CO2E             0.00000      KG/HR           
+    PRODUCT STREAMS CO2E          0.00000      KG/HR           
+    NET STREAMS CO2E PRODUCTION   0.00000      KG/HR           
+    UTILITIES CO2E PRODUCTION     0.00000      KG/HR           
+    TOTAL CO2E PRODUCTION         0.00000      KG/HR           
+
+
+
+                         **********************
+                         ****  INPUT DATA  ****
+                         **********************
+
+   ****   INPUT PARAMETERS   ****
+
+    NUMBER OF STAGES                                        23
+    ALGORITHM OPTION                                      NEWTON      
+    INITIALIZATION OPTION                                 STANDARD    
+    HYDRAULIC PARAMETER CALCULATIONS                      NO      
+    DESIGN SPECIFICATION METHOD                           SIMULT  
+    MAXIMUM NO. OF NEWTON ITERATIONS                       110
+    MAXIMUM NUMBER OF FLASH ITERATIONS                      30
+    FLASH TOLERANCE                                          0.000100000
+    COLUMN EQUATIONS CONVERGENCE TOLERANCE                   0.100000-06
+
+   ****   COL-SPECS   ****
+
+    MOLAR VAPOR DIST / TOTAL DIST                            0.0        
+    MOLAR REFLUX RATIO                                       1.55310    
+    MOLAR DISTILLATE RATE          KMOL/HR                  40.0000     
+
+   ****    PROFILES   ****
+
+    P-SPEC          STAGE   1  PRES, PA                100,000.         
+
+                          *******************
+                          ****  RESULTS  ****
+                          *******************
+
+
+   ***   COMPONENT SPLIT FRACTIONS   ***
+
+                             OUTLET STREAMS 
+                             --------------
+                  L-TOP        L-BOTTOM
+    COMPONENT:
+    METHANOL    .99670       .32995E-02
+    WATER       .15102E-01   .98490    
+
+ 
+   ***    SUMMARY OF KEY RESULTS    ***
+
+    TOP STAGE TEMPERATURE          K                       337.501      
+    BOTTOM STAGE TEMPERATURE       K                       371.894      
+    TOP STAGE LIQUID FLOW          KMOL/HR                  52.7297     
+    BOTTOM STAGE LIQUID FLOW       KMOL/HR                  27.7157     
+    TOP STAGE VAPOR FLOW           KMOL/HR                   0.0        
+    BOILUP VAPOR FLOW              KMOL/HR                  15.2147     
+    MOLAR REFLUX RATIO                                       1.24703    
+    MOLAR BOILUP RATIO                                       0.54896    
+    CONDENSER DUTY (W/O SUBCOOL)   KJ/HR            -3,362,430.         
+    REBOILER DUTY                  KJ/HR               623,276.         
+
+
+   ****   MANIPULATED VARIABLES   ****
+
+                                                 BOUNDS             CALCULATED
+                                          LOWER         UPPER         VALUE
+   MOLAR DISTILLATE RATE      KMOL/HR     0.0000        100.00        42.284    
+   MOLAR REFLUX RATIO                     0.0000        100.00        1.2470    
+
+   ****    DESIGN SPECIFICATIONS   **** 
+
+ NO  SPEC-TYPE     QUALIFIERS              UNIT       SPECIFIED     CALCULATED
+                                                        VALUE         VALUE
+  1  MOLE-FRAC     STREAMS: L-TOP                      0.99000       0.99000    
+                   COMPS:   METHANOL     
+  2  MOLE-FRAC     STREAMS: L-BOTTOM                   0.50000E-02   0.50000E-02
+                   COMPS:   METHANOL     
+
+   ****   MAXIMUM FINAL RELATIVE ERRORS   ****
+
+    DEW POINT                       0.18870E-11  STAGE= 18
+    BUBBLE POINT                    0.18869E-11  STAGE= 18
+    COMPONENT MASS BALANCE          0.17903E-10  STAGE= 20 COMP=METHANOL
+    ENERGY BALANCE                  0.19009E-10  STAGE= 20
+
+
+   ****    PROFILES   ****
+
+   **NOTE** REPORTED VALUES FOR STAGE LIQUID AND VAPOR RATES ARE THE FLOWS
+            FROM THE STAGE INCLUDING ANY SIDE PRODUCT.
+
+                                          ENTHALPY
+ STAGE TEMPERATURE   PRESSURE             KJ/KMOL            HEAT DUTY
+       K             PA             LIQUID       VAPOR        KJ/HR   
+
+   1   337.50       0.10000E+06  -0.23495E+06 -0.19932E+06  -.33624+07
+   2   337.72       0.10000E+06  -0.23566E+06 -0.19956E+06            
+   3   338.02       0.10000E+06  -0.23663E+06 -0.19988E+06            
+  16   354.60       0.10000E+06  -0.27192E+06 -0.21561E+06            
+  17   354.69       0.10000E+06  -0.27200E+06 -0.21570E+06            
+  18   355.72       0.10000E+06  -0.27292E+06 -0.21675E+06            
+  22   370.02       0.10000E+06  -0.27946E+06 -0.23481E+06            
+  23   371.89       0.10000E+06  -0.27984E+06 -0.23779E+06   .62328+06
+
+ STAGE     FLOW RATE                  FEED RATE               PRODUCT RATE
+            KMOL/HR                    KMOL/HR                  KMOL/HR 
+       LIQUID     VAPOR       LIQUID    VAPOR    MIXED      LIQUID    VAPOR
+   1  95.01      0.000                                       42.2842          
+   2  52.53      95.01                                                        
+   3  52.26      94.81                                                        
+  16  45.33      87.64                                                        
+  17  42.93      87.62                  70.0000                               
+  18  42.86      15.21                                                        
+  22  42.93      15.09                                                        
+  23  27.72      15.21                                       27.7157          
+
+    ****  MASS FLOW PROFILES  ****
+
+ STAGE     FLOW RATE                  FEED RATE               PRODUCT RATE
+            KG/HR                      KG/HR                    KG/HR   
+       LIQUID     VAPOR       LIQUID    VAPOR    MIXED      LIQUID    VAPOR
+   1  3031.      0.000                                     1348.9479          
+   2  1665.      3031.                                                        
+   3  1642.      3014.                                                        
+  16  945.3      2297.                                                        
+  17  894.0      2294.                1850.1985                               
+  18  879.7      392.8                                                        
+  22  783.2      295.0                                                        
+  23  501.3      281.9                                      501.2505          
+
+                         ****   MOLE-X-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.99000       0.10000E-01
+      2    0.97543       0.24572E-01
+      3    0.95554       0.44458E-01
+     16    0.20222       0.79778    
+     17    0.20034       0.79966    
+     18    0.17901       0.82099    
+     22    0.16251E-01   0.98375    
+     23    0.50000E-02   0.99500    
+
+                         ****   MOLE-Y-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.99593       0.40733E-02
+      2    0.99000       0.10000E-01
+      3    0.98193       0.18073E-01
+     16    0.58456       0.41544    
+     17    0.58240       0.41760    
+     18    0.55621       0.44379    
+     22    0.10965       0.89035    
+     23    0.36746E-01   0.96325    
+
+                         ****   K-VALUES           ****
+   STAGE     METHANOL      WATER   
+      1     1.0060       0.40733    
+      2     1.0149       0.40697    
+      3     1.0276       0.40651    
+     16     2.8908       0.52074    
+     17     2.9071       0.52222    
+     18     3.1072       0.54055    
+     22     6.7471       0.90506    
+     23     7.3492       0.96809    
+
+                         ****   MASS-X-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.99435       0.56471E-02
+      2    0.98603       0.13965E-01
+      3    0.97451       0.25492E-01
+     16    0.31074       0.68926    
+     17    0.30824       0.69176    
+     18    0.27944       0.72056    
+     22    0.28543E-01   0.97146    
+     23    0.88586E-02   0.99114    
+
+                         ****   MASS-Y-PROFILE     ****
+   STAGE     METHANOL      WATER   
+      1    0.99771       0.22943E-02
+      2    0.99435       0.56471E-02
+      3    0.98976       0.10242E-01
+     16    0.71450       0.28550    
+     17    0.71269       0.28731    
+     18    0.69033       0.30967    
+     22    0.17968       0.82032    
+     23    0.63539E-01   0.93646    
+
+
+
+
+                    ********************************
+                    ***** HYDRAULIC PARAMETERS *****
+                    ********************************
+
+
+       *** DEFINITIONS ***
+
+        MARANGONI INDEX = SIGMA - SIGMATO
+        FLOW PARAM = (ML/MV)*SQRT(RHOV/RHOL)
+        QR = QV*SQRT(RHOV/(RHOL-RHOV))
+        F FACTOR = QV*SQRT(RHOV)
+          WHERE:
+          SIGMA IS THE SURFACE TENSION OF LIQUID FROM THE STAGE
+          SIGMATO IS THE SURFACE TENSION OF LIQUID TO THE STAGE
+          ML IS THE MASS FLOW OF LIQUID FROM THE STAGE
+          MV IS THE MASS FLOW OF VAPOR TO THE STAGE
+          RHOL IS THE MASS DENSITY OF LIQUID FROM THE STAGE
+          RHOV IS THE MASS DENSITY OF VAPOR TO THE STAGE
+          QV IS THE VOLUMETRIC FLOW RATE OF VAPOR TO THE STAGE
+
+
+                     TEMPERATURE
+                         K   
+ STAGE       LIQUID FROM       VAPOR TO
+    1         337.50            337.72    
+    2         337.72            338.02    
+    3         338.02            338.44    
+   16         354.60            354.69    
+   17         354.69            381.20    
+   18         355.72            357.95    
+   22         370.02            371.89    
+   23         371.89            371.89    
+
+
+             MASS FLOW                VOLUME FLOW         MOLECULAR WEIGHT
+              KG/HR                    L/MIN   
+ STAGE LIQUID FROM  VAPOR TO   LIQUID FROM  VAPOR TO   LIQUID FROM  VAPOR TO
+    1   3031.1      3031.1      67.808      44465.      31.902      31.902    
+    2   1665.0      3013.9      37.204      44411.      31.697      31.789    
+    3   1641.8      2990.8      36.626      44338.      31.419      31.635    
+   16   945.28      2294.2      18.414      43064.      20.852      26.185    
+   17   894.01      2243.0      17.405      45012.      20.825      26.322    
+   18   879.66      378.41      17.009      7509.5      20.526      24.995    
+   22   783.19      281.94      14.292      7840.8      18.243      18.531    
+   23   501.25      0.0000      9.1099      0.0000      18.085    
+
+
+               DENSITY                  VISCOSITY         SURFACE TENSION
+               GM/CC                     CP                  DYNE/CM 
+ STAGE LIQUID FROM  VAPOR TO     LIQUID FROM  VAPOR TO      LIQUID FROM
+    1  0.74502      0.11361E-02  0.34625      0.11023E-01    19.365    
+    2  0.74589      0.11311E-02  0.34677      0.11043E-01    20.018    
+    3  0.74712      0.11242E-02  0.34745      0.11070E-01    20.907    
+   16  0.85557      0.88791E-03  0.33726      0.11998E-01    52.823    
+   17  0.85608      0.83050E-03  0.33701      0.12959E-01    52.891    
+   18  0.86198      0.83985E-03  0.33399      0.12162E-01    53.660    
+   22  0.91335      0.59930E-03  0.28888      0.12572E-01    58.154    
+   23  0.91704                   0.28325                     58.277    
+
+
+       MARANGONI INDEX   FLOW PARAM          QR          REDUCED F-FACTOR
+ STAGE    DYNE/CM                          L/MIN         (GM-L)**.5/MIN  
+    1                    0.39051E-01       1737.7           47395.    
+    2   0.65282          0.21512E-01       1730.7           47232.    
+    3   0.88971          0.21295E-01       1721.2           47011.    
+   16   0.15884          0.13273E-01       1388.0           40579.    
+   17   0.68766E-01      0.12415E-01       1402.7           41020.    
+   18   0.76876          0.72561E-01       234.52           6881.9    
+   22   0.42947          0.71157E-01       200.91           6069.9    
+   23   0.12343                            0.0000           0.0000    
+
+
+
+
+                 ************************************ 
+                 ***** TRAY SIZING CALCULATIONS ***** 
+                 ************************************ 
+
+
+    *******************
+    *** SECTION   1 ***
+    *******************
+
+    STARTING STAGE NUMBER                                         2
+    ENDING STAGE NUMBER                                           3
+    FLOODING CALCULATION METHOD                               GLITSCH6
+
+    DESIGN PARAMETERS             
+    -----------------             
+    PEAK CAPACITY FACTOR                                      1.00000    
+    SYSTEM FOAMING FACTOR                                     1.00000    
+    FLOODING FACTOR                                           0.80000    
+    MINIMUM COLUMN DIAMETER         METER                     0.30480    
+    MINIMUM DC AREA/COLUMN AREA                               0.100000   
+    HOLE AREA/ACTIVE AREA                                     0.100000   
+    DOWNCOMER DESIGN BASIS                           EQUAL FLOW PATH LENGTH
+
+    TRAY SPECIFICATIONS        
+    -------------------        
+    TRAY TYPE                                                 SIEVE       
+    NUMBER OF PASSES                                              1
+    TRAY SPACING                    METER                     0.60960    
+
+
+            ***** SIZING RESULTS @ STAGE WITH MAXIMUM DIAMETER *****
+
+    STAGE WITH MAXIMUM DIAMETER                                   2
+    COLUMN DIAMETER                 METER                     0.67182    
+    DC AREA/COLUMN AREA                                       0.14397    
+    DOWNCOMER VELOCITY              M/SEC                     0.012150   
+    FLOW PATH LENGTH PER PANEL      METER                     0.40099    
+    SIDE DOWNCOMER WIDTH            METER                     0.13541    
+    SIDE WEIR LENGTH                METER                     0.53902    
+    CENTER DOWNCOMER WIDTH          METER                     0.0        
+    CENTER WEIR LENGTH              METER                     MISSING    
+    OFF-CENTER DOWNCOMER WIDTH      METER                     0.0        
+    OFF-CENTER SHORT WEIR LENGTH    METER                     MISSING    
+    OFF-CENTER LONG WEIR LENGTH     METER                     MISSING    
+    TRAY CENTER TO OCDC CENTER      METER                     0.0        
+
+
+                          **** SIZING PROFILES ****
+
+       STAGE    DIAMETER      TOTAL AREA   ACTIVE AREA   SIDE DC AREA
+                  METER         SQM          SQM            SQM     
+          2      0.67182       0.35448      0.25241       0.51036E-01
+          3      0.67182       0.35448      0.25241       0.51036E-01
+
+
+               **** ADDITIONAL SIZING PROFILES ****
+
+       FLOODING                            DC BACKUP/
+ STAGE FACTOR      PRES. DROP  DC BACKUP   (TSPC+WHT)
+                    PA          METER   
+   2     89.72       1090.      0.2798       42.36    
+   3     89.31       1082.      0.2775       42.02    
+
+       HEIGHT      DC REL      TR LIQ REL  FRA APPR TO
+ STAGE OVER WEIR   FROTH DENS  FROTH DENS  SYS LIMIT
+        METER   
+   2    0.2521E-01  0.6068      0.1697       54.31    
+   3    0.2491E-01  0.6068      0.1699       53.45    

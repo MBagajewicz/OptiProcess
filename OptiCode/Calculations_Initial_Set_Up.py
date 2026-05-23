@@ -41,8 +41,7 @@ def Calculations_Initial_Set_Up(Type_Equipment, Set_Trimming_Info, Discretized_V
         except:
             save_result(f'{Type_Equipment} parameter from par_calc was not generated at this stage. Skipping')
             pass
-    
-
+       
     # Constructs Primordial Set Candidate Matrix
     # Verify the existence of a Primordial_Set_Constraints_List and Generate Initial Set
     if Set_Trimming_Info['Primordial_Set_Trimming_Constraints_List']:
@@ -67,7 +66,6 @@ def Calculations_Initial_Set_Up(Type_Equipment, Set_Trimming_Info, Discretized_V
             end_prepspace_time = time.time() 
             elapsed_time_prepspace = end_prepspace_time - start_prepspace_time
 
-
             start_settrimming_primordial = time.time()
             Set_Trimming_Solution = Set_Trimming.Set_Trimming(Set_Trimming_Info['Primordial_Set_Trimming_Constraints_List'], Primordial_Set, 
                                                             Model_Parameters, Type_Equipment, Active_Models_Constraints,
@@ -84,6 +82,7 @@ def Calculations_Initial_Set_Up(Type_Equipment, Set_Trimming_Info, Discretized_V
             save_result('Candidate set cardinality after each trimming',
                         Set_Trimming_Solution['candidate_set_cardinality_after_each_trimming'])
     else:
+
         Primordial_Set = Prep_Space.Prep_Space(Discretized_Variables)
         Initial_Set = Primordial_Set
         save_result(f'\n************ Initial Set = Primordial Set with {Initial_Set.shape[1]} candidates ************\n')
@@ -91,6 +90,4 @@ def Calculations_Initial_Set_Up(Type_Equipment, Set_Trimming_Info, Discretized_V
         if not Set_Trimming_Info['Primordial_Set_Trimming_Constraints_List']:
             Set_Trimming_Info['Empty_primordial_set'] = True
         
-
-
     return Initial_Set
