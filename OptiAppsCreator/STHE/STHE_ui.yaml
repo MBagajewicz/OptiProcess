@@ -138,7 +138,7 @@ pages:
         source: "Model_Parameters"
         fields:
           n:        {label: "Amortization period", unit: "years"}
-          pc:       {label: "Energy cost", unit: "$/kWh", display_factor: 3600000}
+          pc:       {label: "Energy cost", unit: "$/kWh"}
           Nop:      {label: "Operating hours per year", unit: "h/year"}
           int_rate: {label: "Interest", unit: "%", display_factor: 100}
           par_a:    {label: "Cost model parameter a"}
@@ -254,6 +254,122 @@ pages:
         color: brown_dark
         source: "Model_Parameters"
         fields:
-          Nss:     {label: "Number of sealing strips"}
-          plbmax1: {label: "Max unsupported span (type 1)"}
-          plbmax2: {label: "Max unsupported span (type 2)"}
+          Nss:     {label: "Number of sealing strips", default: 0}
+          plbmax1: {label: "Max unsupported span (type 1)", default: 52}
+          plbmax2: {label: "Max unsupported span (type 2)", default: 0.532}
+
+  # ============================================================
+  # RESULTS PAGE
+  # ============================================================
+  results:
+    title: "Results"
+    columns:
+      - [hot_stream_results, cold_stream_results, summary_data]
+      - [unit_geometry]
+      - [thermo_properties, pressure_drop]
+      - [optimization_results]
+
+    sections:
+
+      hot_stream_results:
+        title: "HOT STREAM"
+        element: data_table
+        color: green_display
+        source: "Model_Parameters"
+        source_prefix: "h"
+        rows:
+          - {label: "Mass flow rate", key: "mh", unit: "kg/s"}
+          - {label: "Inlet temperature", key: "Thi", unit: "°C"}
+          - {label: "Outlet temperature", key: "Tho", unit: "°C"}
+          - {label: "Density", key: "roh", unit: "kg/m³"}
+          - {label: "Viscosity", key: "mih", unit: "Pa s", display_factor: 1000, display_unit: "mPa s"}
+          - {label: "Heat capacity", key: "Cph", unit: "J/(kg K)"}
+          - {label: "Thermal cond.", key: "kh", unit: "W/(m K)"}
+          - {label: "Fouling factor", key: "Rfh", unit: "m² K/W"}
+
+      cold_stream_results:
+        title: "COLD STREAM"
+        element: data_table
+        color: green_display
+        source: "Model_Parameters"
+        source_prefix: "c"
+        rows:
+          - {label: "Mass flow rate", key: "mc", unit: "kg/s"}
+          - {label: "Inlet temperature", key: "Tci", unit: "°C"}
+          - {label: "Outlet temperature", key: "Tco", unit: "°C"}
+          - {label: "Density", key: "roc", unit: "kg/m³"}
+          - {label: "Viscosity", key: "mic", unit: "Pa s", display_factor: 1000, display_unit: "mPa s"}
+          - {label: "Heat capacity", key: "Cpc", unit: "J/(kg K)"}
+          - {label: "Thermal cond.", key: "kc", unit: "W/(m K)"}
+          - {label: "Fouling factor", key: "Rfc", unit: "m² K/W"}
+
+      summary_data:
+        title: ""
+        element: data_table
+        color: green_display
+        rows:
+          - {label: "Heat load", key: "Q", unit: "kW", computed: true}
+          - {label: "LMTD", key: "LMTD", unit: "°C", computed: true}
+
+      unit_geometry:
+        title: "UNIT GEOMETRY"
+        element: data_table
+        color: blue_display
+        rows:
+          - {label: "Shell diameter", key: "Ds", unit: "m", result_var: true}
+          - {label: "Number of baffles", key: "Nb", result_var: true}
+          - {label: "Baffle cut", key: "Bc", result_var: true}
+          - {label: "Number of tubes", key: "Nt", computed: true}
+          - {label: "Number tube passes", key: "Npt", result_var: true}
+          - {label: "Outer tube diam.", key: "dte", unit: "m", result_var: true}
+          - {label: "Tube bundle layout", key: "layout", result_var: true}
+          - {label: "Pitch ratio", key: "rp", result_var: true}
+          - {label: "Tube length", key: "L", unit: "m", result_var: true}
+          - {label: "Heat transfer area per shell", key: "A_shell", unit: "m²", computed: true}
+          - {label: "Total heat transfer area", key: "A_total", unit: "m²", computed: true}
+          - {label: "Correction factor", key: "F", computed: true}
+          - {label: "Area/required area ratio", key: "A_ratio", computed: true}
+
+      thermo_properties:
+        title: "THERMO PROPERTIES"
+        element: data_table
+        color: yellow_display
+        subsections:
+          - title: "TUBE SIDE"
+            rows:
+              - {label: "Velocity flow", key: "vt", unit: "m/s", computed: true}
+              - {label: "Reynolds number", key: "Ret", computed: true}
+              - {label: "Conv. heat transfer coeff.", key: "ht", unit: "W/(m² K)", computed: true}
+          - title: "SHELL SIDE"
+            rows:
+              - {label: "Velocity flow", key: "vs", unit: "m/s", computed: true}
+              - {label: "Reynolds number", key: "Res", computed: true}
+              - {label: "Conv. heat transfer coeff.", key: "hs", unit: "W/(m² K)", computed: true}
+        footer_rows:
+          - {label: "Overall heat transfer coeff. (dirty)", key: "U", unit: "W/(m² K)", computed: true}
+          - {label: "Overall heat transfer coeff. (clean)", key: "Uc", unit: "W/(m² K)", computed: true}
+
+      pressure_drop:
+        title: "PRESSURE DROP"
+        element: data_table
+        color: red_display
+        rows:
+          - {label: "Tube pressure drop", key: "DPt", unit: "kPa", computed: true}
+          - {label: "Shell pressure drop", key: "DPs", unit: "kPa", computed: true}
+
+      optimization_results:
+        title: "OPTIMIZATION"
+        element: data_table
+        color: blue_display
+        subsections:
+          - title: ""
+            rows:
+              - {label: "Objective function", key: "OF_value", unit_from: "OF", computed: true, highlight: true}
+          - title: "ECONOMICS"
+            rows:
+              - {label: "Capital cost", key: "CAPEX", unit: "$", computed: true}
+              - {label: "Tube side operational cost", key: "OPEX_t", unit: "$/y", computed: true}
+              - {label: "Shell side operational cost", key: "OPEX_s", unit: "$/y", computed: true}
+              - {label: "Operational cost", key: "OPEX_total", unit: "$/y", computed: true}
+              - {label: "Total annualized cost", key: "TAC", unit: "$/y", computed: true}
+

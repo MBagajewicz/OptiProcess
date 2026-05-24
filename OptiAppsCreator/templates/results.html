@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiHexx — Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lora:ital@1&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; font-family: Arial, sans-serif; }
+        .font-cursive { font-family: 'Dancing Script', cursive; }
+        .font-serif-italic { font-family: 'Lora', serif; font-style: italic; }
+        .table-container { background-color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        td { border: 1px solid #e5e7eb; padding: 4px 8px; font-size: 11px; color: #333; }
+        td:first-child { text-align: left; color: #555; }
+        td:last-child { text-align: right; }
+        .panel-title { text-align: center; font-size: 14px; padding: 6px 0; background-color: white; margin-bottom: 4px; }
+        .spinner { border: 3px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-box { background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; text-align: center; color: #dc2626; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <div class="p-4">
+        <div class="bg-gradient-to-b from-[#fce043] via-[#ffc03a] to-[#f38b7b] border-[3px] border-black rounded-lg shadow-sm flex flex-col items-center justify-center py-2">
+            <h1 class="font-cursive text-4xl font-bold text-black tracking-wider">{{ header.title }}</h1>
+            <p class="font-serif-italic text-sm text-black font-bold mt-1">{{ header.subtitle }}</p>
+            <p class="text-[10px] text-gray-600 mt-1">{{ header.prototype }}</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="px-6 border-b border-gray-300 flex gap-8 text-sm text-gray-600">
+        {% for nav in nav_pages %}
+        <a href="{{ nav.file }}" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-white/80 z-50 flex items-center justify-center">
+        <div class="text-center">
+            <div class="spinner mx-auto mb-3"></div>
+            <p class="text-gray-600 text-sm">Running optimization...</p>
+        </div>
+    </div>
+
+    <!-- Error message -->
+    <div id="error-box" class="hidden mx-4 mt-4 error-box"></div>
+
+    <!-- Main Content -->
+    <div id="results-content" class="flex flex-row items-start gap-3 p-4 overflow-x-auto">
+
+        {% for column in columns %}
+        <div class="flex flex-col gap-3 shrink-0 w-[260px]">
+            {% for section in column %}
+            <div class="{{ section.color.border }} {{ section.color.bg }} rounded-lg p-1 {{ 'h-full' if section.full_height }}">
+                {% if section.title %}
+                <div class="bg-white mb-1">
+                    <h2 class="text-center {{ section.color.title }} font-bold text-lg py-1">{{ section.title }}</h2>
+                </div>
+                {% endif %}
+
+                {% if section.subsections %}
+                    {% for sub in section.subsections %}
+                    {% if sub.title %}
+                    <div class="bg-white mb-1 border border-gray-200">
+                        <h3 class="text-center text-gray-700 text-sm py-1">{{ sub.title }}</h3>
+                    </div>
+                    {% endif %}
+                    <div class="table-container mb-1">
+                        <table>
+                            <tbody>
+                                {% for row in sub.rows %}
+                                <tr>
+                                    <td>{{ row.label }}</td>
+                                    <td id="result-{{ row.key }}" class="{{ 'font-bold text-black' if row.highlight }}">—</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if section.rows %}
+                <div class="table-container">
+                    <table>
+                        <tbody>
+                            {% for row in section.rows %}
+                            <tr>
+                                <td>{{ row.label }}</td>
+                                <td id="result-{{ row.key }}" class="{{ 'font-bold text-black' if row.highlight }}">—</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                {% if section.footer_rows %}
+                <div class="table-container mt-1">
+                    <table>
+                        <tbody>
+                            {% for row in section.footer_rows %}
+                            <tr>
+                                <td>{{ row.label }}</td>
+                                <td id="result-{{ row.key }}">—</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <!-- Download button area -->
+        <div class="flex flex-col gap-3">
+            <button id="btn-download" onclick="downloadResults()" class="bg-white text-blue-600 border border-gray-200 px-4 py-2 rounded-full shadow-md flex items-center gap-2 text-sm hover:bg-gray-50 transition-colors">
+                <i class="fas fa-download"></i> Download Results
+            </button>
+        </div>
+
+    </div>
+
+<script>
+// --- Configuration ---
+const API_URL = window.location.origin + '/api/optimize';
+const STORAGE_KEY_PROBLEM = 'optihex_problem_data';
+const STORAGE_KEY_GEOM = 'optihex_geometric_data';
+const MODEL = '{{ model_name }}';
+
+// --- Column display helpers ---
+const DISPLAY_FACTORS = {
+    {% for section in all_sections %}{% for row in section.all_rows %}
+    "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
+    {% endfor %}{% endfor %}
+};
+const ROW_UNITS = {
+    {% for section in all_sections %}{% for row in section.all_rows %}
+    "{{ row.key }}": "{{ row.unit or '' }}",
+    {% endfor %}{% endfor %}
+};
+
+// --- Load data from sessionStorage ---
+function getSessionData() {
+    try {
+        const problemRaw = sessionStorage.getItem(STORAGE_KEY_PROBLEM);
+        const geomRaw = sessionStorage.getItem(STORAGE_KEY_GEOM);
+        if (!problemRaw) return null;
+        const params = JSON.parse(problemRaw);
+        const discrete = geomRaw ? JSON.parse(geomRaw) : null;
+        return { parameters: params, discrete_variables: discrete };
+    } catch(e) { return null; }
+}
+
+// --- Build API payload ---
+function buildPayload(data) {
+    var params = Object.assign({}, data.parameters);
+    var geomData = data.discrete_variables || {};
+
+    // Reverse display_factor conversions before sending to API
+    // int_rate: displayed as %, stored as decimal (display_factor=100)
+    var REVERSE = {
+        'int_rate': 0.01     // divide by 100 to get decimal
+    };
+    Object.keys(params).forEach(function(k) {
+        if (REVERSE[k] !== undefined && typeof params[k] === 'number') {
+            params[k] = params[k] * REVERSE[k];
+        }
+    });
+
+    // Separate tube option params (scalar values) from discrete variable arrays
+    var discreteVars = {};
+    var tubeOptKeys = ['LBLD', 'UBLD', 'ktube', 'thk', 'Nss', 'plbmax1', 'plbmax2'];
+    var allKeys = Object.keys(geomData);
+    for (var i = 0; i < allKeys.length; i++) {
+        var k = allKeys[i];
+        if (tubeOptKeys.indexOf(k) >= 0) {
+            params[k] = geomData[k];        // scalar → parameters
+        } else {
+            discreteVars[k] = geomData[k];  // array → discrete_variables
+        }
+    }
+
+    var selectedOf = params['_selected_of'] || 'TAC_OF';
+    delete params['_selected_of'];
+
+    return {
+        model: MODEL,
+        parameters: params,
+        discrete_variables: discreteVars,
+        selected_of: selectedOf,
+        number_of_equipment: 1
+    };
+}
+
+// --- API call ---
+async function runOptimization() {
+    const sessionData = getSessionData();
+    const overlay = document.getElementById('loading-overlay');
+    const errorBox = document.getElementById('error-box');
+
+    if (!sessionData) {
+        errorBox.classList.remove('hidden');
+        errorBox.innerHTML = '<p>No input data found. Please fill the <a href="problem_data.html" class="underline">Problem Data</a> page first.</p>';
+        return null;
+    }
+
+    overlay.classList.remove('hidden');
+    errorBox.classList.add('hidden');
+
+    try {
+        const payload = buildPayload(sessionData);
+        console.log('OptiHexx payload:', JSON.stringify(payload, null, 2));
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('OptiHexx response:', result);
+
+        if (result.status !== 'ok') {
+            errorBox.classList.remove('hidden');
+            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + (result.error || 'unknown error') + '</p><p class="text-xs mt-1">Check browser console (F12) for details.</p>';
+            overlay.classList.add('hidden');
+            return null;
+        }
+
+        // Debug: check what we got
+        if (!result.optimal_variables || !result.calculations) {
+            console.warn('API response missing optimal_variables or calculations', result);
+            errorBox.classList.remove('hidden');
+            errorBox.innerHTML = '<p><b>API response incomplete.</b> Missing optimal_variables or calculations. Check console (F12).</p>';
+            overlay.classList.add('hidden');
+        }
+
+        return { result, sessionData };
+
+    } catch(err) {
+        errorBox.classList.remove('hidden');
+        errorBox.innerHTML = `<p>Optimization failed: ${err.message}</p><p class="text-xs mt-1">Is the API server running? Run: uvicorn solver_api:app --host 0.0.0.0 --port 8000</p>`;
+        return null;
+    } finally {
+        overlay.classList.add('hidden');
+    }
+}
+
+// --- Populate results ---
+function populateResults(data, sessionData) {
+    const params = sessionData.parameters;
+    const optimal = data.optimal_variables || {};
+    const calc = data.calculations || {};
+    const objective = data.objective || {};
+
+    // Echo input parameters
+    setVal('mh', params.mh, 'kg/s');
+    setVal('Thi', params.Thi, '°C');
+    setVal('Tho', params.Tho, '°C');
+    setVal('roh', params.roh, 'kg/m³');
+    setVal('mih', params.mih ? params.mih * 1000 : null, 'mPa s');
+    setVal('Cph', params.Cph, 'J/(kg K)');
+    setVal('kh', params.kh, 'W/(m K)');
+    setVal('Rfh', params.Rfh, 'm² K/W');
+
+    setVal('mc', params.mc, 'kg/s');
+    setVal('Tci', params.Tci, '°C');
+    setVal('Tco', params.Tco, '°C');
+    setVal('roc', params.roc, 'kg/m³');
+    setVal('mic', params.mic ? params.mic * 1000 : null, 'mPa s');
+    setVal('Cpc', params.Cpc, 'J/(kg K)');
+    setVal('kc', params.kc, 'W/(m K)');
+    setVal('Rfc', params.Rfc, 'm² K/W');
+
+    // Summary computed values
+    setVal('Q', calc.Q, 'kW');
+    if (params.Thi != null && params.Tho != null && params.Tci != null && params.Tco != null) {
+        const dT1 = params.Thi - params.Tco;
+        const dT2 = params.Tho - params.Tci;
+        if (dT1 > 0 && dT2 > 0 && Math.abs(dT1 - dT2) > 1e-10) {
+            setVal('LMTD', (dT1 - dT2) / Math.log(dT1 / dT2), '°C');
+        }
+    }
+
+    // Optimal geometry variables
+    const varKeys = ['Ds', 'dte', 'Npt', 'rp', 'L', 'Nb', 'Bc'];
+    const varLabels = {lay: {1: 'Square (90°)', 2: 'Triangle (30°)', 3: 'Rotated Square (45°)'}};
+    const varUnits = {Ds: 'm', dte: 'm', L: 'm'};
+    for (const k of varKeys) {
+        const val = optimal[k];
+        if (val != null) setVal(k, val, varUnits[k] || '');
+    }
+    // Layout as label
+    if (optimal.lay != null) {
+        setVal('layout', varLabels.lay[optimal.lay] || optimal.lay, '');
+    }
+
+    // Computed geometry (from solver intermediate results)
+    setVal('Nt', calc.Nt, '');
+    setVal('A_shell', calc.A_shell, 'm²');
+    setVal('A_total', calc.A_total, 'm²');
+    setVal('F', calc.F, '');
+    setVal('A_ratio', calc.A_ratio, '');
+
+    // Thermo properties
+    setVal('vt', calc.vt, 'm/s');
+    setVal('Ret', calc.Ret, '');
+    setVal('ht', calc.ht, 'W/(m² K)');
+    setVal('vs', calc.vs, 'm/s');
+    setVal('Res', calc.Res, '');
+    setVal('hs', calc.hs, 'W/(m² K)');
+    setVal('U', calc.U, 'W/(m² K)');
+    setVal('Uc', calc.Uc, 'W/(m² K)');
+
+    // Pressure drops
+    setVal('DPt', calc.DPt, 'kPa');
+    setVal('DPs', calc.DPs, 'kPa');
+
+    // Optimization / Economics
+    if (objective.value != null) {
+        setVal('OF_value', objective.value, objective.unit || '');
+    }
+    setVal('TAC', calc.TAC, '$/y');
+    setVal('CAPEX', calc.CAPEX, '$');
+    setVal('OPEX_t', calc.OPEX_t, '$/y');
+    setVal('OPEX_s', calc.OPEX_s, '$/y');
+    setVal('OPEX_total', calc.OPEX_total, '$/y');
+}
+
+// --- Helper: set a result cell value ---
+function setVal(key, value, unit) {
+    const el = document.getElementById('result-' + key);
+    if (!el) return;
+    if (value == null) {
+        el.textContent = '—';
+        return;
+    }
+    const factor = DISPLAY_FACTORS[key] || 1;
+    const displayVal = factor !== 1 ? value * factor : value;
+    const formatted = typeof displayVal === 'number' ? displayVal.toFixed(4).replace(/\.?0+$/, '') : String(displayVal);
+    const unitSuffix = unit || ROW_UNITS[key] || '';
+    el.textContent = unitSuffix ? formatted + ' ' + unitSuffix : formatted;
+}
+
+// --- Download results as text ---
+function downloadResults() {
+    const rows = [];
+    document.querySelectorAll('td[id^="result-"]').forEach(el => {
+        const key = el.id.replace('result-', '');
+        const label = el.parentElement?.firstElementChild?.textContent || key;
+        rows.push(`${label}: ${el.textContent}`);
+    });
+    const blob = new Blob([rows.join('\n')], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'optihex_results.txt'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+// --- Init ---
+runOptimization().then(data => {
+    if (data) populateResults(data.result, data.sessionData);
+});
+</script>
+
+</body>
+</html>

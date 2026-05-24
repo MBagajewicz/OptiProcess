@@ -34,9 +34,9 @@
     <!-- Navigation -->
     <div class="bg-white border-b border-gray-300 px-4 flex space-x-8 text-sm font-medium text-gray-600">
         {% for nav_page in nav_pages %}
-        <div class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
+        <a href="{{ nav_page.file }}" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
             {{ nav_page.label }}
-        </div>
+        </a>
         {% endfor %}
     </div>
 

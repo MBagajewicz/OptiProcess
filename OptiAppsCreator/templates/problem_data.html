@@ -27,13 +27,13 @@
             <div class="input-container {{ section.color.bg }}">
                 <label class="input-label {{ section.color.label }}">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}</label>
                 {% if field.element == 'select' %}
-                <select class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold">
+                <select data-key="{{ field.key }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold">
                     {% for opt in field.options %}
                     <option value="{{ opt }}" {{ 'selected' if opt == field.default }}>{{ opt }}</option>
                     {% endfor %}
                 </select>
                 {% else %}
-                <input type="text" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
+                <input type="text" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
                 {% endif %}
             </div>
             {% endfor %}
@@ -54,9 +54,9 @@
             <tbody class="text-center">
                 {% for row in section.rows %}
                 <tr>
-                    <td class="border border-red-100 p-1 text-red-500">{{ row.lower }}</td>
+                    <td class="border border-red-100 p-1 text-red-500">{{ row.lower }}<input type="hidden" data-key="{{ row.lower_key }}" value="{{ row.lower }}"></td>
                     <td class="border border-red-100 p-1 text-gray-700">{{ row.item }}{% if row.unit %} [{{ row.unit }}]{% endif %}</td>
-                    <td class="border border-red-100 p-1 text-red-500">{{ row.upper }}</td>
+                    <td class="border border-red-100 p-1 text-red-500">{{ row.upper }}<input type="hidden" data-key="{{ row.upper_key }}" value="{{ row.upper }}"></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -79,5 +79,36 @@
 </div>
 {% endfor %}
 
+    <!-- Navigation Bar -->
+    <div class="flex justify-center gap-4 mt-4 mb-4">
+        <button id="btn-next" onclick="saveAndNext()" class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
+            Next: Geometric Options <i class="fas fa-arrow-right ml-1"></i>
+        </button>
+    </div>
+
 </div>
+
+<script>
+function saveAndNext() {
+    const data = {};
+
+    // Collect radio groups
+    const targetRadio = document.querySelector('input[name="Selected_OF"]:checked');
+    if (targetRadio) data['_selected_of'] = targetRadio.value;
+
+    const allocRadio = document.querySelector('input[name="yfluid"]:checked');
+    if (allocRadio) data['yfluid'] = allocRadio.value;
+
+    // Collect all inputs and selects via data-key attribute
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        var key = input.dataset.key;
+        if (!key) return;
+        var val = input.value;
+        data[key] = (input.type === 'number' || !isNaN(parseFloat(val))) ? parseFloat(val) : val;
+    });
+
+    sessionStorage.setItem('optihex_problem_data', JSON.stringify(data));
+    window.location.href = 'geometric_options.html';
+}
+</script>
 {% endblock %}

@@ -56,6 +56,13 @@ GO_COLORS = {
     "green": {"panel": "bg-[#4caf50]", "text": "text-white"},
 }
 
+RS_COLORS = {
+    "green_display": {"border": "border-[6px] border-[#b5d5c5]", "bg": "bg-[#dcf0e3]", "title": "text-red-500"},
+    "blue_display": {"border": "border-[6px] border-[#a5cbf0]", "bg": "bg-[#dbeafe]", "title": "text-gray-800"},
+    "yellow_display": {"border": "border-[6px] border-[#fce4a1]", "bg": "bg-[#fef9c3]", "title": "text-gray-800"},
+    "red_display": {"border": "border-[6px] border-[#f0a8a8]", "bg": "bg-[#fee2e2]", "title": "text-gray-800"},
+}
+
 
 def setup_path():
     """Add OptiAppsCreator to sys.path so STHE/ modules are importable."""
@@ -138,6 +145,9 @@ def build_problem_data_context(yaml_data, model_def, example):
             for key, field_meta in section.get("fields", {}).items():
                 try:
                     default_val = get_example_default(example, f"{source}.{key}")
+                    # Use YAML default as fallback when not in the example
+                    if default_val == "" and "default" in field_meta:
+                        default_val = field_meta["default"]
                     # Apply display conversions (e.g., int_rate stored as 0.1, displayed as 10%)
                     display_factor = field_meta.get("display_factor")
                     if display_factor is not None and isinstance(default_val, (int, float)):
@@ -171,6 +181,8 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "unit": row.get("unit"),
                     "lower": lower_val,
                     "upper": upper_val,
+                    "lower_key": lower_key,
+                    "upper_key": upper_key,
                 })
             resolved["rows"] = rows
 
@@ -211,6 +223,7 @@ def build_geometric_options_context(yaml_data, model_def, example):
         if element == "checkbox_grid":
             go_color = GO_COLORS.get(color, GO_COLORS["brown"])
             resolved["color"] = go_color
+            resolved["variable"] = section.get("variable", "")
             # Handle title with line breaks for narrow columns
             resolved["title_nobreak"] = title.replace(" ", "&nbsp;")
 
@@ -248,6 +261,9 @@ def build_geometric_options_context(yaml_data, model_def, example):
             fields = []
             for key, field_meta in section.get("fields", {}).items():
                 default_val = get_example_default(example, f"{source}.{key}")
+                # Use YAML default as fallback when not in the example
+                if default_val == "" and "default" in field_meta:
+                    default_val = field_meta["default"]
                 fields.append({
                     "key": key,
                     "label": field_meta.get("label", key),
@@ -273,6 +289,78 @@ def build_column_layout(sections, columns_spec):
         if col_sections:
             columns.append(col_sections)
     return columns
+
+
+def build_results_context(yaml_data, model_def):
+    """Build resolved context for the results page (structure + metadata, values come from JS)."""
+    page_yaml = yaml_data["pages"]["results"]
+    sections_out = []
+    all_rows_flat = []
+
+    for section_id, section in page_yaml["sections"].items():
+        color = section.get("color", "blue_display")
+        resolved = {
+            "id": section_id,
+            "element": section.get("element", "data_table"),
+            "title": section.get("title", ""),
+            "color": RS_COLORS.get(color, RS_COLORS["blue_display"]),
+            "full_height": section_id == "unit_geometry",
+        }
+
+        # Handle subsections (thermo_properties, optimization_results)
+        if section.get("subsections"):
+            resolved["subsections"] = []
+            for sub in section["subsections"]:
+                sub_rows = []
+                for row in sub.get("rows", []):
+                    sub_rows.append({
+                        "label": row["label"],
+                        "key": row["key"],
+                        "unit": row.get("unit", ""),
+                        "highlight": row.get("highlight", False),
+                    })
+                resolved["subsections"].append({"title": sub.get("title", ""), "rows": sub_rows})
+                all_rows_flat.extend([r["key"] for r in sub_rows])
+
+        if section.get("rows"):
+            resolved["rows"] = []
+            for row in section["rows"]:
+                resolved["rows"].append({
+                    "label": row["label"],
+                    "key": row["key"],
+                    "unit": row.get("unit", ""),
+                    "highlight": row.get("highlight", False),
+                    "display_factor": row.get("display_factor", 1),
+                })
+                all_rows_flat.append(row["key"])
+
+        if section.get("footer_rows"):
+            resolved["footer_rows"] = []
+            for row in section["footer_rows"]:
+                resolved["footer_rows"].append({
+                    "label": row["label"],
+                    "key": row["key"],
+                    "unit": row.get("unit", ""),
+                })
+                all_rows_flat.append(row["key"])
+
+        sections_out.append(resolved)
+
+    return sections_out, all_rows_flat
+
+
+def flatten_section_rows(sections):
+    """Extract all rows with their display metadata for JS data mapping."""
+    flat = []
+    for s in sections:
+        for r in s.get("rows", []):
+            flat.append(r)
+        for sub in s.get("subsections", []):
+            for r in sub.get("rows", []):
+                flat.append(r)
+        for r in s.get("footer_rows", []):
+            flat.append(r)
+    return flat
 
 
 def generate():
@@ -348,7 +436,7 @@ def generate():
     print(f"  ✓ output/main_menu.html")
 
     # --- Problem Data page ---
-    nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html"} for p in nav_pages]
+    nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
     pd_sections = build_problem_data_context(yaml_data, model_def, example)
     pd_columns = build_column_layout(pd_sections, yaml_data["pages"]["problem_data"]["columns"])
 
@@ -357,12 +445,13 @@ def generate():
         page_title="Problem Data",
         nav_pages=nav_pd,
         columns=pd_columns,
+        all_sections=pd_sections,
     )
     (output_dir / "problem_data.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/problem_data.html")
 
     # --- Geometric Options page ---
-    nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html"} for p in nav_pages]
+    nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
     go_sections = build_geometric_options_context(yaml_data, model_def, example)
     go_columns = build_column_layout(go_sections, yaml_data["pages"]["geometric_options"]["columns"])
 
@@ -371,9 +460,29 @@ def generate():
         page_title="Geometric Options",
         nav_pages=nav_go,
         columns=go_columns,
+        all_sections=go_sections,
     )
     (output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/geometric_options.html")
+
+    # --- Results page ---
+    nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]
+    rs_sections, rs_keys = build_results_context(yaml_data, model_def)
+    rs_columns = build_column_layout(rs_sections, yaml_data["pages"]["results"]["columns"])
+    rs_all_rows = flatten_section_rows(rs_sections)
+
+    template = env.get_template("results.html")
+    html = template.render(
+        page_title="Results",
+        nav_pages=nav_rs,
+        columns=rs_columns,
+        header=header_data,
+        model_name=args.model,
+        all_sections=rs_sections,
+        zip=zip,
+    )
+    (output_dir / "results.html").write_text(html, encoding="utf-8")
+    print(f"  ✓ output/results.html")
 
     print(f"\nDone. Generated {args.model} UI for example '{args.example}' in '{output_dir}/'")
 
