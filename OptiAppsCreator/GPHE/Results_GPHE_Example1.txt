@@ -1,0 +1,52 @@
+
+******* Testing consistency *******
+
+DeltaTmin does not exist in the Model_Parameters. A default value of 5 °C is adopted.
+
+********** Incremental Set Trimming running **********
+
+************ Initial Set = Primordial Set with 158200 candidates ************
+
+
+******************** Starting Execution for GPHE_Example1 ********************
+
+The solution of Equipment1 "GPHE" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Empty Primordial Set!!!!
+Initial size without primordial set: 158200
+Set Trimming vh_lb - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming vh_lb - Space Size After Trimming: 56560
+Set Trimming - Trimming time:  0.01148 seconds
+
+Set Trimming vh_ub - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming vh_ub - Space Size After Trimming: 33420
+Set Trimming - Trimming time:  0.00349 seconds
+
+Set Trimming vc_lb - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming vc_lb - Space Size After Trimming: 28815
+Set Trimming - Trimming time:  0.00300 seconds
+
+Set Trimming vc_ub - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming vc_ub - Space Size After Trimming: 19140
+Set Trimming - Trimming time:  0.00200 seconds
+
+Set Trimming DPh_ub - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming DPh_ub - Space Size After Trimming: 10803
+Set Trimming - Trimming time:  0.00599 seconds
+
+Set Trimming DPc_ub - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming DPc_ub - Space Size After Trimming: 5055
+Set Trimming - Trimming time:  0.00349 seconds
+
+Set Trimming Areq - Space Preparation is not needed. The set ['Ntp', 'Pl', 'Nph', 'Sa', 'Npc'] remains without changes.
+Set Trimming Areq - Space Size After Trimming: 2908
+Set Trimming - Trimming time:  0.00299 seconds
+
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each incremental trimming [158200, 56560, 33420, 28815, 19140, 10803, 5055, 2908, 2908]
+{'TAC_OF': {'TAC': np.float64(11333.695654744326), 'Number_of_solutions': 1}, 'Ntp': np.int64(110), 'Pl': np.int64(3), 'Sa': np.int64(65), 'Nph': np.int64(1), 'Npc': np.int64(1)}
+Elapsed time for Equipment1 "GPHE": 0.05 seconds 
+
+OF Solution total ($/year) 11333.695654744326
+Total time elapsed: 0.17867 seconds
+
