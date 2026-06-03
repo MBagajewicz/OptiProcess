@@ -195,8 +195,11 @@ def build_problem_data_context(yaml_data, model_def, example):
     return sections_out
 
 
-def build_geometric_options_context(yaml_data, model_def, example):
-    """Build resolved context for the geometric_options page."""
+def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=True):
+    """Build resolved context for the geometric_options page.
+    
+    sort_numeric: if True, sort purely-numeric option lists before rendering checkbox grids.
+    """
     page_yaml = yaml_data["pages"]["geometric_options"]
     sections_out = []
 
@@ -244,6 +247,11 @@ def build_geometric_options_context(yaml_data, model_def, example):
                     items = []
                     # Use standard values as the full option list
                     options = var_info["standard"]
+                    # Sort purely-numeric lists when the flag is enabled
+                    if (sort_numeric and isinstance(options, list)
+                            and options
+                            and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in options)):
+                        options = sorted(options)
                     selected_set = set(var_info["selected"])
                     for val in options:
                         label = label_map.get(val, str(val))
@@ -390,9 +398,23 @@ def build_results_js_context(yaml_data):
 
 def generate():
     parser = argparse.ArgumentParser(description="Generate HTML UI pages from model data + YAML")
-    parser.add_argument("--model", default="STHE", help="Model name (default: STHE)")
+    parser.add_argument(
+        "--model", nargs="*", default=["STHE"],
+        help="Model names to generate (default: STHE). Ignored when --all is passed.",
+    )
+    parser.add_argument(
+        "--all", action="store_true",
+        help="Generate pages for every active model listed in common_ui.yaml",
+    )
     parser.add_argument("--example", default="Example1", help="Example name for defaults (default: Example1)")
     parser.add_argument("--output", default="output", help="Output directory (default: output)")
+    parser.add_argument(
+        "--no-sort-numeric-options",
+        action="store_false",
+        dest="sort_numeric_options",
+        default=True,
+        help="Disable automatic sorting of numeric geometric option lists in the UI (enabled by default)",
+    )
     args = parser.parse_args()
 
     setup_path()
@@ -404,15 +426,16 @@ def generate():
     with open(common_yaml_path, "r", encoding="utf-8") as f:
         common_ui = yaml.safe_load(f)
 
-    # Load model-specific UI metadata (problem_data, geometric_options, results)
-    model_yaml_path = os.path.join(script_dir, args.model, f"{args.model}_ui.yaml")
-    with open(model_yaml_path, "r", encoding="utf-8") as f:
-        model_ui = yaml.safe_load(f)
+    # Determine which models to generate
+    if args.all:
+        model_list = [m["id"] for m in common_ui.get("available_models", []) if m.get("active")]
+        if not model_list:
+            print("No active models found in common_ui.yaml. Nothing to generate.")
+            return
+    else:
+        model_list = args.model
 
-    model_def = load_model_def(args.model)
-    example = load_examples(args.model, args.example)
-
-    # Set up Jinja2
+    # Set up Jinja2 (shared across all models)
     template_dir = os.path.join(script_dir, "templates")
     env = Environment(
         loader=FileSystemLoader(template_dir),
@@ -469,64 +492,72 @@ def generate():
     (output_dir / "main_menu.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/main_menu.html")
 
-    # --- Model-specific pages (in output/{model}/) ---
-    model_output_dir = output_dir / args.model
-    model_output_dir.mkdir(parents=True, exist_ok=True)
+    # --- Model-specific pages (each model in output/{model}/) ---
+    for model_name in model_list:
+        model_yaml_path = os.path.join(script_dir, model_name, f"{model_name}_ui.yaml")
+        with open(model_yaml_path, "r", encoding="utf-8") as f:
+            model_ui = yaml.safe_load(f)
 
-    # Problem Data page
-    nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
-    pd_sections = build_problem_data_context(model_ui, model_def, example)
-    pd_columns = build_column_layout(pd_sections, model_ui["pages"]["problem_data"]["columns"])
+        model_def = load_model_def(model_name)
+        example = load_examples(model_name, args.example)
 
-    template = env.get_template("problem_data.html")
-    html = template.render(
-        page_title="Problem Data",
-        nav_pages=nav_pd,
-        columns=pd_columns,
-        all_sections=pd_sections,
-    )
-    (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/{args.model}/problem_data.html")
+        model_output_dir = output_dir / model_name
+        model_output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Geometric Options page
-    nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
-    go_sections = build_geometric_options_context(model_ui, model_def, example)
-    go_columns = build_column_layout(go_sections, model_ui["pages"]["geometric_options"]["columns"])
+        # Problem Data page
+        nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
+        pd_sections = build_problem_data_context(model_ui, model_def, example)
+        pd_columns = build_column_layout(pd_sections, model_ui["pages"]["problem_data"]["columns"])
 
-    template = env.get_template("geometric_options.html")
-    html = template.render(
-        page_title="Geometric Options",
-        nav_pages=nav_go,
-        columns=go_columns,
-        all_sections=go_sections,
-    )
-    (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/{args.model}/geometric_options.html")
+        template = env.get_template("problem_data.html")
+        html = template.render(
+            page_title="Problem Data",
+            nav_pages=nav_pd,
+            columns=pd_columns,
+            all_sections=pd_sections,
+        )
+        (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/problem_data.html")
 
-    # Results page
-    nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]
-    rs_sections, rs_keys = build_results_context(model_ui, model_def)
-    rs_columns = build_column_layout(rs_sections, model_ui["pages"]["results"]["columns"])
-    rs_all_rows = flatten_section_rows(rs_sections)
-    rs_var_keys, rs_var_labels, rs_var_units = build_results_js_context(model_ui)
+        # Geometric Options page
+        nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
+        go_sections = build_geometric_options_context(model_ui, model_def, example, args.sort_numeric_options)
+        go_columns = build_column_layout(go_sections, model_ui["pages"]["geometric_options"]["columns"])
 
-    template = env.get_template("results.html")
-    html = template.render(
-        page_title="Results",
-        nav_pages=nav_rs,
-        columns=rs_columns,
-        header=header_data,
-        model_name=args.model,
-        all_sections=rs_sections,
-        zip=zip,
-        var_keys=rs_var_keys,
-        var_labels=rs_var_labels,
-        var_units=rs_var_units,
-    )
-    (model_output_dir / "results.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/{args.model}/results.html")
+        template = env.get_template("geometric_options.html")
+        html = template.render(
+            page_title="Geometric Options",
+            nav_pages=nav_go,
+            columns=go_columns,
+            all_sections=go_sections,
+        )
+        (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/geometric_options.html")
 
-    print(f"\nDone. Generated {args.model} UI for example '{args.example}' in '{model_output_dir}/'")
+        # Results page
+        nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]
+        rs_sections, rs_keys = build_results_context(model_ui, model_def)
+        rs_columns = build_column_layout(rs_sections, model_ui["pages"]["results"]["columns"])
+        rs_all_rows = flatten_section_rows(rs_sections)
+        rs_var_keys, rs_var_labels, rs_var_units = build_results_js_context(model_ui)
+
+        template = env.get_template("results.html")
+        html = template.render(
+            page_title="Results",
+            nav_pages=nav_rs,
+            columns=rs_columns,
+            header=header_data,
+            model_name=model_name,
+            all_sections=rs_sections,
+            zip=zip,
+            var_keys=rs_var_keys,
+            var_labels=rs_var_labels,
+            var_units=rs_var_units,
+        )
+        (model_output_dir / "results.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/results.html")
+
+    print(f"\nDone. Generated {len(model_list)} model(s) for example '{args.example}' in '{output_dir}/'")
 
 
 if __name__ == "__main__":
