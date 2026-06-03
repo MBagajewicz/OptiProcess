@@ -24,10 +24,12 @@ pages:
       optimization_target:
         title: "OPTIMIZATION TARGET"
         element: radio_group
-        source: "Model_Declarations"            # from Examples_STHE → EquipmentN.Model_Declarations
+        source: "Model_Declarations"
         source_key: "Selected_OF"
-        # Labels for each objective function option (read from Model_Def for options list)
-        option_labels: {TAC_OF: "TAC", CAPEX_OF: "CAPEX", AREA_OF: "AREA"}
+        options:
+          - {value: "TAC_OF", label: "TAC"}
+          - {value: "CAPEX_OF", label: "CAPEX"}
+          - {value: "AREA_OF", label: "AREA"}
 
       fluid_allocation:
         title: "FLUID ALLOCATION"

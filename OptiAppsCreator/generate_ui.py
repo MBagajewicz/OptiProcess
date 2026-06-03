@@ -118,22 +118,15 @@ def build_problem_data_context(yaml_data, model_def, example):
             source_key = section["source_key"]
             defaults = get_example_default(example, f"{source}.{source_key}")
             options = []
-            if "options" in section:
-                for opt in section["options"]:
-                    options.append({
-                        "value": opt["value"],
-                        "label": opt["label"],
-                        "checked": opt["value"] == defaults if isinstance(defaults, str) else opt["value"] == defaults[0],
-                    })
-            elif "option_labels" in section:
-                # Options come from Model_Def objective function list
-                of_data = model_def.get("Model_Info", {}).get("Objective_Function", {})
-                eq_names = of_data.get("Equation_Name", [])
-                labels = section.get("option_labels", {})
-                for name in eq_names:
-                    label = labels.get(name, name)
-                    selected = defaults and defaults[0] == name
-                    options.append({"value": name, "label": label, "checked": selected})
+            opts = section.get("options")
+            if not opts:
+                raise ValueError(f"radio_group section '{section_id}' has no 'options' list in YAML")
+            for opt in opts:
+                options.append({
+                    "value": opt["value"],
+                    "label": opt["label"],
+                    "checked": opt["value"] == defaults if isinstance(defaults, str) else opt["value"] == defaults[0],
+                })
             resolved["options"] = options
             resolved["source_key"] = source_key
             resolved["color"] = {}  # radio groups use hardcoded classes in template

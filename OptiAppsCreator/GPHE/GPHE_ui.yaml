@@ -25,7 +25,10 @@ pages:
         element: radio_group
         source: "Model_Declarations"
         source_key: "Selected_OF"
-        option_labels: {TAC_OF: "TAC", CAPEX_OF: "CAPEX", AREA_OF: "AREA"}
+        options:
+          - {value: "TAC_OF", label: "TAC"}
+          - {value: "CAPEX_OF", label: "CAPEX"}
+          - {value: "AREA_OF", label: "AREA"}
 
       hot_stream:
         title: "HOT STREAM"
