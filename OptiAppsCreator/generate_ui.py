@@ -146,7 +146,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                 try:
                     default_val = get_example_default(example, f"{source}.{key}")
                     # Use YAML default as fallback when not in the example
-                    if default_val == "" and "default" in field_meta:
+                    if isinstance(default_val, str) and default_val == "" and "default" in field_meta:
                         default_val = field_meta["default"]
                     # Apply display conversions (e.g., int_rate stored as 0.1, displayed as 10%)
                     display_factor = field_meta.get("display_factor")
@@ -262,7 +262,7 @@ def build_geometric_options_context(yaml_data, model_def, example):
             for key, field_meta in section.get("fields", {}).items():
                 default_val = get_example_default(example, f"{source}.{key}")
                 # Use YAML default as fallback when not in the example
-                if default_val == "" and "default" in field_meta:
+                if isinstance(default_val, str) and default_val == "" and "default" in field_meta:
                     default_val = field_meta["default"]
                 fields.append({
                     "key": key,
@@ -363,6 +363,31 @@ def flatten_section_rows(sections):
     return flat
 
 
+def build_results_js_context(yaml_data):
+    """Build dynamic JS variables for the results page: result_var_keys, value_labels, var_units."""
+    results = yaml_data["pages"]["results"]
+    geo = yaml_data["pages"]["geometric_options"]
+
+    # Collect all result_var keys from results page
+    var_keys = []
+    var_units = {}
+    for section in results["sections"].values():
+        for row in section.get("rows", []):
+            if row.get("result_var"):
+                var_keys.append(row["key"])
+                if row.get("unit"):
+                    var_units[row["key"]] = row["unit"]
+
+    # Collect value labels from geometric_options sections
+    var_labels = {}
+    for section in geo["sections"].values():
+        var_name = section.get("variable", "")
+        if var_name and section.get("value_labels"):
+            var_labels[var_name] = section["value_labels"]
+
+    return var_keys, var_labels, var_units
+
+
 def generate():
     parser = argparse.ArgumentParser(description="Generate HTML UI pages from model data + YAML")
     parser.add_argument("--model", default="STHE", help="Model name (default: STHE)")
@@ -372,24 +397,38 @@ def generate():
 
     setup_path()
 
-    # Load data sources
-    yaml_path = os.path.join(args.model, f"{args.model}_ui.yaml")
-    with open(yaml_path, "r", encoding="utf-8") as f:
-        yaml_data = yaml.safe_load(f)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Load common UI metadata (header, login, available_models)
+    common_yaml_path = os.path.join(script_dir, "common_ui.yaml")
+    with open(common_yaml_path, "r", encoding="utf-8") as f:
+        common_ui = yaml.safe_load(f)
+
+    # Load model-specific UI metadata (problem_data, geometric_options, results)
+    model_yaml_path = os.path.join(script_dir, args.model, f"{args.model}_ui.yaml")
+    with open(model_yaml_path, "r", encoding="utf-8") as f:
+        model_ui = yaml.safe_load(f)
 
     model_def = load_model_def(args.model)
     example = load_examples(args.model, args.example)
 
     # Set up Jinja2
-    template_dir = os.path.join(os.path.dirname(__file__), "templates")
+    template_dir = os.path.join(script_dir, "templates")
     env = Environment(
         loader=FileSystemLoader(template_dir),
         autoescape=select_autoescape(["html"]),
     )
-    env.globals.update(zip=zip)  # needed for some template patterns
+    env.globals.update(zip=zip)
 
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Common header for all pages
+    header_data = common_ui.get("header", {
+        "title": "OptiHexx",
+        "subtitle": "Heat Exchanger Optimal Design Suite",
+        "prototype": "Prototype P07",
+    })
 
     nav_pages = [
         {"label": "Problem Data", "file": "problem_data.html"},
@@ -397,23 +436,18 @@ def generate():
         {"label": "Results", "file": "results.html"},
     ]
 
-    # --- Login page ---
-    header_data = yaml_data.get("header", {
-        "title": "OptiHexx",
-        "subtitle": "Heat Exchanger Optimal Design Suite",
-        "prototype": "Prototype P07",
-    })
+    # --- Login page (once, in output/) ---
     login_context = {
         "header": header_data,
-        "login": {"default_user": "|"},
+        "login": common_ui.get("login", {"default_user": "|"}),
     }
     template = env.get_template("login.html")
     html = template.render(**login_context)
     (output_dir / "login.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/login.html")
 
-    # --- Main Menu page ---
-    models_raw = yaml_data.get("available_models", [])
+    # --- Main Menu page (once, in output/) ---
+    models_raw = common_ui.get("available_models", [])
     models = []
     for m in models_raw:
         if m.get("active"):
@@ -435,10 +469,14 @@ def generate():
     (output_dir / "main_menu.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/main_menu.html")
 
-    # --- Problem Data page ---
+    # --- Model-specific pages (in output/{model}/) ---
+    model_output_dir = output_dir / args.model
+    model_output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Problem Data page
     nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
-    pd_sections = build_problem_data_context(yaml_data, model_def, example)
-    pd_columns = build_column_layout(pd_sections, yaml_data["pages"]["problem_data"]["columns"])
+    pd_sections = build_problem_data_context(model_ui, model_def, example)
+    pd_columns = build_column_layout(pd_sections, model_ui["pages"]["problem_data"]["columns"])
 
     template = env.get_template("problem_data.html")
     html = template.render(
@@ -447,13 +485,13 @@ def generate():
         columns=pd_columns,
         all_sections=pd_sections,
     )
-    (output_dir / "problem_data.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/problem_data.html")
+    (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
+    print(f"  ✓ output/{args.model}/problem_data.html")
 
-    # --- Geometric Options page ---
+    # Geometric Options page
     nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
-    go_sections = build_geometric_options_context(yaml_data, model_def, example)
-    go_columns = build_column_layout(go_sections, yaml_data["pages"]["geometric_options"]["columns"])
+    go_sections = build_geometric_options_context(model_ui, model_def, example)
+    go_columns = build_column_layout(go_sections, model_ui["pages"]["geometric_options"]["columns"])
 
     template = env.get_template("geometric_options.html")
     html = template.render(
@@ -462,14 +500,15 @@ def generate():
         columns=go_columns,
         all_sections=go_sections,
     )
-    (output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/geometric_options.html")
+    (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
+    print(f"  ✓ output/{args.model}/geometric_options.html")
 
-    # --- Results page ---
+    # Results page
     nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]
-    rs_sections, rs_keys = build_results_context(yaml_data, model_def)
-    rs_columns = build_column_layout(rs_sections, yaml_data["pages"]["results"]["columns"])
+    rs_sections, rs_keys = build_results_context(model_ui, model_def)
+    rs_columns = build_column_layout(rs_sections, model_ui["pages"]["results"]["columns"])
     rs_all_rows = flatten_section_rows(rs_sections)
+    rs_var_keys, rs_var_labels, rs_var_units = build_results_js_context(model_ui)
 
     template = env.get_template("results.html")
     html = template.render(
@@ -480,11 +519,14 @@ def generate():
         model_name=args.model,
         all_sections=rs_sections,
         zip=zip,
+        var_keys=rs_var_keys,
+        var_labels=rs_var_labels,
+        var_units=rs_var_units,
     )
-    (output_dir / "results.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/results.html")
+    (model_output_dir / "results.html").write_text(html, encoding="utf-8")
+    print(f"  ✓ output/{args.model}/results.html")
 
-    print(f"\nDone. Generated {args.model} UI for example '{args.example}' in '{output_dir}/'")
+    print(f"\nDone. Generated {args.model} UI for example '{args.example}' in '{model_output_dir}/'")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,31 @@
+# common_ui.yaml — Global UI metadata shared across all models
+# Serves the login page, main menu, and any other model-independent content.
+# Model-specific pages are defined in {Model}/{Model}_ui.yaml .
+
+# ============================================================
+# HEADER — used on every page
+# ============================================================
+header:
+  title: "OptiHexx"
+  subtitle: "Heat Exchanger Optimal Design Suite"
+  prototype: "Prototype P07"
+
+# ============================================================
+# LOGIN PAGE
+# ============================================================
+login:
+  default_user: "|"
+
+# ============================================================
+# MAIN MENU — list of all known model types
+# Active models link to their subdirectory; inactive ones are greyed out
+# ============================================================
+available_models:
+  - {id: "STHE", label: "Shell & Tube", active: true, link: "STHE/problem_data.html"}
+  - {id: "GPHE", label: "Plate Exchangers", active: true, link: "GPHE/problem_data.html"}
+  - {id: "DoublePipe", label: "Double Pipe Structures", active: false, link: "#"}
+  - {id: "Spiral", label: "Spiral Exchangers", active: false, link: "#"}
+  - {id: "Condenser", label: "Condensers", active: false, link: "#"}
+  - {id: "Reboiler", label: "Reboilers", active: false, link: "#"}
+  - {id: "AirCooler", label: "Air Coolers", active: false, link: "#"}
+  - {id: "FiredHeater", label: "Fired Heater", active: false, link: "#"}

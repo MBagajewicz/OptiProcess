@@ -1,27 +1,6 @@
 # STHE_ui.yaml — UI presentation metadata for Shell & Tube Heat Exchanger
-# This file contains ONLY display-level information.
-# Variable definitions, standard values, constraints → Model_Def_STHE.py
-# Default values → Examples_STHE.py
-
-# ============================================================
-# GLOBAL UI CONFIG
-# ============================================================
-header:
-  title: "OptiHexx"
-  subtitle: "Heat Exchanger Optimal Design Suite"
-  prototype: "Prototype P07"
-
-# List of all known model types for the main menu
-# Active models link to their problem-data page; inactive ones are greyed out
-available_models:
-  - {id: "STHE", label: "Shell & Tube", active: true, link: "problem_data.html"}
-  - {id: "GPHE", label: "Plate Exchangers", active: false, link: "#"}
-  - {id: "DoublePipe", label: "Double Pipe Structures", active: false, link: "#"}
-  - {id: "Spiral", label: "Spiral Exchangers", active: false, link: "#"}
-  - {id: "Condenser", label: "Condensers", active: false, link: "#"}
-  - {id: "Reboiler", label: "Reboilers", active: false, link: "#"}
-  - {id: "AirCooler", label: "Air Coolers", active: false, link: "#"}
-  - {id: "FiredHeater", label: "Fired Heater", active: false, link: "#"}
+# Model-specific pages (problem_data, geometric_options, results).
+# Common metadata (header, available_models, login) lives in common_ui.yaml .
 
 model:
   display_name: "Shell & Tube"

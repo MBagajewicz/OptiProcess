@@ -296,16 +296,18 @@ function populateResults(data, sessionData) {
     }
 
     // Optimal geometry variables
-    const varKeys = ['Ds', 'dte', 'Npt', 'rp', 'L', 'Nb', 'Bc'];
-    const varLabels = {lay: {1: 'Square (90°)', 2: 'Triangle (30°)', 3: 'Rotated Square (45°)'}};
-    const varUnits = {Ds: 'm', dte: 'm', L: 'm'};
-    for (const k of varKeys) {
-        const val = optimal[k];
-        if (val != null) setVal(k, val, varUnits[k] || '');
-    }
-    // Layout as label
-    if (optimal.lay != null) {
-        setVal('layout', varLabels.lay[optimal.lay] || optimal.lay, '');
+    var varKeys = {{ var_keys | tojson }};
+    var varLabels = {{ var_labels | tojson }};
+    var varUnits = {{ var_units | tojson }};
+
+    for (var i = 0; i < varKeys.length; i++) {
+        var k = varKeys[i];
+        var val = optimal[k];
+        if (val != null) {
+            var label = val;
+            if (varLabels[k] && varLabels[k][val] !== undefined) label = varLabels[k][val];
+            setVal(k, label, varUnits[k] || '');
+        }
     }
 
     // Computed geometry (from solver intermediate results)
