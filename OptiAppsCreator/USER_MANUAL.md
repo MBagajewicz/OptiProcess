@@ -1,233 +1,207 @@
-# USER MANUAL — OptiHexx / OptiAppsCreator
+# MANUAL DE USUARIO — OptiAppsCreator / OptiHexx
 
-**OptiHexx** is a web application for Shell & Tube Heat Exchanger design optimization. It uses **Set Trimming** and **Smart Enumeration** to guarantee global optimality. The UI is auto-generated from Python model definitions + a lightweight YAML metadata file.
+**OptiHexx** es una aplicación web para optimización de intercambiadores de calor usando **Set Trimming** y **Smart Enumeration** con garantía de optimalidad global. La UI se genera automáticamente a partir de modelos Python y archivos YAML de metadatos de presentación.
 
 ---
 
-## 1. Architecture
+## 1. Arquitectura
 
 ```
 OptiAppsCreator/
-├── STHE/                          ← Model directory (one per heat exchanger type)
-│   ├── STHE_ui.yaml               ← UI presentation metadata (labels, groups, layout)
-│   ├── Examples_STHE.py           ← Problem instances (Example1..Example13)
+├── common_ui.yaml               ← Metadatos globales (header, login, menú principal)
+├── STHE/                        ← Directorio del modelo Shell & Tube
+│   ├── STHE_ui.yaml             ← Metadatos UI específicos del modelo
+│   ├── Examples_STHE.py         ← Instancias de problema (Example1..Example13)
 │   ├── Model/
-│   │   ├── Model_Def_STHE.py      ← Structural metadata (variables, constraints, OF)
+│   │   ├── Model_Def_STHE.py    ← Metadatos estructurales (variables, restricciones, OF)
+│   │   ├── Output_Info.py       ← Cálculos post-optimización (21 campos)
 │   │   ├── Parameters_Update_STHE.py
 │   │   └── Constraints_and_OF_STHE.py
-│   └── Calculations/              ← Thermal-hydraulic model
-├── OptiCode/                      ← Shared optimization engine
-├── Common_Equations_HEX/          ← Shared LMTD, heat load
-├── templates/                     ← Jinja2 HTML templates
-│   ├── base.html                  ← Shared header, nav, Tailwind CDN
+│   └── Calculations/            ← Modelo termohidráulico
+├── GPHE/                        ← Directorio del modelo Gasketed Plate
+│   ├── GPHE_ui.yaml
+│   ├── Examples_GPHE.py
+│   ├── Model/
+│   │   ├── Model_Def_GPHE.py
+│   │   ├── Output_Info.py       ← Cálculos post-optimización (36 campos)
+│   │   ├── Parameters_Update_GPHE.py
+│   │   └── Constraints_and_OF_GPHE.py
+│   └── Calculations/
+├── OptiCode/                    ← Motor de optimización compartido
+├── Common_Equations_HEX/        ← Ecuaciones comunes (LMTD, carga térmica)
+├── templates/                   ← Plantillas Jinja2
 │   ├── login.html
 │   ├── main_menu.html
 │   ├── problem_data.html
 │   ├── geometric_options.html
 │   └── results.html
-├── generate_ui.py                 ← HTML generator (reads YAML + .py → renders templates)
-├── solver_runner.py               ← CLI solver runner (JSON in → JSON out)
-├── solver_api.py                  ← FastAPI REST server (POST /api/optimize)
-└── output/                        ← Generated HTML files (5 pages)
+├── generate_ui.py               ← Generador HTML (YAML + .py → HTML)
+├── solver_runner.py             ← Ejecutor del solver (JSON in → JSON out)
+├── solver_api.py                ← Servidor FastAPI (/ui/ + /api/optimize)
+├── requirements.txt             ← Dependencias
+└── output/                      ← HTML generado
+    ├── login.html
+    ├── main_menu.html
+    ├── STHE/
+    │   ├── problem_data.html
+    │   ├── geometric_options.html
+    │   └── results.html
+    └── GPHE/
+        ├── problem_data.html
+        ├── geometric_options.html
+        └── results.html
 ```
 
-**Data flow for UI generation:**
+**Flujo de generación de UI:**
 
 ```
-Model_Def_STHE.py ──┐
-Examples_STHE.py  ──┼──► generate_ui.py ──► output/*.html
-STHE_ui.yaml ───────┘
+common_ui.yaml ──────────┐
+Model_Def_{M}.py ────────┼──► generate_ui.py ──► output/*.html
+Examples_{M}.py ─────────┤                       output/{M}/*.html
+{M}_ui.yaml ─────────────┘
 ```
 
-**Data flow at runtime:**
+**Flujo en tiempo de ejecución:**
 
 ```
-Browser (problem_data.html)
+Navegador (problem_data.html)
     │ sessionStorage
     ▼
-Browser (geometric_options.html)
+Navegador (geometric_options.html)
     │ sessionStorage
     ▼
-Browser (results.html) ──► POST /api/optimize ──► solver_runner.py ──► Main.py pipeline ──► JSON results
+Navegador (results.html) ──► POST /api/optimize ──► solver_runner.py ──► pipeline OptiProcess ──► JSON
 ```
 
 ---
 
-## 2. Prerequisites
+## 2. Prerrequisitos
 
-| Dependency | Purpose |
-|-----------|---------|
+| Dependencia | Propósito |
+|-------------|-----------|
 | Python ≥ 3.10 | Runtime |
-| numpy, scipy | Solver engine |
-| pyyaml | YAML parsing |
-| jinja2 | HTML template rendering |
-| fastapi, uvicorn | API server (only for runtime) |
-| Tailwind CSS | Loaded from CDN (no install needed) |
-
-Install everything:
-
-```bash
-pip install numpy scipy pyyaml jinja2 fastapi uvicorn
-```
-
----
-
-## 3. Quick Start
-
-### 3.1 Install dependencies
+| numpy, scipy | Motor del solver |
+| pyyaml | Parseo de YAML |
+| jinja2 | Renderizado de plantillas HTML |
+| fastapi, uvicorn | Servidor API |
+| Tailwind CSS | Cargado desde CDN (sin instalación) |
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3.2 Generate the UI pages
+---
+
+## 3. Inicio Rápido
+
+### 3.1 Generar las páginas
 
 ```bash
 cd OptiAppsCreator
-python generate_ui.py --model STHE --example Example1
+python generate_ui.py --all                    # todos los modelos activos
+# o:
+python generate_ui.py --model STHE GPHE        # modelos específicos
+# o:
+python generate_ui.py                          # solo STHE (default)
 ```
 
-This produces 5 files in `output/`:
+Esto produce:
 
 ```
-output/login.html
-output/main_menu.html
-output/problem_data.html       ← pre-filled with Example1 defaults
-output/geometric_options.html  ← pre-checked with Example1 discrete values
-output/results.html            ← empty tables, populated at runtime by JS
+output/login.html               ← compartido, generado una vez
+output/main_menu.html           ← compartido, generado una vez
+output/STHE/problem_data.html   ← pre-llenado con defaults de Example1
+output/STHE/geometric_options.html
+output/STHE/results.html
+output/GPHE/problem_data.html
+output/GPHE/geometric_options.html
+output/GPHE/results.html
 ```
 
-### 3.3 Start the server
+### 3.2 Iniciar el servidor
 
 ```bash
 cd OptiAppsCreator
 uvicorn solver_api:app --host 127.0.0.1 --port 8000
 ```
 
-A single process serves:
-- **Web UI** at `/ui/` (static HTML, CSS, JS)
-- **REST API** at `/api/` (POST /api/optimize)
+Un solo proceso sirve:
+- **UI web** en `/ui/` (HTML estático)
+- **API REST** en `/api/` (POST /api/optimize)
 
-### 3.4 Open the application
+### 3.3 Abrir la aplicación
 
-Open **http://127.0.0.1:8000/ui/main_menu.html** in your browser.
+Abrir **http://127.0.0.1:8000/ui/main_menu.html** en el navegador.
 
-> **Do not** open the `.html` files directly from disk (`file://`). The browser blocks cross-origin `fetch` calls to `http://127.0.0.1:8000`. Always use the server URL.
+> **No** abrir los `.html` directamente desde disco (`file://`). El navegador bloquea llamadas `fetch` cross-origin a `http://127.0.0.1:8000`.
 
-### 3.5 User flow
+### 3.4 Flujo del usuario
 
-1. **Main Menu** → click **Shell & Tube**
-2. **Problem Data** → review/edit pre-filled parameters → click **Next: Geometric Options →**
-3. **Geometric Options** → check/uncheck discrete variable ranges → click **Run Optimization →**
-4. **Results** → page auto-calls the API and populates all tables (streams, geometry, thermo, pressure, economics)
-5. Click **Download Results** to save as `.txt`
-
----
-
-## 4. User Flow (Browser)
-
-### Page 1: Login
-Credits and branding. Login form is decorative (no backend auth).
-
-### Page 2: Main Menu
-Select an equipment type. Only **Shell & Tube** is active; others are greyed out.
-
-### Page 3: Problem Data
-Fill in process conditions and economic parameters. Sections:
-
-| Panel | Fields |
-|-------|--------|
-| **OPTIMIZATION TARGET** | Radio: TAC / CAPEX / AREA |
-| **FLUID ALLOCATION** | Radio: Autoselect / Cold in Tubes / Hot in Tubes |
-| **HOT STREAM** | 9 fields: temps, flow, density, Cp, viscosity, k, fouling, ΔP |
-| **COLD STREAM** | 9 fields (same structure) |
-| **FLOW LIMITS** | Table: tube/shell velocity, Reynolds, L/D bounds |
-| **LMTD SETTINGS** | Xp limit, F min |
-| **OTHER OPTIONS** | Excess area, pump efficiency, shell method, tube method |
-| **ECONOMIC PARAMETERS** | Amortization, energy cost, hours/year, interest, cost params |
-
-Click **Next: Geometric Options →** to save data and proceed.
-
-### Page 4: Geometric Options
-Select which discrete design values the optimizer may consider. Each panel is a checkbox grid:
-
-| Panel | Variable | Source |
-|-------|----------|--------|
-| Configurations Available | — (static UI) | Series/Parallel combos |
-| Number of Shells Available | — (static UI) | 1–8 |
-| Number of Tube Passes | Npt | Standard_Variables_Values |
-| Layouts Available | lay | 1=Square, 2=Triangle, 3=Rotated Square |
-| Pitch Ratio | rp | 1.25, 1.33, 1.50 |
-| Shell Diameter [m] | Ds | TEMA standard list |
-| Outer Tube Diameter [m] | dte | BWG sizes |
-| Tube Length [m] | L | Standard lengths |
-| Baffle cut | Bc | 0.15–0.45 |
-| Tube Options | ktube, thk, LBLD, UBLD | Text inputs |
-| Number of Baffles | Nb | 1–20 |
-| Bell Method Parameters | Nss, plbmax1, plbmax2 | Text inputs |
-
-Click **Run Optimization →** to save selections and navigate to results.
-
-### Page 5: Results
-On load, the page:
-1. Reads saved data from sessionStorage
-2. Sends `POST /api/optimize`
-3. Populates all tables:
-
-| Panel | Fields displayed |
-|-------|-----------------|
-| **HOT STREAM** | Echoed input parameters (mass flow, temps, density, viscosity, Cp, k, fouling) |
-| **COLD STREAM** | Echoed input parameters |
-| *(Summary)* | Heat load [kW], LMTD [°C] |
-| **UNIT GEOMETRY** | Optimal Ds, dte, Npt, rp, lay (layout), L, Nb, Bc; tube count (Nt), heat transfer area, correction factor F, area ratio A/A_req |
-| **THERMO PROPERTIES** | Tube & shell velocities, Reynolds numbers, convective heat transfer coefficients, overall HTC (dirty & clean) |
-| **PRESSURE DROP** | Tube & shell ΔP [kPa] |
-| **OPTIMIZATION** | Objective function value, CAPEX, tube/shell/total OPEX, TAC |
-
-Click **Download Results** to save as text file.
+1. **Main Menu** → seleccionar tipo de intercambiador
+2. **Problem Data** → revisar/editar parámetros → **Next: Geometric Options →**
+3. **Geometric Options** → marcar/desmarcar rangos de variables discretas → **Run Optimization →**
+4. **Results** → la página llama al API y llena todas las tablas automáticamente
 
 ---
 
-## 5. API Reference
+## 4. Referencia CLI
+
+### `generate_ui.py`
+
+```bash
+python generate_ui.py [--model MODEL [MODEL ...]] [--all] [--example EXAMPLE] [--output OUTPUT] [--no-sort-numeric-options]
+```
+
+| Opción | Default | Descripción |
+|--------|---------|-------------|
+| `--model STHE GPHE` | `["STHE"]` | Nombres de modelos (ignorado si se usa `--all`) |
+| `--all` | — | Genera todos los modelos marcados activos en `common_ui.yaml` |
+| `--example` | `Example1` | Nombre del ejemplo para valores por defecto |
+| `--output` | `output` | Directorio de salida |
+| `--no-sort-numeric-options` | — | Desactiva el ordenamiento de listas numéricas en checkbox_grids |
+
+Ejemplos:
+
+```bash
+python generate_ui.py                                    # solo STHE
+python generate_ui.py --model STHE GPHE --example Example1
+python generate_ui.py --all                              # todos los activos
+python generate_ui.py --all --no-sort-numeric-options    # sin ordenar
+```
+
+### `solver_api.py`
+
+```bash
+uvicorn solver_api:app --host 127.0.0.1 --port 8000
+```
+
+| Opción | Default | Descripción |
+|--------|---------|-------------|
+| `--host` | `127.0.0.1` | Dirección de bind (`0.0.0.0` para acceso en red) |
+| `--port` | `8000` | Puerto |
+| `--reload` | off | Reinicio automático (solo desarrollo) |
+
+---
+
+## 5. Referencia de la API REST
 
 ### `GET /api/health`
 
-Health check.
-
-**Response:**
 ```json
 {"status": "ok", "service": "OptiProcess Solver API"}
 ```
 
 ### `POST /api/optimize`
 
-Run a full optimization.
+**Request:**
 
-**Request body:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `model` | string | yes | Model name (currently only `"STHE"`) |
-| `parameters` | object | yes | All Model_Parameters key-value pairs (43 required — see below) |
-| `discrete_variables` | object | yes | `{"Ds": [...], "dte": [...], ...}` — 8 arrays, each must have ≥1 value |
-| `selected_of` | string | no | `"TAC_OF"`, `"CAPEX_OF"`, or `"AREA_OF"` (default: `"TAC_OF"`) |
-| `number_of_equipment` | int | no | Number of units (default: 1) |
-
-**Required `parameters` keys:**
-
-```
-mh, roh, Cph, mih, kh, Rfh, DPhdisp,     # Hot stream
-mc, roc, Cpc, mic, kc, Rfc, DPcdisp,     # Cold stream
-ktube, thk, yfluid,                        # HEX config
-Shell_Method, Tube_Method,                 # Correlation methods
-Aexc, Tci, Tco, Thi, Tho,                 # Problem temps
-vsmax, vsmin, vtmax, vtmin,               # Velocity bounds
-Retmin, Resmin, Retmax, Resmax,            # Reynolds bounds
-LBLD, UBLD, Xp, F_min,                    # Geometric/LMTD bounds
-par_a, par_b, pc, int_rate, n, eta, Nop   # Economics
-```
-
-For Bell method, also include: `Nss`, `plbmax1`, `plbmax2`.
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `model` | string | sí | Nombre del modelo (`"STHE"`, `"GPHE"`) |
+| `parameters` | object | sí | Pares clave-valor de `Model_Parameters` |
+| `discrete_variables` | object | sí | `{"Ds": [...], "dte": [...], ...}` |
+| `selected_of` | string | no | `"TAC_OF"`, `"CAPEX_OF"`, `"AREA_OF"` (default: `"TAC_OF"`) |
+| `number_of_equipment` | int | no | Número de equipos (default: 1) |
 
 **Response (200 OK):**
 
@@ -255,362 +229,571 @@ For Bell method, also include: `Nss`, `plbmax1`, `plbmax2`.
         "CAPEX": 30825.6,
         "OPEX_t": 2406.6, "OPEX_s": 824.2, "OPEX_total": 3230.8,
         "TAC": 8247.5, "Q": 2272.0,
-        "Nt": 302, "F": 0.971, "A_total": 146.9, "A_ratio": 1.16
+        "Nt": 302, "A_total": 146.9, "A_shell": 146.9, "A_ratio": 1.16, "F": 0.971
     },
     "number_of_solutions": 1,
     "elapsed_seconds": 0.19
 }
 ```
 
-| Field | Type | Description |
+| Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `status` | string | `"ok"` or `"error"` |
-| `model` | string | Model name |
-| `objective` | object | OF equation name, variable name, optimal value, unit |
-| `optimal_variables` | object | Optimal discrete variable values (+ `yfluid`) |
-| `calculations` | object | 21 intermediate results: velocities, Reynolds, HTCs, pressure drops, economics |
-| `number_of_solutions` | int | Number of equally-optimal candidates |
-| `elapsed_seconds` | number | Solver execution time |
-
-**Response (200 — error):**
-
-```json
-{
-    "status": "error",
-    "error": "description of what went wrong",
-    "elapsed_seconds": 0.0
-}
-```
-
-Validation errors return 200 with `"status": "error"` and a descriptive message. Infrastructure errors (Python crash, timeout) return HTTP 500.
-
-### cURL example
-
-```bash
-curl -s -X POST http://127.0.0.1:8000/api/optimize \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model": "STHE",
-    "selected_of": "TAC_OF",
-    "parameters": {
-        "mh": 20, "roh": 750, "Cph": 2840, "mih": 0.002, "kh": 0.19,
-        "Rfh": 0.0002, "DPhdisp": 100000,
-        "mc": 60, "roc": 995, "Cpc": 4187, "mic": 0.0005, "kc": 0.6,
-        "Rfc": 0.0007, "DPcdisp": 100000,
-        "ktube": 50, "thk": 0.00165, "yfluid": "hot_stream",
-        "Shell_Method": "Kern", "Tube_Method": "Dittus_Boelter",
-        "Aexc": 11, "Tci": 47, "Tco": 56, "Thi": 120, "Tho": 80,
-        "vsmax": 2, "vsmin": 0.5, "vtmax": 3, "vtmin": 1,
-        "Retmin": 10000, "Resmin": 2000, "Retmax": 5000000, "Resmax": 100000,
-        "LBLD": 3, "UBLD": 15, "Xp": 0.9, "F_min": 0.75,
-        "par_a": 635.14, "par_b": 0.778, "pc": 0.15,
-        "int_rate": 0.1, "n": 10, "eta": 0.6, "Nop": 7500
-    },
-    "discrete_variables": {
-        "Ds": [0.7874,0.8382,0.889,0.9398,0.9906,1.0668,1.143,1.2192,1.3716,1.524],
-        "dte": [0.01905,0.02540,0.03175,0.03810,0.05080],
-        "Npt": [1,2,4,6],
-        "rp": [1.25,1.33,1.50],
-        "lay": [1,2],
-        "L": [1.2195,1.8293,2.4390,3.0488,3.6585,4.8768,6.0976],
-        "Nb": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
-        "Bc": [0.25]
-    }
-}' | python3 -m json.tool
-```
+| `status` | string | `"ok"` o `"error"` |
+| `model` | string | Nombre del modelo |
+| `objective` | object | Función, variable, valor y unidad de la OF |
+| `optimal_variables` | object | Valores óptimos de variables discretas |
+| `calculations` | object | Resultados intermedios (21 campos STHE, 36 GPHE) |
+| `number_of_solutions` | int | Cantidad de candidatos igualmente óptimos |
+| `elapsed_seconds` | number | Tiempo de ejecución del solver |
 
 ---
 
-## 6. YAML Schema Reference (`STHE_ui.yaml`)
+## 6. Formato de los Archivos YAML
 
-The YAML file contains **only** UI presentation metadata. Structural data comes from `Model_Def_STHE.py` and `Examples_STHE.py`.
+OptiAppsCreator usa dos tipos de archivos YAML:
 
-### Top-level
+1. **`common_ui.yaml`** — metadatos globales compartidos entre todos los modelos.
+2. **`{Modelo}/{Modelo}_ui.yaml`** — metadatos específicos de un modelo.
+
+### 6.1 `common_ui.yaml` — Metadatos Globales
+
+Define la cabecera, la página de login y el menú principal. Se carga una sola vez, independientemente del modelo.
 
 ```yaml
+# ============================================================
+# HEADER — usado en todas las páginas
+# ============================================================
 header:
-  title: "OptiHexx"
-  subtitle: "Heat Exchanger Optimal Design Suite"
-  prototype: "Prototype P07"
+  title: "OptiHexx"                              # Título principal
+  subtitle: "Heat Exchanger Optimal Design Suite" # Subtítulo
+  prototype: "Prototype P07"                      # Versión
 
+# ============================================================
+# LOGIN PAGE
+# ============================================================
+login:
+  default_user: "|"                               # Usuario por defecto (decorativo)
+
+# ============================================================
+# MAIN MENU — lista de todos los tipos de intercambiador conocidos
+# ============================================================
 available_models:
-  - {id: "STHE", label: "Shell & Tube", active: true, link: "problem_data.html"}
-  - {id: "GPHE", label: "Plate Exchangers", active: false, link: "#"}
-  # ... more models
-
-model:
-  display_name: "Shell & Tube"
-  icon: "fa-industry"
+  - {id: "STHE", label: "Shell & Tube", active: true, link: "STHE/problem_data.html"}
+  - {id: "GPHE", label: "Plate Exchangers", active: true, link: "GPHE/problem_data.html"}
+  - {id: "DoublePipe", label: "Double Pipe Structures", active: false, link: "#"}
 ```
 
-### Pages → `problem_data`
+**Etiquetas:**
 
-```yaml
-pages:
-  problem_data:
-    title: "Problem Data"
-    columns:                     # each column is a list of section IDs
-      - [optimization_target, fluid_allocation]
-      - [hot_stream, cold_stream, lmtd_display]
-      - [flow_limits, lmtd_settings, other_options]
-      - [economic]
-    sections:
-      optimization_target:
-        title: "OPTIMIZATION TARGET"
-        element: radio_group
-        source: "Model_Declarations"
-        source_key: "Selected_OF"
-        option_labels: {TAC_OF: "TAC", CAPEX_OF: "CAPEX", AREA_OF: "AREA"}
-
-      hot_stream:
-        title: "HOT STREAM"
-        element: form_group       # renders labeled text inputs
-        color: red                # red, blue, yellow, gray, green, pink
-        source: "Model_Parameters"
-        fields:
-          Thi: {label: "Inlet Temperature", unit: "°C"}
-          Tho: {label: "Outlet Temperature", unit: "°C"}
-          # ...
-
-      flow_limits:
-        title: "FLOW LIMITS"
-        element: limit_table      # special 3-column table: lower | item | upper
-        rows:
-          - {item: "Tube velocity", unit: "m/s", lower: vtmin, upper: vtmax}
-          # ...
-
-      shell_method:
-        # Use element: select for dropdowns
-        fields:
-          Shell_Method:
-            label: "Shell Method"
-            element: select
-            options: ["Kern", "Bell"]
-```
-
-**Supported `element` types for problem_data:**
-
-| element | Renders as |
-|---------|-----------|
-| `radio_group` | Radio button group |
-| `form_group` | Labeled text inputs (or selects) |
-| `limit_table` | Three-column min/item/max table |
-| `computed_display` | Read-only display field |
-
-**Field modifiers:**
-- `unit: "°C"` — appended to label
-- `display_factor: 100` — multiply stored value for display (e.g., 0.1 → 10%)
-- `computed_hint: true` — shows field as disabled (calculated)
-- `element: select` — renders `<select>` dropdown instead of `<input>`
-
-### Pages → `geometric_options`
-
-```yaml
-  geometric_options:
-    title: "Geometric Options"
-    columns:
-      - [configurations, shell_count]
-      - [tube_passes, layouts, pitch_ratio]
-      - [shell_diameter]
-      # ...
-    sections:
-      tube_passes:
-        title: "Number of Tube Passes"
-        element: checkbox_grid
-        color: blue               # brown, blue, yellow, brown_dark, red_dark, green
-        variable: "Npt"           # must match List_of_Variables from Model_Def
-
-      layouts:
-        variable: "lay"
-        value_labels: {1: "Square (90°)", 2: "Triangle (30°)", 3: "Rotated Square (45°)"}
-
-      configurations:
-        element: checkbox_grid
-        static: true              # not tied to a model variable
-        items:
-          - {value: "series", label: "Series"}
-          - {value: "parallel", label: "Parallel"}
-
-      tube_options:
-        element: form_group       # text inputs within geometric-options page
-        color: brown_dark
-        source: "Model_Parameters"
-        fields:
-          ktube: {label: "Thermal Conductivity", unit: "W/(m K)"}
-```
-
-**color values for geometric_options:** `brown`, `blue`, `yellow`, `brown_dark`, `red_dark`, `green`
-
-### Pages → `results`
-
-```yaml
-  results:
-    title: "Results"
-    columns:
-      - [hot_stream_results, cold_stream_results, summary_data]
-      - [unit_geometry]
-      - [thermo_properties, pressure_drop]
-      - [optimization_results]
-    sections:
-      hot_stream_results:
-        title: "HOT STREAM"
-        element: data_table
-        color: green_display      # green_display, blue_display, yellow_display, red_display
-        rows:
-          - {label: "Mass flow rate", key: "mh", unit: "kg/s"}
-          # ...
-
-      thermo_properties:
-        title: "THERMO PROPERTIES"
-        color: yellow_display
-        subsections:              # nested sub-tables with their own headers
-          - title: "TUBE SIDE"
-            rows:
-              - {label: "Velocity flow", key: "vt", unit: "m/s", computed: true}
-          - title: "SHELL SIDE"
-            rows: [...]
-        footer_rows:              # rows below all subsections
-          - {label: "Overall HTC (dirty)", key: "U", unit: "W/(m² K)", computed: true}
-
-      optimization_results:
-        subsections:
-          - title: ""
-            rows:
-              - {label: "Objective function", key: "OF_value", highlight: true}
-          - title: "ECONOMICS"
-            rows:
-              - {label: "Capital cost", key: "CAPEX", unit: "$"}
-```
-
-**Row modifiers for results:**
-- `computed: true` — value comes from solver (or is derived by JS)
-- `highlight: true` — bold text
-- `result_var: true` — value is an optimal discrete variable
-- `display_factor: 1000` — for unit conversion in display (e.g., Pa·s → mPa·s)
+| Etiqueta | Padre | Significado |
+|----------|-------|-------------|
+| `header` | raíz | Datos de cabecera para todas las páginas |
+| `header.title` | header | Título de la aplicación |
+| `header.subtitle` | header | Subtítulo descriptivo |
+| `header.prototype` | header | Identificador de versión/prototipo |
+| `login` | raíz | Configuración de la página de login |
+| `login.default_user` | login | Usuario pre-llenado (decorativo) |
+| `available_models` | raíz | Lista de modelos para el menú principal |
+| `available_models[].id` | item | Identificador del modelo (debe coincidir con el nombre del directorio) |
+| `available_models[].label` | item | Etiqueta visible en el botón del menú |
+| `available_models[].active` | item | `true` si el modelo está activo, `false` si está en gris |
+| `available_models[].link` | item | URL relativa desde `output/` hacia la página `problem_data` del modelo |
 
 ---
 
-## 7. Adding a New Model
+### 6.2 `{Modelo}_ui.yaml` — Metadatos Específicos del Modelo
 
-To add a new heat exchanger type (e.g., GPHE / Plate Exchanger):
+Define la presentación de las tres ventanas del modelo: Problem Data, Geometric Options y Results.
 
-### Step 1: Create model directory structure
+#### 6.2.1 Estructura General
+
+```yaml
+model:                          # Identificación del modelo
+  display_name: "Shell & Tube"  # Nombre para mostrar
+  icon: "fa-industry"           # Clase FontAwesome (no usado actualmente)
+
+pages:                          # Páginas del modelo
+  problem_data:    {...}        # Ventana 1: datos del problema
+  geometric_options: {...}      # Ventana 2: opciones geométricas
+  results:         {...}        # Ventana 3: resultados
+```
+
+---
+
+#### 6.2.2 Página: `problem_data`
+
+Define los paneles de entrada de datos del problema (temperaturas, caudales, propiedades, economía).
+
+**Etiquetas de `problem_data`:**
+
+| Etiqueta | Nivel | Significado |
+|----------|-------|-------------|
+| `title` | página | Título de la ventana |
+| `columns` | página | Distribución de secciones en columnas. Cada elemento es una lista de IDs de sección. |
+| `sections` | página | Diccionario de secciones, cada una con un ID único |
+
+**Tipos de `element` (elementos de sección) para `problem_data`:**
+
+| `element` | Renderiza | Usado para |
+|-----------|-----------|------------|
+| `radio_group` | Grupo de radio buttons | Selección de OF, asignación de fluido |
+| `form_group` | Inputs de texto etiquetados | Propiedades de corrientes, economía |
+| `limit_table` | Tabla de 3 columnas (mín / ítem / máx) | Límites de velocidad, Reynolds, L/D |
+| `computed_display` | Campo de solo lectura | Valores calculados como LMTD o carga térmica |
+
+##### `radio_group`
+
+Grupo de botones de opción excluyente.
+
+```yaml
+optimization_target:
+  title: "OPTIMIZATION TARGET"       # Título visible del panel
+  element: radio_group               # Tipo de elemento
+  source: "Model_Declarations"       # Fuente en Examples_{M}.py → EquipmentN.{source}
+  source_key: "Selected_OF"          # Clave dentro de la fuente para el valor por defecto
+  options:                           # Lista de opciones
+    - {value: "TAC_OF", label: "TAC"}
+    - {value: "CAPEX_OF", label: "CAPEX"}
+    - {value: "AREA_OF", label: "AREA"}
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `title` | Título visible del panel |
+| `element` | Debe ser `radio_group` |
+| `source` | `"Model_Declarations"` o `"Model_Parameters"`. Indica de dónde leer el valor por defecto desde `Examples_{M}.py` |
+| `source_key` | Clave dentro de `source` que contiene el valor preseleccionado |
+| `options` | Lista de opciones. Cada opción tiene `value` (valor enviado al solver) y `label` (texto visible) |
+
+> **Valor por defecto:** El generador lee `Equipment1.{source}.{source_key}` de `Examples_{M}.py` y marca la opción cuyo `value` coincida.
+
+##### `form_group`
+
+Grupo de campos de entrada de texto o select.
+
+```yaml
+hot_stream:
+  title: "HOT STREAM"
+  element: form_group
+  color: red                         # red, blue, yellow, gray, green, pink
+  source: "Model_Parameters"         # Fuente en Examples_{M}.py
+  fields:
+    Thi:                             # Clave del parámetro
+      label: "Inlet Temperature"     # Etiqueta visible
+      unit: "°C"                     # Unidad (se agrega a la etiqueta)
+    Tho:
+      label: "Outlet Temperature"
+      unit: "°C"
+    mh:
+      label: "Flow Rate"
+      unit: "kg/s"
+    int_rate:                        # Ejemplo con factor de display
+      label: "Interest"
+      unit: "%"
+      display_factor: 100           # Valor × 100 para mostrar (0.1 → 10%)
+    Shell_Method:
+      label: "Shell Method"
+      element: select                # Renderiza <select> en vez de <input>
+      options: ["Kern", "Bell"]      # Opciones del dropdown
+    Tco:
+      label: "Outlet Temperature"
+      unit: "°C"
+      computed_hint: true            # Campo deshabilitado (calculado)
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `title` | Título visible del panel |
+| `element` | Debe ser `form_group` |
+| `color` | Esquema de color: `red`, `blue`, `yellow`, `gray`, `green`, `pink` |
+| `source` | `"Model_Parameters"`. Fuente de valores por defecto |
+| `fields` | Diccionario clave → metadatos del campo |
+
+**Metadatos por campo (`fields.{key}`):**
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `label` | Etiqueta visible (requerido) |
+| `unit` | Unidad de medida (opcional, se agrega a la etiqueta) |
+| `element` | `select` para dropdown, omitir para input de texto |
+| `options` | Lista de strings para el dropdown (solo si `element: select`) |
+| `display_factor` | Multiplicador para conversión de display (ej. `int_rate: 0.1` → mostrado como `10` si `display_factor: 100`). No afecta el valor enviado al solver. |
+| `computed_hint` | `true` para deshabilitar el campo (valor calculado, no editable) |
+| `default` | Valor por defecto si no existe en `Examples_{M}.py` |
+
+##### `limit_table`
+
+Tabla de límites con columnas: mínimo, ítem, máximo.
+
+```yaml
+flow_limits:
+  title: "FLOW LIMITS"
+  element: limit_table
+  color: red
+  source: "Model_Parameters"
+  rows:
+    - {item: "Tube velocity", unit: "m/s", lower: vtmin, upper: vtmax}
+    - {item: "Shell velocity", unit: "m/s", lower: vsmin, upper: vsmax}
+    - {item: "Tube Reynolds", lower: Retmin, upper: Retmax}
+    - {item: "Shell Reynolds", lower: Resmin, upper: Resmax}
+    - {item: "L/D ratio", lower: LBLD, upper: UBLD}
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `title` | Título visible del panel |
+| `element` | Debe ser `limit_table` |
+| `color` | `red` (único usado) |
+| `source` | `"Model_Parameters"`. Fuente de valores por defecto |
+| `rows` | Lista de filas de la tabla |
+
+**Metadatos por fila (`rows[]`):**
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `item` | Etiqueta de la fila (columna central) |
+| `unit` | Unidad (opcional, columna central) |
+| `lower` | Clave del parámetro para el límite inferior |
+| `upper` | Clave del parámetro para el límite superior |
+
+##### `computed_display`
+
+Panel de solo lectura para valores calculados en el navegador (sin enviar al solver).
+
+```yaml
+lmtd_display:
+  title: ""
+  element: computed_display
+  color: pink
+  rows:
+    - {label: "LMTD (Calculated)", unit: "°C", computed: true}
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `element` | Debe ser `computed_display` |
+| `color` | `pink` (único usado) |
+| `rows` | Lista de filas |
+
+---
+
+#### 6.2.3 Página: `geometric_options`
+
+Define los paneles de selección de variables discretas que el optimizador puede considerar.
+
+**Etiquetas de `geometric_options`:**
+
+| Etiqueta | Nivel | Significado |
+|----------|-------|-------------|
+| `title` | página | Título de la ventana |
+| `columns` | página | Distribución de secciones en columnas |
+| `sections` | página | Diccionario de secciones |
+
+**Tipos de `element` para `geometric_options`:**
+
+| `element` | Renderiza | Usado para |
+|-----------|-----------|------------|
+| `checkbox_grid` | Grilla de checkboxes | Variables discretas del modelo (Ds, dte, Npt, etc.) |
+| `form_group` | Inputs de texto | Parámetros adicionales (opciones de tubo, Bell) |
+| `computed_display` | Campo de solo lectura | Información complementaria |
+
+##### `checkbox_grid`
+
+Grilla de checkboxes con opciones seleccionables. Es el elemento principal de esta ventana.
+
+**Caso A — Vinculado a una variable del modelo:**
+
+```yaml
+shell_diameter:
+  title: "Shell Diameter"
+  unit: "m"                         # Unidad mostrada en el título
+  element: checkbox_grid
+  color: yellow                     # brown, blue, yellow, brown_dark, red_dark, green
+  variable: "Ds"                    # Nombre en List_of_Variables de Model_Def
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `title` | Título del panel |
+| `unit` | Unidad (opcional, se agrega al título) |
+| `element` | Debe ser `checkbox_grid` |
+| `color` | `brown`, `blue`, `yellow`, `brown_dark`, `red_dark`, `green` |
+| `variable` | Nombre de la variable (debe coincidir con `List_of_Variables` en `Model_Def_{M}.py`) |
+
+> Las opciones disponibles (valores) se leen de `Model_Def_{M}.py → Standard_Variables_Values[variable]`.
+> Las opciones preseleccionadas se leen de `Examples_{M}.py → Discrete_Values_of_Variables[índice]`.
+
+**`value_labels` — etiquetas personalizadas para valores:**
+
+```yaml
+layouts:
+  title: "Layouts Available"
+  element: checkbox_grid
+  color: blue
+  variable: "lay"
+  value_labels:                     # Mapa valor → etiqueta
+    1: "Square (90°)"
+    2: "Triangle (30°)"
+    3: "Rotated Square (45°)"
+```
+
+Sin `value_labels`, el valor numérico se muestra como string directamente.
+
+**Caso B — Estático (no vinculado a variable):**
+
+```yaml
+configurations:
+  title: "Configurations Available"
+  element: checkbox_grid
+  color: brown
+  static: true                      # No vinculado a variable del modelo
+  items:
+    - {value: "series", label: "Series"}
+    - {value: "parallel", label: "Parallel"}
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `static` | `true` para panel decorativo sin vinculación a variable |
+| `items` | Lista explícita de opciones con `value` y `label` |
+
+##### `form_group` (en geometric_options)
+
+Similar al de `problem_data`, pero con colores distintos.
+
+```yaml
+tube_options:
+  title: "Tube Options"
+  element: form_group
+  color: brown_dark                 # brown_dark, red_dark, brown, etc.
+  source: "Model_Parameters"
+  fields:
+    ktube: {label: "Thermal Conductivity", unit: "W/(m K)"}
+    thk:   {label: "Tube Thickness", unit: "m"}
+    LBLD:  {label: "Minimum Tube Length", unit: "m"}
+    UBLD:  {label: "Maximum Tube Length", unit: "m"}
+```
+
+---
+
+#### 6.2.4 Página: `results`
+
+Define los paneles de la ventana de resultados. Los valores se llenan dinámicamente desde la respuesta del API.
+
+**Etiquetas de `results`:**
+
+| Etiqueta | Nivel | Significado |
+|----------|-------|-------------|
+| `title` | página | Título de la ventana |
+| `columns` | página | Distribución de secciones en columnas |
+| `sections` | página | Diccionario de secciones |
+
+**Tipo de `element` para `results`:**
+
+| `element` | Usado para |
+|-----------|------------|
+| `data_table` | Tablas de datos (único elemento disponible) |
+
+##### `data_table`
+
+Tabla de resultados con filas de datos. Puede contener subsecciones y filas de pie.
+
+```yaml
+hot_stream_results:
+  title: "HOT STREAM"
+  element: data_table
+  color: green_display              # green_display, blue_display, yellow_display, red_display
+  rows:                             # Filas de la tabla
+    - {label: "Mass flow rate", key: "mh", unit: "kg/s"}
+    - {label: "Inlet temperature", key: "Thi", unit: "°C"}
+    - {label: "Viscosity", key: "mih", unit: "mPa s", display_factor: 1000}
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `title` | Título del panel |
+| `element` | Debe ser `data_table` |
+| `color` | `green_display`, `blue_display`, `yellow_display`, `red_display` |
+| `rows` | Lista de filas |
+
+**Metadatos por fila (`rows[]`):**
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `label` | Etiqueta visible (columna izquierda) |
+| `key` | Clave que identifica el valor. Para parámetros de entrada: nombre del parámetro (`"mh"`, `"Thi"`). Para resultados calculados: nombre en `calculations` del JSON (`"vt"`, `"U"`, `"TAC"`). Para variables óptimas: nombre de la variable (`"Ds"`, `"Ntp"`) |
+| `unit` | Unidad de medida (opcional) |
+| `computed` | `true` si el valor viene del solver (cálculos intermedios) |
+| `result_var` | `true` si el valor es una variable discreta óptima |
+| `highlight` | `true` para texto en negrita |
+| `display_factor` | Multiplicador para conversión de display (ej. `1000` para Pa·s → mPa·s) |
+
+**Subsecciones (`subsections`):**
+
+Tablas anidadas con sus propios títulos.
+
+```yaml
+thermo_properties:
+  title: "THERMO PROPERTIES"
+  element: data_table
+  color: yellow_display
+  subsections:                      # Sub-tablas con encabezados propios
+    - title: "TUBE SIDE"
+      rows:
+        - {label: "Velocity flow", key: "vt", unit: "m/s", computed: true}
+        - {label: "Reynolds number", key: "Ret", computed: true}
+    - title: "SHELL SIDE"
+      rows:
+        - {label: "Velocity flow", key: "vs", unit: "m/s", computed: true}
+        - {label: "Reynolds number", key: "Res", computed: true}
+  footer_rows:                      # Filas debajo de todas las subsecciones
+    - {label: "Overall HTC (dirty)", key: "U", unit: "W/(m² K)", computed: true}
+    - {label: "Overall HTC (clean)", key: "Uc", unit: "W/(m² K)", computed: true}
+```
+
+| Etiqueta | Significado |
+|----------|-------------|
+| `subsections` | Lista de subsecciones, cada una con `title` y `rows` |
+| `footer_rows` | Filas que aparecen después de todas las subsecciones |
+
+**Subsección sin título dentro de `optimization_results`:**
+
+```yaml
+optimization_results:
+  title: "OPTIMIZATION"
+  element: data_table
+  color: blue_display
+  subsections:
+    - title: ""                     # Sin título
+      rows:
+        - {label: "Objective function", key: "OF_value", unit_from: "OF", computed: true, highlight: true}
+    - title: "ECONOMICS"
+      rows:
+        - {label: "Capital cost", key: "CAPEX", unit: "$", computed: true}
+        - {label: "Total annualized cost", key: "TAC", unit: "$/y", computed: true}
+```
+
+La clave especial `OF_value` se llena desde `objective.value` de la respuesta del API, no desde `calculations`.
+
+---
+
+## 7. Cómo Agregar un Modelo Nuevo
+
+### Paso 1: Crear estructura de directorio
 
 ```
-GPHE/
-├── GPHE_ui.yaml
-├── Examples_GPHE.py
+MiModelo/
+├── MiModelo_ui.yaml              ← Metadatos de presentación
+├── Examples_MiModelo.py          ← Instancias de problema
 ├── Model/
-│   ├── Model_Def_GPHE.py
-│   ├── Parameters_Update_GPHE.py
-│   └── Constraints_and_OF_GPHE.py
+│   ├── __init__.py
+│   ├── Model_Def_MiModelo.py     ← Metadatos estructurales
+│   ├── Parameters_Update_MiModelo.py
+│   ├── Constraints_and_OF_MiModelo.py
+│   └── Output_Info.py            ← Cálculos post-optimización (opcional)
 ├── Calculations/
-│   └── (thermal-hydraulic model)
+│   └── (módulos termohidráulicos)
 └── __init__.py
 ```
 
-### Step 2: Write the YAML metadata (`GPHE_ui.yaml`)
+### Paso 2: Escribir `Model_Def_MiModelo.py`
 
-Follow the same schema as `STHE_ui.yaml` (see Section 6). The YAML references variable names, parameter keys, and objective function names as defined in your `Model_Def_GPHE.py`.
+Debe exportar `Model_MiModelo` con:
 
-### Step 3: Add model to the main menu
+```python
+Model_MiModelo = {
+    "Model_Info": {
+        "List_of_Variables": ["var1", "var2", ...],          # Orden de variables discretas
+        "Standard_Variables_Values": {                        # Universo de opciones
+            "var1": [val1, val2, ...],
+            "var2": [val3, val4, ...],
+        },
+        "Objective_Function": {
+            "Equation_Name": ["TAC_OF", "CAPEX_OF", "AREA_OF"],
+            "Optimization_Variables_Names": ["TAC", "CAPEX", "Area"],
+            "Unit_OF": ["$/year", "$", "m²"]
+        },
+    },
+    ...
+}
+```
 
-In `GPHE_ui.yaml`, include the `available_models` list, or add the new model to the shared list:
+### Paso 3: Escribir `Examples_MiModelo.py`
+
+Debe exportar al menos `Example1` con:
+
+```python
+Example1 = {
+    "Number_of_Equipment": 1,
+    "Equipment1": {
+        "Model_Declarations": {
+            "Type_Equipment": "MiModelo",
+            "Discrete_Values_of_Variables": [
+                [v1, v2, ...],    # var1
+                [v3, v4, ...],    # var2  (mismo orden que List_of_Variables)
+            ],
+            "Selected_OF": ["TAC_OF"],
+        },
+        "Model_Parameters": {
+            "param1": valor1,
+            "param2": valor2,
+            ...
+        },
+    },
+}
+```
+
+### Paso 4: Escribir `Output_Info.py` (opcional)
+
+```python
+def build_output_info(optimal_vars, params, objective=None):
+    """Calcula variables derivadas post-optimización."""
+    return {
+        "objective": objective or {},
+        "calculations": {},  # dict con resultados intermedios
+    }
+
+def write_output_json(output_info, output_path):
+    """Escribe el diccionario como JSON."""
+    import json
+    with open(output_path, "w") as f:
+        json.dump(output_info, f, indent=2)
+```
+
+Si este archivo no existe, la API devuelve `calculations: {}` sin error.
+
+### Paso 5: Escribir `MiModelo_ui.yaml`
+
+Crear el YAML siguiendo el formato explicado en la Sección 6.2. Definir `model`, `pages.problem_data`, `pages.geometric_options` y `pages.results`.
+
+### Paso 6: Registrar en `common_ui.yaml`
+
+Agregar el modelo a la lista `available_models`:
 
 ```yaml
 available_models:
-  - {id: "GPHE", label: "Plate Exchangers", active: true, link: "problem_data.html"}
+  - {id: "MiModelo", label: "Mi Intercambiador", active: true, link: "MiModelo/problem_data.html"}
 ```
 
-### Step 4: Generate and test
+### Paso 7: Generar y probar
 
 ```bash
-python generate_ui.py --model GPHE --example Example1
+python generate_ui.py --all
 uvicorn solver_api:app --host 127.0.0.1 --port 8000
 ```
 
-**Requirements for the model to work with the generator:**
-- `Model_Def_{Model}.py` must export `Model_{Model}` dict with:
-  - `Model_Info.List_of_Variables` — ordered list of discrete variable names
-  - `Model_Info.Standard_Variables_Values` — dict with full option lists per variable
-  - `Model_Info.Objective_Function` — dict with `Equation_Name`, `Optimization_Variables_Names`, `Unit_OF`
-- `Examples_{Model}.py` must export one or more example dicts with:
-  - `Number_of_Equipment`
-  - `Equipment1.Model_Declarations`: `Type_Equipment`, `Discrete_Values_of_Variables`, `Selected_OF`
-  - `Equipment1.Model_Parameters`: all parameter key-value pairs
-
 ---
 
-## 8. CLI Reference
+## 8. Solución de Problemas
 
-### `generate_ui.py`
-
-```bash
-python generate_ui.py [--model STHE] [--example Example1] [--output output]
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--model` | `STHE` | Model name (must have `{Model}_ui.yaml`) |
-| `--example` | `Example1` | Example name for default values |
-| `--output` | `output` | Output directory for generated HTML |
-
-### `solver_runner.py`
-
-```bash
-python solver_runner.py --model STHE --input /tmp/in.json --output /tmp/out.json
-```
-
-Used internally by the API. Can also be used standalone for batch processing.
-
-### `solver_api.py`
-
-```bash
-uvicorn solver_api:app --host 0.0.0.0 --port 8000
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--host` | `127.0.0.1` | Bind address (`0.0.0.0` for network access) |
-| `--port` | `8000` | Port number |
-| `--reload` | off | Auto-restart on code changes (dev only) |
-
----
-
-## 9. Troubleshooting
-
-**All result cells show "—" (dashes)**
-- The API call failed. Check that the server is running: `curl http://127.0.0.1:8000/api/health`
-- Ensure you opened the page via `http://127.0.0.1:8000/ui/...` (not `file://`).
-- Open the browser console (F12) and look for errors.
-
-**"Optimization failed: Missing required parameters: [...]"**
-- The browser JS failed to collect some form fields. Refresh the page, refill, and try again. If persistent, the generated HTML may need regeneration: `python generate_ui.py`
-
-**"Optimization failed: No feasible design found" (or "variables_survivor_names")**
-- The discrete variable ranges are too restrictive — no geometric combination satisfies the Primordial constraints (L/D between 3-15, baffle spacing limits). Widen the ranges for Shell Diameter (Ds), Tube Length (L), and Number of Baffles (Nb).
-
-**"500 Internal Server Error" on POST /api/optimize**
-- The solver subprocess crashed. Check the server console for a Python traceback. Common causes: missing required parameters, empty discrete variable arrays, or invalid data types.
-
-**"No input data found" on results page**
-- You navigated directly to results.html without filling the previous pages. Start from the Main Menu: Shell & Tube → Problem Data → Next → Geometric Options → Run Optimization.
-
-**"Is the API server running?" error**
-- Start the server: `uvicorn solver_api:app --host 127.0.0.1 --port 8000`
-- Verify: `curl http://127.0.0.1:8000/api/health`
-
-**Solver returns `number_of_solutions: 0`**
-- No feasible design found with the selected discrete variable ranges. Widen the search space or relax constraints.
-
-**Import errors when running from a different directory**
-- Always run scripts from the `OptiAppsCreator/` directory. The code relies on relative imports and `sys.path`.
-
-**Generator warns about display_factor on non-numeric field**
-- A `display_factor` was set on a field whose value is a string. Remove the factor or ensure the source field is numeric.
-
-**"Module STHE not found"**
-- Run from the `OptiAppsCreator/` directory. The `generate_ui.py` script adds it to `sys.path` automatically.
-
-**Port 8000 already in use**
-- A previous server instance is still running: `pkill -f uvicorn` then restart.
+| Problema | Causa probable | Solución |
+|----------|---------------|----------|
+| **Todas las celdas muestran "—"** | El API no responde | Verificar que el servidor esté corriendo: `curl http://127.0.0.1:8000/api/health`. No usar `file://` |
+| **"No input data found"** | Navegó directo a results.html | Ir al menú principal → modelo → Problem Data → Next → Geometric Options → Run |
+| **"No feasible design found"** | Los rangos discretos son muy restrictivos | Ampliar rangos de Ds, L, Nb (STHE) o Ntp, Pl, Sa (GPHE) |
+| **"Missing required parameters"** | Parámetros internos no enviados por la UI | Regenerar HTML: `python generate_ui.py --all`. El merge con Example1 inyecta los faltantes |
+| **500 Internal Server Error** | Crash del solver | Revisar consola del servidor. Causas: parámetros faltantes, arrays vacíos, tipos inválidos |
+| **Port 8000 ocupado** | Instancia previa corriendo | `pkill -f uvicorn` y reiniciar |
+| **Error de importación** | Script ejecutado desde otro directorio | Ejecutar siempre desde `OptiAppsCreator/` |
+| **Modelo no aparece en el menú** | No registrado en `common_ui.yaml` | Agregar entrada en `available_models` con `active: true` |
+| **checkbox_grid vacío** | `variable` no coincide con `List_of_Variables` | Verificar que el nombre en el YAML coincida exactamente con el de `Model_Def` |
