@@ -81,7 +81,7 @@ try:
     if Create_Results_txt:
         with open(file_path, "w", encoding="utf-8") as f:
             pass
-except NameError or KeyError:
+except (NameError, KeyError):
     print('\n@@@@@@@@ A .txt file with the results was automatically created @@@@@@@@')
     with open(file_path, "w", encoding="utf-8") as f:
         pass
@@ -95,7 +95,7 @@ def save_result(*texts):
                 f.write(text_c + "\n")
         else:
             print(text_c)
-    except NameError or KeyError:
+    except (NameError, KeyError):
         print(text_c)
         with open(file_path, "a", encoding="utf-8") as f:
             f.write(text_c + "\n")

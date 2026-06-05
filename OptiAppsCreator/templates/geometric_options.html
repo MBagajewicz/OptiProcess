@@ -9,15 +9,16 @@
 {% endblock %}
 
 {% block content %}
-<main class="flex-grow bg-main relative p-6 flex space-x-4 overflow-x-auto">
+<main class="h-[calc(100vh-132px)] bg-main relative p-6 flex flex-col overflow-hidden">
+    <div class="flex space-x-4 overflow-x-auto flex-1 items-stretch min-h-0">
 
 {% for column in columns %}
-<div class="flex flex-col {{ 'space-y-4' if column|length > 1 }} min-w-[120px]">
+<div class="flex flex-col gap-4 h-full min-h-0">
     {% for section in column %}
         {% if section.element == 'checkbox_grid' %}
-    <div class="{{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} {{ 'h-full' if column|length == 1 }}" data-var="{{ section.variable }}">
-        <h3 class="text-xs font-bold mb-3 leading-tight">{{ section.title_nobreak|safe }}</h3>
-        <div class="space-y-2 max-h-[500px] overflow-y-auto">
+    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col" data-var="{{ section.variable }}">
+        <h3 class="text-xs font-bold mb-3 leading-tight flex-shrink-0">{{ section.title_nobreak|safe }}</h3>
+        <div class="flex-1 min-h-0 overflow-y-auto space-y-2">
             {% for item in section.grid_items %}
             <div class="flex items-center justify-between">
                 <div class="checkbox-grid-input {{ '!text-black !border-black/20' if section.color.text_class == 'text-black' }}">{{ item.label }}</div>
@@ -28,7 +29,7 @@
     </div>
 
         {% elif section.element == 'form_group' %}
-    <div class="{{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} mt-auto">
+    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} mt-auto">
         <h3 class="text-[10px] font-bold mb-4">{{ section.title }}</h3>
         <div class="space-y-4">
             {% for field in section.fields %}
@@ -44,8 +45,10 @@
 </div>
 {% endfor %}
 
+    </div>
+
     <!-- Navigation Bar -->
-    <div class="flex justify-center gap-4 mt-4 mb-4">
+    <div class="flex justify-center gap-4 mt-4">
         <button onclick="window.location.href='problem_data.html'" class="bg-gray-500 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-gray-600 transition-colors shadow-md">
             <i class="fas fa-arrow-left mr-1"></i> Back
         </button>

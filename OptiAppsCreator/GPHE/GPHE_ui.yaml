@@ -139,13 +139,6 @@ pages:
           8: "8 (Lp=1.85, Lw=0.45, Dp=0.16)"
           9: "9 (Lp=1.54, Lw=0.81, Dp=0.28)"
 
-      plate_dims:
-        title: "Plate Dimensions"
-        element: computed_display
-        color: brown_dark
-        rows:
-          - {label: "Lp, Lw, Dp vectors loaded from example", computed: true}
-
       chevron_angle:
         title: "Chevron Angle"
         unit: "°"

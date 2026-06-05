@@ -221,6 +221,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
         if element == "checkbox_grid":
             go_color = GO_COLORS.get(color, GO_COLORS["brown"])
             resolved["color"] = go_color
+            resolved["width_class"] = "w-44"
             resolved["variable"] = section.get("variable", "")
             # Handle title with line breaks for narrow columns
             resolved["title_nobreak"] = title.replace(" ", "&nbsp;")
@@ -260,6 +261,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
         elif element == "form_group":
             go_color = GO_COLORS.get(color, GO_COLORS["brown_dark"])
             resolved["color"] = go_color
+            resolved["width_class"] = "w-56"
             source = section.get("source", "Model_Parameters")
             fields = []
             for key, field_meta in section.get("fields", {}).items():
@@ -294,7 +296,7 @@ def build_column_layout(sections, columns_spec):
     return columns
 
 
-_WC_MAP = {"w-56": 56, "w-64": 64, "w-72": 72}
+_WC_MAP = {"w-44": 44, "w-56": 56, "w-64": 64, "w-72": 72}
 
 
 def _width_value(width_class):
@@ -539,6 +541,7 @@ def generate():
         nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
         go_sections = build_geometric_options_context(model_ui, model_def, example, args.sort_numeric_options)
         go_columns = build_column_layout(go_sections, model_ui["pages"]["geometric_options"]["columns"])
+        go_columns = uniformize_column_widths(go_columns)
 
         template = env.get_template("geometric_options.html")
         html = template.render(
@@ -573,7 +576,7 @@ def generate():
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/results.html")
 
-    print(f"\nDone. Generated {len(model_list)} model(s) for example '{args.example}' in '{output_dir}/'")
+
 
 
 if __name__ == "__main__":
