@@ -129,6 +129,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                 })
             resolved["options"] = options
             resolved["source_key"] = source_key
+            resolved["width_class"] = "w-56"
             resolved["color"] = {}  # radio groups use hardcoded classes in template
 
         elif element == "form_group":
@@ -181,6 +182,7 @@ def build_problem_data_context(yaml_data, model_def, example):
 
         elif element == "computed_display":
             resolved["color"] = PD_COLORS.get("pink")
+            resolved["width_class"] = "w-56"
             resolved["rows"] = section.get("rows", [])
 
         sections_out.append(resolved)
@@ -289,6 +291,26 @@ def build_column_layout(sections, columns_spec):
                 col_sections.append(section_map[sid])
         if col_sections:
             columns.append(col_sections)
+    return columns
+
+
+_WC_MAP = {"w-56": 56, "w-64": 64, "w-72": 72}
+
+
+def _width_value(width_class):
+    return _WC_MAP.get(width_class, 0)
+
+
+def uniformize_column_widths(columns):
+    """Make all sections in each column share the widest width_class in that column."""
+    for col in columns:
+        if not col:
+            continue
+        max_w = max((_width_value(s.get("width_class", "")) for s in col), default=0)
+        if max_w > 0:
+            classname = f"w-{max_w}"
+            for s in col:
+                s["width_class"] = classname
     return columns
 
 
@@ -501,6 +523,7 @@ def generate():
         nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
         pd_sections = build_problem_data_context(model_ui, model_def, example)
         pd_columns = build_column_layout(pd_sections, model_ui["pages"]["problem_data"]["columns"])
+        pd_columns = uniformize_column_widths(pd_columns)
 
         template = env.get_template("problem_data.html")
         html = template.render(

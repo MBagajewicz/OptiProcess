@@ -13,9 +13,9 @@ pages:
   problem_data:
     title: "Problem Data"
     columns:
-      - [optimization_target]
-      - [hot_stream, cold_stream, heat_display]
-      - [flow_limits, other_options]
+      - [optimization_target, other_options, heat_display]
+      - [hot_stream, cold_stream]
+      - [flow_limits]
       - [economic]
 
     sections:

@@ -36,6 +36,7 @@ def _scalar(val):
 def build_output_info(optimal_vars, params, objective=None):
     """Compute thermo/hydraulic/economics output details for GPHE."""
 
+    ## Import Calculation Functions to Inermediate Output Values
     from GPHE.Calculations import (
         Calculations_GPHE_velocity,
         Calculations_GPHE_Reynolds,
@@ -50,13 +51,15 @@ def build_output_info(optimal_vars, params, objective=None):
         Calculations_GPHE_CAPEX,
     )
     from Common_Equations_HEX import Calculations_HEX_heatload, Calculations_HEX_LMTD
-
+    
+    ## Optimal Values extraction
     Ntp = np.atleast_1d(float(optimal_vars["Ntp"]))
     Pl = int(optimal_vars["Pl"])
     Sa = np.atleast_1d(float(optimal_vars["Sa"]))
     Nph = np.atleast_1d(float(optimal_vars["Nph"]))
     Npc = np.atleast_1d(float(optimal_vars["Npc"]))
 
+    ## Parameters extration
     Lp = params["ppLp"][Pl]
     Lw = params["ppLw"][Pl]
     Dp = params["ppDp"][Pl]
@@ -83,7 +86,8 @@ def build_output_info(optimal_vars, params, objective=None):
     Tco = params["Tco"]
     DPhdisp = params["DPhdisp"]
     DPcdisp = params["DPcdisp"]
-
+    
+    ## Intermediate variables calcs: Optimal Values + Parameters --> Calculations --> Intermediate Values
     vh = Calculations_GPHE_velocity.GPHE_velocity(Ntp, Lw, Nph, bp, mh, roh)
     vc = Calculations_GPHE_velocity.GPHE_velocity(Ntp, Lw, Npc, bp, mc, roc)
 
