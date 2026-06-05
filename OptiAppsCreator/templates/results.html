@@ -138,14 +138,34 @@ const MODEL = '{{ model_name }}';
 
 // --- Column display helpers ---
 const DISPLAY_FACTORS = {
-    {% for section in all_sections %}{% for row in section.all_rows %}
+    {% for section in all_sections %}
+    {% for row in section.rows|default([]) %}
     "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
-    {% endfor %}{% endfor %}
+    {% endfor %}
+    {% for sub in section.subsections|default([]) %}
+    {% for row in sub.rows %}
+    "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
+    {% endfor %}
+    {% endfor %}
+    {% for row in section.footer_rows|default([]) %}
+    "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
+    {% endfor %}
+    {% endfor %}
 };
 const ROW_UNITS = {
-    {% for section in all_sections %}{% for row in section.all_rows %}
+    {% for section in all_sections %}
+    {% for row in section.rows|default([]) %}
     "{{ row.key }}": "{{ row.unit or '' }}",
-    {% endfor %}{% endfor %}
+    {% endfor %}
+    {% for sub in section.subsections|default([]) %}
+    {% for row in sub.rows %}
+    "{{ row.key }}": "{{ row.unit or '' }}",
+    {% endfor %}
+    {% endfor %}
+    {% for row in section.footer_rows|default([]) %}
+    "{{ row.key }}": "{{ row.unit or '' }}",
+    {% endfor %}
+    {% endfor %}
 };
 
 // --- Load data from sessionStorage ---
@@ -340,6 +360,16 @@ function populateResults(data, sessionData) {
     setVal('OPEX_t', calc.OPEX_t, '$/y');
     setVal('OPEX_s', calc.OPEX_s, '$/y');
     setVal('OPEX_total', calc.OPEX_total, '$/y');
+
+    // Generic fallback: fill any remaining computed values from calculations
+    for (var ck in calc) {
+        if (calc.hasOwnProperty(ck) && calc[ck] != null) {
+            var cell = document.getElementById('result-' + ck);
+            if (cell && cell.textContent === '\u2014') {
+                setVal(ck, calc[ck]);
+            }
+        }
+    }
 }
 
 // --- Helper: set a result cell value ---
