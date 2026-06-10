@@ -34,10 +34,25 @@
     </div>
 
     <!-- Navigation -->
-    <div class="px-6 border-b border-gray-300 flex gap-8 text-sm text-gray-600">
-        {% for nav in nav_pages %}
-        <a href="{{ nav.file }}" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
-        {% endfor %}
+    <div class="px-6 border-b border-gray-300 flex items-center justify-between gap-4 text-sm text-gray-600">
+        <div class="flex gap-8">
+            {% for nav in nav_pages %}
+            <a href="{{ nav.file }}" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
+            {% endfor %}
+        </div>
+        <div class="flex items-center gap-3 py-1">
+            <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
+            <div class="relative">
+                <button type="button" onclick="toggleSaveMenu()" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-blue-700">
+                    Save <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="save-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] text-xs">
+                    <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save (cloud)</button>
+                    <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (cloud)</button>
+                    <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (local)</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loading overlay -->
@@ -132,9 +147,24 @@
 <script>
 // --- Configuration ---
 const API_URL = window.location.origin + '/api/optimize';
-const STORAGE_KEY_PROBLEM = 'optihex_problem_data';
-const STORAGE_KEY_GEOM = 'optihex_geometric_data';
 const MODEL = '{{ model_name }}';
+const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
+const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
+const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
+const STORAGE_KEY_PROJECT = 'optihex_' + MODEL + '_current_project';
+const STORAGE_KEY_DIRTY = 'optihex_' + MODEL + '_project_dirty';
+
+function getCurrentProject() { return sessionStorage.getItem(STORAGE_KEY_PROJECT) || ''; }
+function setCurrentProject(name) { sessionStorage.setItem(STORAGE_KEY_PROJECT, name || ''); updateProjectIndicator(); }
+function isDirty() { return sessionStorage.getItem(STORAGE_KEY_DIRTY) === 'true'; }
+function setDirty(value) { sessionStorage.setItem(STORAGE_KEY_DIRTY, value ? 'true' : 'false'); updateProjectIndicator(); }
+function updateProjectIndicator() {
+    const el = document.getElementById('project-indicator');
+    if (!el) return;
+    const name = getCurrentProject() || 'Unsaved';
+    el.textContent = 'Current project: ' + name + (isDirty() ? '*' : '');
+}
+function toggleSaveMenu() { document.getElementById('save-menu').classList.toggle('hidden'); }
 
 // --- Column display helpers ---
 const DISPLAY_FACTORS = {
@@ -219,6 +249,79 @@ function buildPayload(data) {
         selected_of: selectedOf,
         number_of_equipment: 1
     };
+}
+
+function buildProjectPayload(name) {
+    const sessionData = getSessionData();
+    if (!sessionData) return null;
+    const solverPayload = buildPayload(sessionData);
+    return {
+        name: name || getCurrentProject(),
+        parameters: solverPayload.parameters,
+        discrete_variables: solverPayload.discrete_variables,
+        selected_of: solverPayload.selected_of,
+        number_of_equipment: solverPayload.number_of_equipment
+    };
+}
+
+async function saveCloud() {
+    document.getElementById('save-menu').classList.add('hidden');
+    const name = getCurrentProject();
+    if (!name) {
+        await saveAsCloud();
+        return;
+    }
+    const payload = buildProjectPayload(name);
+    if (!payload) return alert('No project data available to save.');
+    const response = await fetch(API_PROJECTS_URL + '/' + encodeURIComponent(name), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) return alert('Could not save project: ' + await response.text());
+    setDirty(false);
+}
+
+async function saveAsCloud() {
+    document.getElementById('save-menu').classList.add('hidden');
+    const name = prompt('Project name:', getCurrentProject() || 'NewProject');
+    if (!name) return;
+    const payload = buildProjectPayload(name);
+    if (!payload) return alert('No project data available to save.');
+    const response = await fetch(API_PROJECTS_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) return alert('Could not save project: ' + await response.text());
+    const data = await response.json();
+    setCurrentProject(data.name || name);
+    setDirty(false);
+}
+
+function saveAsLocal() {
+    document.getElementById('save-menu').classList.add('hidden');
+    const name = getCurrentProject() || 'Project';
+    const payload = buildProjectPayload(name);
+    if (!payload) return alert('No project data available to save.');
+    const text = 'import numpy as np\n\nProject = ' + JSON.stringify({
+        Number_of_Equipment: payload.number_of_equipment,
+        Equipment1: {
+            Model_Declarations: {
+                Type_Equipment: MODEL,
+                Discrete_Values_of_Variables: Object.values(payload.discrete_variables),
+                Selected_OF: [payload.selected_of]
+            },
+            Model_Parameters: payload.parameters
+        }
+    }, null, 4) + '\n';
+    const blob = new Blob([text], {type: 'text/x-python'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name + '.py';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 // --- API call ---
@@ -403,6 +506,7 @@ function downloadResults() {
 }
 
 // --- Init ---
+updateProjectIndicator();
 runOptimization().then(data => {
     if (data) populateResults(data.result, data.sessionData);
 });

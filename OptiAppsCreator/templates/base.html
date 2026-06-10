@@ -25,31 +25,185 @@
     <!-- Header -->
     <div class="p-2">
         <div class="bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-400 border-2 border-black rounded-lg p-4 text-center shadow-md">
-            <h1 class="header-font text-3xl italic font-bold">OptiHexx</h1>
-            <p class="text-xs font-semibold italic">Heat Exchanger Optimal Design Suite</p>
-            <p class="text-[10px] text-gray-600">Prototype P07</p>
+            <h1 class="header-font text-3xl italic font-bold">{{ header.title }}</h1>
+            <p class="text-xs font-semibold italic">{{ header.subtitle }}</p>
+            <p class="text-[10px] text-gray-600">{{ header.prototype }}</p>
         </div>
     </div>
 
     <!-- Navigation -->
-    <div class="bg-white border-b border-gray-300 px-4 flex space-x-8 text-sm font-medium text-gray-600">
-        {% for nav_page in nav_pages %}
-        <a href="{{ nav_page.file }}" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
-            {{ nav_page.label }}
-        </a>
-        {% endfor %}
+    <div class="bg-white border-b border-gray-300 px-4 flex items-center justify-between gap-4 text-sm font-medium text-gray-600">
+        <div class="flex space-x-8">
+            {% for nav_page in nav_pages %}
+            <a href="{{ nav_page.file }}" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
+                {{ nav_page.label }}
+            </a>
+            {% endfor %}
+        </div>
+        <div class="flex items-center gap-3 py-1">
+            <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
+            <div class="relative">
+                <button type="button" onclick="toggleSaveMenu()" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-blue-700">
+                    Save <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="save-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] text-xs">
+                    <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save (cloud)</button>
+                    <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (cloud)</button>
+                    <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (local)</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% block content %}{% endblock %}
 
     <script>
+    const MODEL = '{{ model_name }}';
+    const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
+
+    function modelKey(name) { return 'optihex_' + MODEL + '_' + name; }
+    function problemStorageKey() { return modelKey('problem_data'); }
+    function geomStorageKey() { return modelKey('geometric_data'); }
+    function currentProjectKey() { return modelKey('current_project'); }
+    function dirtyKey() { return modelKey('project_dirty'); }
+
+    function getJson(key, fallback) {
+        try {
+            const raw = sessionStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch(e) { return fallback; }
+    }
+
+    function setJson(key, value) {
+        sessionStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getCurrentProject() {
+        return sessionStorage.getItem(currentProjectKey()) || '';
+    }
+
+    function setCurrentProject(name) {
+        sessionStorage.setItem(currentProjectKey(), name || '');
+        updateProjectIndicator();
+    }
+
+    function setDirty(value) {
+        sessionStorage.setItem(dirtyKey(), value ? 'true' : 'false');
+        updateProjectIndicator();
+    }
+
+    function isDirty() {
+        return sessionStorage.getItem(dirtyKey()) === 'true';
+    }
+
+    function updateProjectIndicator() {
+        const el = document.getElementById('project-indicator');
+        if (!el) return;
+        const name = getCurrentProject() || 'Unsaved';
+        el.textContent = 'Current project: ' + name + (isDirty() ? '*' : '');
+    }
+
+    function syncCurrentPageState() {
+        if (typeof window.collectProblemData === 'function') window.collectProblemData(false);
+        if (typeof window.collectGeometricData === 'function') window.collectGeometricData(false);
+    }
+
+    function buildProjectPayload(name) {
+        syncCurrentPageState();
+        const params = getJson(problemStorageKey(), {});
+        const geom = getJson(geomStorageKey(), {});
+        const selectedOf = params._selected_of || 'TAC_OF';
+        const cleanParams = Object.assign({}, params);
+        delete cleanParams._selected_of;
+        if (typeof cleanParams.int_rate === 'number') cleanParams.int_rate = cleanParams.int_rate * 0.01;
+        const discrete = {};
+        Object.keys(geom).forEach(function(k) {
+            if (Array.isArray(geom[k])) discrete[k] = geom[k];
+            else cleanParams[k] = geom[k];
+        });
+        return {
+            name: name || getCurrentProject(),
+            parameters: cleanParams,
+            discrete_variables: discrete,
+            selected_of: selectedOf,
+            number_of_equipment: 1
+        };
+    }
+
+    function toggleSaveMenu() {
+        document.getElementById('save-menu').classList.toggle('hidden');
+    }
+
+    async function saveCloud() {
+        document.getElementById('save-menu').classList.add('hidden');
+        const name = getCurrentProject();
+        if (!name) {
+            await saveAsCloud();
+            return;
+        }
+        const response = await fetch(API_PROJECTS_URL + '/' + encodeURIComponent(name), {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(buildProjectPayload(name))
+        });
+        if (!response.ok) {
+            alert('Could not save project: ' + await response.text());
+            return;
+        }
+        setDirty(false);
+    }
+
+    async function saveAsCloud() {
+        document.getElementById('save-menu').classList.add('hidden');
+        const name = prompt('Project name:', getCurrentProject() || 'NewProject');
+        if (!name) return;
+        const response = await fetch(API_PROJECTS_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(buildProjectPayload(name))
+        });
+        if (!response.ok) {
+            alert('Could not save project: ' + await response.text());
+            return;
+        }
+        const data = await response.json();
+        setCurrentProject(data.name || name);
+        setDirty(false);
+    }
+
+    function saveAsLocal() {
+        document.getElementById('save-menu').classList.add('hidden');
+        const name = getCurrentProject() || 'Project';
+        const payload = buildProjectPayload(name);
+        const text = 'import numpy as np\n\nProject = ' + JSON.stringify({
+            Number_of_Equipment: payload.number_of_equipment,
+            Equipment1: {
+                Model_Declarations: {
+                    Type_Equipment: MODEL,
+                    Discrete_Values_of_Variables: Object.values(payload.discrete_variables),
+                    Selected_OF: [payload.selected_of]
+                },
+                Model_Parameters: payload.parameters
+            }
+        }, null, 4) + '\n';
+        const blob = new Blob([text], {type: 'text/x-python'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name + '.py';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
     document.querySelectorAll('.checkbox-item').forEach(function(el) {
         el.addEventListener('click', function() {
             this.classList.toggle('checked');
             var icon = this.querySelector('i');
             if (icon) icon.classList.toggle('fa-check');
+            setDirty(true);
         });
     });
+    document.addEventListener('DOMContentLoaded', updateProjectIndicator);
     </script>
 </body>
 </html>

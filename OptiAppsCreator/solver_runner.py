@@ -42,6 +42,8 @@ import argparse
 import importlib
 import numpy as np
 
+from project_store import load_project
+
 # Ensure OptiAppsCreator is on sys.path for imports
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRIPT_DIR not in sys.path:
@@ -71,11 +73,9 @@ def load_model_def(model_name):
     return getattr(module, var_name)
 
 
-def load_examples(model_name, example_name):
-    """Import Examples_{Model} and return the Example dict."""
-    module_path = f"{model_name}.Examples_{model_name}"
-    module = importlib.import_module(module_path)
-    return getattr(module, example_name)
+def load_project_defaults(model_name, project_name):
+    """Load a project dict from {Model}/Projects/{Project}.py."""
+    return load_project(model_name, project_name)
 
 
 def compute_output_info(optimal_vars, params, model_name, objective=None):
@@ -90,7 +90,7 @@ def compute_output_info(optimal_vars, params, model_name, objective=None):
 
 
 def build_example_dict(input_data):
-    """Convert user-submitted JSON into an Example dict matching Examples_{Model}.py structure."""
+    """Convert user-submitted JSON into a project/example dict matching solver expectations."""
     params = input_data["parameters"]
     discrete = input_data["discrete_variables"]
     selected_of = input_data.get("selected_of", "TAC_OF")
@@ -114,7 +114,7 @@ def build_example_dict(input_data):
 
     # Merge user-submitted params with Example1 defaults (fills missing internal params)
     try:
-        example_ref = load_examples(model_name, "Example1")
+        example_ref = load_project_defaults(model_name, "Example1")
         ref_params = dict(example_ref["Equipment1"]["Model_Parameters"])
         # Convert numpy arrays to lists for JSON compatibility, then merge
         for k in list(ref_params.keys()):
@@ -145,30 +145,17 @@ def build_example_dict(input_data):
     return example
 
 
-def inject_example(example_dict, model_name, example_name):
-    """Inject an example dict into the Examples module at runtime via monkey-patching."""
-    module = importlib.import_module(f"{model_name}.Examples_{model_name}")
-    setattr(module, example_name, example_dict)
-    return module
-
-
 def run_solver(model_name, example_name, example_dict):
     """Run the full OptiProcess pipeline for the given model and example. Returns (Sol_Dict, active_example, active_models)."""
     from OptiCode import (
         Calculations_Prep_Organizer,
         Calculations_Solver_Selection,
         Calculations_Consistency_Check,
-        Import_Example,
         Import_Functions,
         Import_Models,
     )
 
-    # Inject the user-submitted example into the Examples module
-    inject_example(example_dict, model_name, example_name)
-
-    # Import example data using the existing infrastructure
-    active_repo = Import_Example.Import_Example(model_name, "Examples_")
-    active_example = getattr(active_repo, example_name)
+    active_example = example_dict
 
     # Collect model list
     active_models_list = [model_name]

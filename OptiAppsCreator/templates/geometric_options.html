@@ -60,9 +60,9 @@
 </main>
 
 <script>
-function saveAndOptimize() {
+function collectGeometricData(markDirty) {
     // Collect checked items from checkbox grids by variable name
-    var discrete = {};
+    var discrete = getJson(geomStorageKey(), {});
     document.querySelectorAll('[data-var]').forEach(function(panel) {
         var varName = panel.dataset.var;
         var checked = [];
@@ -70,7 +70,7 @@ function saveAndOptimize() {
             var val = item.dataset.value;
             checked.push(isNaN(val) ? val : parseFloat(val));
         });
-        if (checked.length > 0) discrete[varName] = checked;
+        discrete[varName] = checked;
     });
 
     // Collect tube options / bell params form inputs via data-key
@@ -82,8 +82,48 @@ function saveAndOptimize() {
         }
     });
 
-    sessionStorage.setItem('optihex_geometric_data', JSON.stringify(discrete));
+    setJson(geomStorageKey(), discrete);
+    if (markDirty !== false) setDirty(true);
+    return discrete;
+}
+
+window.collectGeometricData = collectGeometricData;
+
+function restoreGeometricData() {
+    const discrete = getJson(geomStorageKey(), null);
+    if (!discrete) return;
+
+    document.querySelectorAll('[data-var]').forEach(function(panel) {
+        var varName = panel.dataset.var;
+        var selected = discrete[varName] || [];
+        panel.querySelectorAll('.checkbox-item').forEach(function(item) {
+            var val = item.dataset.value;
+            var numeric = isNaN(val) ? val : parseFloat(val);
+            var checked = selected.indexOf(numeric) >= 0 || selected.indexOf(val) >= 0;
+            item.classList.toggle('checked', checked);
+            var icon = item.querySelector('i');
+            if (icon) icon.classList.toggle('fa-check', checked);
+        });
+    });
+
+    document.querySelectorAll('.tube-options-input').forEach(function(input) {
+        var key = input.dataset.key;
+        if (key && discrete[key] !== undefined) input.value = discrete[key];
+    });
+}
+
+function saveAndOptimize() {
+    collectGeometricData(false);
     window.location.href = 'results.html';
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    restoreGeometricData();
+    document.querySelectorAll('.tube-options-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            collectGeometricData(true);
+        });
+    });
+});
 </script>
 {% endblock %}

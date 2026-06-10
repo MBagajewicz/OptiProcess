@@ -2,7 +2,7 @@
 """generate_ui.py — Generates static HTML pages from model data + YAML UI metadata.
 
 Reads:  Model_Def_{Model}.py  → structural metadata (variables, constraints, standard values)
-        Examples_{Model}.py   → instance defaults (parameter values, discrete selections)
+        {Model}/Projects/*.py → project defaults (parameter values, discrete selections)
         {Model}_ui.yaml       → UI presentation metadata (labels, groupings, input types)
 
 Output: output/{page}.html — rendered HTML pages using Jinja2 templates.
@@ -16,6 +16,8 @@ from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from project_store import load_project
 
 
 # --- Color CSS class maps ---
@@ -79,11 +81,9 @@ def load_model_def(model_name):
     return getattr(module, var_name)
 
 
-def load_examples(model_name, example_name):
-    """Import Examples_{Model} and return the Example dict."""
-    module_path = f"{model_name}.Examples_{model_name}"
-    module = importlib.import_module(module_path)
-    return getattr(module, example_name)
+def load_project_defaults(model_name, project_name):
+    """Load a project dict from {Model}/Projects/{Project}.py."""
+    return load_project(model_name, project_name)
 
 
 def get_example_default(example, key_path, equipment=1):
@@ -423,7 +423,7 @@ def generate():
         "--all", action="store_true",
         help="Generate pages for every active model listed in common_ui.yaml",
     )
-    parser.add_argument("--example", default="Example1", help="Example name for defaults (default: Example1)")
+    parser.add_argument("--example", default="Example1", help="Project name for defaults (default: Example1)")
     parser.add_argument("--output", default="output", help="Output directory (default: output)")
     parser.add_argument(
         "--no-sort-numeric-options",
@@ -474,6 +474,7 @@ def generate():
         {"label": "Problem Data", "file": "problem_data.html"},
         {"label": "Geometric Options", "file": "geometric_options.html"},
         {"label": "Results", "file": "results.html"},
+        {"label": "Projects", "file": "projects.html"},
     ]
 
     # --- Login page (once, in output/) ---
@@ -516,7 +517,7 @@ def generate():
             model_ui = yaml.safe_load(f)
 
         model_def = load_model_def(model_name)
-        example = load_examples(model_name, args.example)
+        example = load_project_defaults(model_name, args.example)
 
         model_output_dir = output_dir / model_name
         model_output_dir.mkdir(parents=True, exist_ok=True)
@@ -533,6 +534,8 @@ def generate():
             nav_pages=nav_pd,
             columns=pd_columns,
             all_sections=pd_sections,
+            header=header_data,
+            model_name=model_name,
         )
         (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/problem_data.html")
@@ -549,6 +552,8 @@ def generate():
             nav_pages=nav_go,
             columns=go_columns,
             all_sections=go_sections,
+            header=header_data,
+            model_name=model_name,
         )
         (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/geometric_options.html")
@@ -575,6 +580,18 @@ def generate():
         )
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/results.html")
+
+        # Projects page
+        nav_pr = [{"label": p["label"], "active": p["file"] == "projects.html", "file": p["file"]} for p in nav_pages]
+        template = env.get_template("projects.html")
+        html = template.render(
+            page_title="Projects",
+            nav_pages=nav_pr,
+            header=header_data,
+            model_name=model_name,
+        )
+        (model_output_dir / "projects.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/projects.html")
 
 
 

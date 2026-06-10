@@ -41,6 +41,7 @@ import json
 import uuid
 import subprocess
 import shutil
+import importlib
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -48,6 +49,15 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+from project_store import (
+    ProjectError,
+    list_projects,
+    load_project,
+    project_to_ui_payload,
+    save_project,
+    ui_payload_to_project,
+)
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -71,6 +81,14 @@ class OptimizationResponse(BaseModel):
     number_of_solutions: int | None = None
     elapsed_seconds: float | None = None
     error: str | None = None
+
+
+class ProjectSaveRequest(BaseModel):
+    name: str | None = None
+    parameters: dict
+    discrete_variables: dict
+    selected_of: str = "TAC_OF"
+    number_of_equipment: int = 1
 
 
 # --- App setup ---
@@ -100,9 +118,75 @@ if output_dir.exists():
 
 # --- Routes ---
 
+def load_model_def(model_name: str) -> dict:
+    module = importlib.import_module(f"{model_name}.Model.Model_Def_{model_name}")
+    return getattr(module, f"Model_{model_name}")
+
+
+def build_project_response(model: str, project_name: str) -> dict:
+    model_def = load_model_def(model)
+    var_order = model_def["Model_Info"]["List_of_Variables"]
+    project = load_project(model, project_name)
+    payload = project_to_ui_payload(model, project_name, project)
+    discrete_values = payload.pop("discrete_values")
+    payload["discrete_variables"] = {
+        var: discrete_values[idx] if idx < len(discrete_values) else []
+        for idx, var in enumerate(var_order)
+    }
+    payload["variable_order"] = var_order
+    return payload
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "OptiProcess Solver API"}
+
+
+@app.get("/api/projects/{model}")
+async def api_list_projects(model: str):
+    try:
+        return {"model": model, "projects": list_projects(model)}
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/projects/{model}/{project_name}")
+async def api_load_project(model: str, project_name: str):
+    try:
+        return build_project_response(model, project_name)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/projects/{model}")
+async def api_save_project_as(model: str, req: ProjectSaveRequest):
+    if not req.name:
+        raise HTTPException(status_code=400, detail="Project name is required")
+    try:
+        model_def = load_model_def(model)
+        var_order = model_def["Model_Info"]["List_of_Variables"]
+        project = ui_payload_to_project(model, req.model_dump(), var_order)
+        save_project(model, req.name, project)
+        return build_project_response(model, req.name)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/projects/{model}/{project_name}")
+async def api_save_project(model: str, project_name: str, req: ProjectSaveRequest):
+    try:
+        model_def = load_model_def(model)
+        var_order = model_def["Model_Info"]["List_of_Variables"]
+        project = ui_payload_to_project(model, req.model_dump(), var_order)
+        save_project(model, project_name, project)
+        return build_project_response(model, project_name)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @app.post("/api/optimize", response_model=OptimizationResponse)

@@ -89,8 +89,8 @@
 </div>
 
 <script>
-function saveAndNext() {
-    const data = {};
+function collectProblemData(markDirty) {
+    const data = getJson(problemStorageKey(), {});
 
     // Collect radio groups
     const targetRadio = document.querySelector('input[name="Selected_OF"]:checked');
@@ -107,8 +107,43 @@ function saveAndNext() {
         data[key] = (input.type === 'number' || !isNaN(parseFloat(val))) ? parseFloat(val) : val;
     });
 
-    sessionStorage.setItem('optihex_problem_data', JSON.stringify(data));
+    setJson(problemStorageKey(), data);
+    if (markDirty !== false) setDirty(true);
+    return data;
+}
+
+window.collectProblemData = collectProblemData;
+
+function restoreProblemData() {
+    const data = getJson(problemStorageKey(), null);
+    if (!data) return;
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        var key = input.dataset.key;
+        if (!key || data[key] === undefined) return;
+        input.value = data[key];
+    });
+    if (data._selected_of !== undefined) {
+        var of = document.querySelector('input[name="Selected_OF"][value="' + data._selected_of + '"]');
+        if (of) of.checked = true;
+    }
+    if (data.yfluid !== undefined) {
+        var yf = document.querySelector('input[name="yfluid"][value="' + data.yfluid + '"]');
+        if (yf) yf.checked = true;
+    }
+}
+
+function saveAndNext() {
+    collectProblemData(false);
     window.location.href = 'geometric_options.html';
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    restoreProblemData();
+    document.querySelectorAll('input[data-key], select[data-key], input[type="radio"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            collectProblemData(true);
+        });
+    });
+});
 </script>
 {% endblock %}
