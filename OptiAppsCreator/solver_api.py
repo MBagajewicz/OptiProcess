@@ -45,7 +45,7 @@ import importlib
 from pathlib import Path
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -129,10 +129,10 @@ def load_model_def(model_name: str) -> dict:
     return getattr(module, f"Model_{model_name}")
 
 
-def build_project_response(model: str, project_name: str) -> dict:
+def build_project_response(model: str, project_name: str, scope: str = "users") -> dict:
     model_def = load_model_def(model)
     var_order = model_def["Model_Info"]["List_of_Variables"]
-    project = load_project(model, project_name)
+    project = load_project(model, project_name, scope=scope)
     payload = project_to_ui_payload(model, project_name, project)
     discrete_values = payload.pop("discrete_values")
     payload["discrete_variables"] = {
@@ -140,6 +140,7 @@ def build_project_response(model: str, project_name: str) -> dict:
         for idx, var in enumerate(var_order)
     }
     payload["variable_order"] = var_order
+    payload["scope"] = scope
     return payload
 
 
@@ -162,9 +163,9 @@ async def health():
 
 
 @app.get("/api/projects/{model}")
-async def api_list_projects(model: str):
+async def api_list_projects(model: str, scope: str = Query("users")):
     try:
-        return {"model": model, "projects": list_projects(model)}
+        return {"model": model, "scope": scope, "projects": list_projects(model, scope=scope)}
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -180,9 +181,9 @@ async def api_parse_local_project(model: str, req: LocalProjectParseRequest):
 
 
 @app.get("/api/projects/{model}/{project_name}")
-async def api_load_project(model: str, project_name: str):
+async def api_load_project(model: str, project_name: str, scope: str = Query("users")):
     try:
-        return build_project_response(model, project_name)
+        return build_project_response(model, project_name, scope=scope)
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
@@ -198,7 +199,7 @@ async def api_save_project_as(model: str, req: ProjectSaveRequest):
         var_order = model_def["Model_Info"]["List_of_Variables"]
         project = ui_payload_to_project(model, req.model_dump(), var_order)
         save_project(model, req.name, project)
-        return build_project_response(model, req.name)
+        return build_project_response(model, req.name, scope="users")
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
@@ -212,7 +213,7 @@ async def api_save_project(model: str, project_name: str, req: ProjectSaveReques
         var_order = model_def["Model_Info"]["List_of_Variables"]
         project = ui_payload_to_project(model, req.model_dump(), var_order)
         save_project(model, project_name, project)
-        return build_project_response(model, project_name)
+        return build_project_response(model, project_name, scope="users")
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:

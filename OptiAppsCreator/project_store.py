@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Project storage helpers for OptiAppsCreator.
 
-Projects are Python files stored under {MODEL}/Projects/{ProjectName}.py and
+Projects are Python files stored under {MODEL}/Projects/{scope}/{ProjectName}.py and
 must export a single variable named Project. The loader validates the AST before
 execution and only allows data-oriented expressions used by project files.
 """
@@ -21,6 +21,10 @@ import numpy as np
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_NAME_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 MODEL_NAME_RE = re.compile(r"^[A-Za-z0-9_]+$")
+PROJECT_SCOPES = {
+    "examples": "Example_Projects",
+    "users": "User_Projects",
+}
 
 
 class ProjectError(ValueError):
@@ -58,6 +62,13 @@ def normalize_project_name(project_name: str) -> str:
     return name
 
 
+def normalize_scope(scope: str | None) -> str:
+    scope = scope or "users"
+    if scope not in PROJECT_SCOPES:
+        raise ProjectError("Invalid project scope. Use 'examples' or 'users'.")
+    return scope
+
+
 def projects_dir(model: str) -> Path:
     model = validate_model_name(model)
     path = SCRIPT_DIR / model / "Projects"
@@ -65,8 +76,15 @@ def projects_dir(model: str) -> Path:
     return path
 
 
-def project_path(model: str, project_name: str) -> Path:
-    base = projects_dir(model).resolve()
+def project_scope_dir(model: str, scope: str | None = "users") -> Path:
+    scope = normalize_scope(scope)
+    path = projects_dir(model) / PROJECT_SCOPES[scope]
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def project_path(model: str, project_name: str, scope: str | None = "users") -> Path:
+    base = project_scope_dir(model, scope).resolve()
     name = normalize_project_name(project_name)
     path = (base / f"{name}.py").resolve()
     if base != path.parent:
@@ -74,13 +92,14 @@ def project_path(model: str, project_name: str) -> Path:
     return path
 
 
-def list_projects(model: str) -> list[dict[str, Any]]:
-    base = projects_dir(model)
+def list_projects(model: str, scope: str | None = "users") -> list[dict[str, Any]]:
+    scope = normalize_scope(scope)
+    base = project_scope_dir(model, scope)
     projects = []
     for path in sorted(base.glob("*.py"), key=lambda p: p.name.lower()):
         if path.name == "__init__.py":
             continue
-        projects.append({"name": path.stem, "file": path.name})
+        projects.append({"name": path.stem, "file": path.name, "scope": scope})
     return projects
 
 
@@ -222,15 +241,18 @@ def load_project_source(model: str, project_name: str, source: str) -> dict[str,
     return project
 
 
-def load_project(model: str, project_name: str) -> dict[str, Any]:
-    path = project_path(model, project_name)
+def load_project(model: str, project_name: str, scope: str | None = "users") -> dict[str, Any]:
+    path = project_path(model, project_name, scope)
     if not path.exists():
         raise ProjectError(f"Project not found: {project_name}")
     return load_project_source(model, project_name, path.read_text(encoding="utf-8"))
 
 
-def save_project(model: str, project_name: str, project: dict[str, Any]) -> Path:
-    path = project_path(model, project_name)
+def save_project(model: str, project_name: str, project: dict[str, Any], scope: str | None = "users") -> Path:
+    scope = normalize_scope(scope)
+    if scope == "examples":
+        raise ProjectError("Example projects are read-only")
+    path = project_path(model, project_name, scope)
     project_copy = json_safe(copy.deepcopy(project))
     text = "import numpy as np\n\nProject = " + pprint.pformat(project_copy, width=120, sort_dicts=False) + "\n"
     path.write_text(text, encoding="utf-8")
@@ -261,7 +283,7 @@ def project_to_ui_payload(model: str, project_name: str, project: dict[str, Any]
 def ui_payload_to_project(model: str, payload: dict[str, Any], var_order: list[str]) -> dict[str, Any]:
     params = dict(payload.get("parameters") or {})
     try:
-        ref = load_project(model, "Example1")
+        ref = load_project(model, "Example1", scope="examples")
         ref_params = json_safe(ref.get("Equipment1", {}).get("Model_Parameters", {}))
         ref_params.update(params)
         params = ref_params

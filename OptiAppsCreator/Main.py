@@ -62,7 +62,7 @@ if root_path not in sys.path:
 
 # Dynamically select the active project based on user input
 try:
-    Active_Example = load_project(Selected_Model, Selected_Project)
+    Active_Example = load_project(Selected_Model, Selected_Project, scope="examples")
 except ProjectError as exc:
     print(f'**Could not load project {Selected_Project} for model {Selected_Model}: {exc}**')
     sys.exit()

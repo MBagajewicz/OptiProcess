@@ -43,9 +43,16 @@
         <div class="flex items-center gap-3 py-1">
             <span id="project-indicator" class="text-xs text-gray-700"><span id="temporal-copy-label" class="hidden text-red-600 font-bold mr-1">(temporal local copy)</span>Current project: —</span>
             <input id="local-project-input" type="file" accept=".py" class="hidden" onchange="loadLocalProjectFile(this.files)">
-            <button type="button" onclick="document.getElementById('local-project-input').click()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
-                Load
-            </button>
+            <div class="relative">
+                <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
+                    Load <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
+                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Example</button>
+                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load User Project</button>
+                    <button type="button" onclick="loadLocalFile()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Local File</button>
+                </div>
+            </div>
             <div class="relative">
                 <button type="button" onclick="toggleSaveMenu()" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-blue-700">
                     Save <i class="fas fa-caret-down ml-1"></i>
@@ -56,8 +63,8 @@
                     <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (local)</button>
                 </div>
             </div>
-            <button type="button" onclick="closeSession()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
-                Close Session
+            <button type="button" onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
+                LOGOUT
             </button>
         </div>
     </div>
@@ -70,8 +77,8 @@
                 <button type="button" onclick="closeAfterSaveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700">Save (cloud)</button>
                 <button type="button" onclick="closeAfterSaveAsCloud()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600">Save As (cloud)</button>
                 <button type="button" onclick="closeAfterSaveAsLocal()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-50">Save As (local)</button>
-                <button type="button" onclick="hideCloseSessionModal()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Cancel Close Session</button>
-                <button type="button" onclick="closeSessionWithoutSave()" class="w-full bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">Close Session without Save</button>
+                <button type="button" onclick="hideCloseSessionModal()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Cancel LOGOUT</button>
+                <button type="button" onclick="logoutWithoutSave()" class="w-full bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">LOGOUT without Save</button>
             </div>
         </div>
     </div>
@@ -168,10 +175,29 @@
         document.getElementById('save-menu').classList.toggle('hidden');
     }
 
+    function toggleLoadMenu() {
+        document.getElementById('load-menu').classList.toggle('hidden');
+    }
+
+    function loadExamples() {
+        document.getElementById('load-menu').classList.add('hidden');
+        window.location.href = 'projects.html?scope=examples';
+    }
+
+    function loadUserProjects() {
+        document.getElementById('load-menu').classList.add('hidden');
+        window.location.href = 'projects.html?scope=users';
+    }
+
+    function loadLocalFile() {
+        document.getElementById('load-menu').classList.add('hidden');
+        document.getElementById('local-project-input').click();
+    }
+
     async function saveCloud() {
         document.getElementById('save-menu').classList.add('hidden');
         const name = getCurrentProject();
-        if (!name || isTemporalLocal()) {
+        if (!name || isTemporalLocal() || sessionStorage.getItem(originKey()) === 'example') {
             return await saveAsCloud();
         }
         const response = await fetch(API_PROJECTS_URL + '/' + encodeURIComponent(name), {
@@ -299,13 +325,13 @@
         window.location.href = '../main_menu.html';
     }
 
-    function closeSession() {
+    function logout() {
         syncCurrentPageState();
         if (isDirty()) showCloseSessionModal();
         else finishCloseSession();
     }
 
-    function closeSessionWithoutSave() {
+    function logoutWithoutSave() {
         hideCloseSessionModal();
         finishCloseSession();
     }

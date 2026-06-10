@@ -75,7 +75,7 @@ def load_model_def(model_name):
 
 def load_project_defaults(model_name, project_name):
     """Load a project dict from {Model}/Projects/{Project}.py."""
-    return load_project(model_name, project_name)
+    return load_project(model_name, project_name, scope="examples")
 
 
 def compute_output_info(optimal_vars, params, model_name, objective=None):

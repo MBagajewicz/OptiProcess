@@ -83,7 +83,7 @@ def load_model_def(model_name):
 
 def load_project_defaults(model_name, project_name):
     """Load a project dict from {Model}/Projects/{Project}.py."""
-    return load_project(model_name, project_name)
+    return load_project(model_name, project_name, scope="examples")
 
 
 def get_example_default(example, key_path, equipment=1):
