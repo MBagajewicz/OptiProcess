@@ -54,6 +54,7 @@ from project_store import (
     ProjectError,
     list_projects,
     load_project,
+    load_project_source,
     project_to_ui_payload,
     save_project,
     ui_payload_to_project,
@@ -89,6 +90,11 @@ class ProjectSaveRequest(BaseModel):
     discrete_variables: dict
     selected_of: str = "TAC_OF"
     number_of_equipment: int = 1
+
+
+class LocalProjectParseRequest(BaseModel):
+    name: str
+    source: str
 
 
 # --- App setup ---
@@ -136,6 +142,20 @@ def build_project_response(model: str, project_name: str) -> dict:
     payload["variable_order"] = var_order
     return payload
 
+
+def build_project_source_response(model: str, project_name: str, source: str) -> dict:
+    model_def = load_model_def(model)
+    var_order = model_def["Model_Info"]["List_of_Variables"]
+    project = load_project_source(model, project_name, source)
+    payload = project_to_ui_payload(model, project_name, project)
+    discrete_values = payload.pop("discrete_values")
+    payload["discrete_variables"] = {
+        var: discrete_values[idx] if idx < len(discrete_values) else []
+        for idx, var in enumerate(var_order)
+    }
+    payload["variable_order"] = var_order
+    return payload
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "OptiProcess Solver API"}
@@ -147,6 +167,16 @@ async def api_list_projects(model: str):
         return {"model": model, "projects": list_projects(model)}
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/api/projects/{model}/parse-local")
+async def api_parse_local_project(model: str, req: LocalProjectParseRequest):
+    try:
+        return build_project_source_response(model, req.name, req.source)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @app.get("/api/projects/{model}/{project_name}")

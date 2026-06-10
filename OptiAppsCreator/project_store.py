@@ -194,13 +194,11 @@ class _ProjectAstValidator(ast.NodeVisitor):
         super().generic_visit(node)
 
 
-def load_project(model: str, project_name: str) -> dict[str, Any]:
-    path = project_path(model, project_name)
-    if not path.exists():
-        raise ProjectError(f"Project not found: {project_name}")
-
-    source = path.read_text(encoding="utf-8")
-    tree = ast.parse(source, filename=str(path))
+def load_project_source(model: str, project_name: str, source: str) -> dict[str, Any]:
+    """Load a project from source text without writing it to disk."""
+    validate_model_name(model)
+    name = normalize_project_name(project_name)
+    tree = ast.parse(source, filename=f"{name}.py")
     validator = _ProjectAstValidator()
     validator.visit(tree)
     if validator.project_assignments != 1:
@@ -217,11 +215,18 @@ def load_project(model: str, project_name: str) -> dict[str, Any]:
         "numpy": np,
     }
     local_env: dict[str, Any] = {}
-    exec(compile(tree, str(path), "exec"), env, local_env)
+    exec(compile(tree, f"{name}.py", "exec"), env, local_env)
     project = local_env.get("Project")
     if not isinstance(project, dict):
         raise ProjectError("Project must be a dictionary")
     return project
+
+
+def load_project(model: str, project_name: str) -> dict[str, Any]:
+    path = project_path(model, project_name)
+    if not path.exists():
+        raise ProjectError(f"Project not found: {project_name}")
+    return load_project_source(model, project_name, path.read_text(encoding="utf-8"))
 
 
 def save_project(model: str, project_name: str, project: dict[str, Any]) -> Path:

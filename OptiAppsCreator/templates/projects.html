@@ -85,18 +85,7 @@ async function loadProject(name) {
         const project = await response.json();
         if (project.model !== MODEL) throw new Error('Project model mismatch.');
 
-        const params = Object.assign({}, project.parameters || {});
-        if (typeof params.int_rate === 'number') params.int_rate = params.int_rate * 100;
-        params._selected_of = project.selected_of || 'TAC_OF';
-
-        const geom = Object.assign({}, project.discrete_variables || {});
-        ['LBLD', 'UBLD', 'ktube', 'thk', 'Nss', 'plbmax1', 'plbmax2'].forEach(function(key) {
-            if (params[key] !== undefined) geom[key] = params[key];
-        });
-        setJson(problemStorageKey(), params);
-        setJson(geomStorageKey(), geom);
-        setCurrentProject(project.name || name);
-        setDirty(false);
+        applyProjectPayload(project, 'cloud');
         window.location.href = 'problem_data.html';
     } catch(e) {
         showProjectError(e.message);
