@@ -63,6 +63,12 @@
                     <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (local)</button>
                 </div>
             </div>
+            <button type="button" onclick="clearProblemData()" class="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-amber-600">
+                Clear Data
+            </button>
+            <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
+                Reset
+            </button>
             <button type="button" onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
                 LOGOUT
             </button>
@@ -97,6 +103,13 @@
     function originKey() { return modelKey('project_origin'); }
     function temporalLocalKey() { return modelKey('project_temporal_local'); }
     function savedLocalKey() { return modelKey('project_saved_local'); }
+    function problemClearedKey() { return modelKey('problem_data_cleared'); }
+    function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
+    function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
+    function lastSavedProjectKey() { return modelKey('last_saved_project_name'); }
+    function lastSavedOriginKey() { return modelKey('last_saved_origin'); }
+    function lastSavedTemporalKey() { return modelKey('last_saved_temporal_local'); }
+    function lastSavedProblemClearedKey() { return modelKey('last_saved_problem_data_cleared'); }
 
     function getJson(key, fallback) {
         try {
@@ -147,6 +160,41 @@
     function syncCurrentPageState() {
         if (typeof window.collectProblemData === 'function') window.collectProblemData(false);
         if (typeof window.collectGeometricData === 'function') window.collectGeometricData(false);
+    }
+
+    function saveSnapshot() {
+        sessionStorage.setItem(lastSavedProblemKey(), sessionStorage.getItem(problemStorageKey()) || '{}');
+        sessionStorage.setItem(lastSavedGeomKey(), sessionStorage.getItem(geomStorageKey()) || '{}');
+        sessionStorage.setItem(lastSavedProjectKey(), getCurrentProject());
+        sessionStorage.setItem(lastSavedOriginKey(), sessionStorage.getItem(originKey()) || '');
+        sessionStorage.setItem(lastSavedTemporalKey(), isTemporalLocal() ? 'true' : 'false');
+        sessionStorage.setItem(lastSavedProblemClearedKey(), sessionStorage.getItem(problemClearedKey()) === 'true' ? 'true' : 'false');
+    }
+
+    function hasSnapshot() {
+        return sessionStorage.getItem(lastSavedProblemKey()) !== null || sessionStorage.getItem(lastSavedGeomKey()) !== null;
+    }
+
+    function resetProjectState() {
+        if (!hasSnapshot()) {
+            alert('No saved or loaded project state is available to reset.');
+            return;
+        }
+        sessionStorage.setItem(problemStorageKey(), sessionStorage.getItem(lastSavedProblemKey()) || '{}');
+        sessionStorage.setItem(geomStorageKey(), sessionStorage.getItem(lastSavedGeomKey()) || '{}');
+        sessionStorage.setItem(currentProjectKey(), sessionStorage.getItem(lastSavedProjectKey()) || '');
+        sessionStorage.setItem(originKey(), sessionStorage.getItem(lastSavedOriginKey()) || '');
+        sessionStorage.setItem(temporalLocalKey(), sessionStorage.getItem(lastSavedTemporalKey()) === 'true' ? 'true' : 'false');
+        sessionStorage.setItem(problemClearedKey(), sessionStorage.getItem(lastSavedProblemClearedKey()) === 'true' ? 'true' : 'false');
+        setDirty(false);
+        window.location.reload();
+    }
+
+    function clearProblemData() {
+        sessionStorage.setItem(problemStorageKey(), '{}');
+        sessionStorage.setItem(problemClearedKey(), 'true');
+        if (typeof window.clearProblemDataForm === 'function') window.clearProblemDataForm();
+        setDirty(true);
     }
 
     function buildProjectPayload(name) {
@@ -211,6 +259,7 @@
         }
         setDirty(false);
         sessionStorage.setItem(originKey(), 'cloud');
+        saveSnapshot();
         return true;
     }
 
@@ -232,6 +281,7 @@
         sessionStorage.setItem(originKey(), 'cloud');
         setTemporalLocal(false);
         setDirty(false);
+        saveSnapshot();
         return true;
     }
 
@@ -263,6 +313,7 @@
         URL.revokeObjectURL(url);
         sessionStorage.setItem(savedLocalKey(), 'true');
         setDirty(false);
+        saveSnapshot();
         return true;
     }
 
@@ -280,7 +331,9 @@
         sessionStorage.setItem(originKey(), source || 'cloud');
         sessionStorage.setItem(savedLocalKey(), source === 'local' ? 'true' : 'false');
         setTemporalLocal(source === 'local');
+        sessionStorage.setItem(problemClearedKey(), 'false');
         setDirty(false);
+        saveSnapshot();
     }
 
     async function loadLocalProjectFile(files) {
@@ -315,7 +368,7 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), currentProjectKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), currentProjectKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedOriginKey(), lastSavedTemporalKey(), lastSavedProblemClearedKey()].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
     }

@@ -108,13 +108,37 @@ function collectProblemData(markDirty) {
     });
 
     setJson(problemStorageKey(), data);
+    sessionStorage.setItem(problemClearedKey(), 'false');
     if (markDirty !== false) setDirty(true);
     return data;
 }
 
 window.collectProblemData = collectProblemData;
 
+function clearProblemDataForm() {
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        if (input.type === 'hidden') return;
+        if (input.tagName === 'SELECT') input.selectedIndex = 0;
+        else input.value = '';
+    });
+    var radioNames = new Set();
+    document.querySelectorAll('input[type="radio"]').forEach(function(input) {
+        radioNames.add(input.name);
+        input.checked = false;
+    });
+    radioNames.forEach(function(name) {
+        var first = document.querySelector('input[type="radio"][name="' + name + '"]');
+        if (first) first.checked = true;
+    });
+}
+
+window.clearProblemDataForm = clearProblemDataForm;
+
 function restoreProblemData() {
+    if (sessionStorage.getItem(problemClearedKey()) === 'true') {
+        clearProblemDataForm();
+        return;
+    }
     const data = getJson(problemStorageKey(), null);
     if (!data) return;
     document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
