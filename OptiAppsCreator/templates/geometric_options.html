@@ -18,12 +18,14 @@
     {% for section in column %}
         {% if section.element == 'checkbox_grid' %}
     <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col" data-var="{{ section.variable }}">
-        <h3 class="text-xs font-bold mb-3 leading-tight flex-shrink-0">{{ section.title_nobreak|safe }}</h3>
+        <h3 class="text-xs font-bold mb-3 leading-tight flex-shrink-0">
+            {{ section.title_nobreak|safe }}{% if section.static %} <span class="ml-1 text-blue-700 text-[9px] font-bold whitespace-nowrap">(future)</span>{% endif %}
+        </h3>
         <div class="checkbox-scroll flex-1 min-h-0 overflow-y-auto space-y-2 pr-8">
             {% for item in section.grid_items %}
             <div class="flex items-center justify-between">
                 <div class="checkbox-grid-input min-w-0 {{ '!text-black !border-black/20' if section.color.text_class == 'text-black' }}">{{ item.label }}</div>
-                <div class="checkbox-item ml-2 mr-3 flex-shrink-0 {{ 'checked' if item.checked else '' }}" data-value="{{ item.value }}"><i class="fas {{ 'fa-check' if item.checked else '' }}"></i></div>
+                <div class="checkbox-item ml-2 mr-3 flex-shrink-0 {{ 'checked' if item.checked else '' }} {{ 'cursor-not-allowed opacity-90' if section.static else '' }}" data-value="{{ item.value }}" data-static="{{ 'true' if section.static else 'false' }}"><i class="fas {{ 'fa-check' if item.checked else '' }}"></i></div>
             </div>
             {% endfor %}
         </div>
@@ -66,6 +68,7 @@ function collectGeometricData(markDirty) {
     var discrete = getJson(geomStorageKey(), {});
     document.querySelectorAll('[data-var]').forEach(function(panel) {
         var varName = panel.dataset.var;
+        if (!varName) return;
         var checked = [];
         panel.querySelectorAll('.checkbox-item.checked').forEach(function(item) {
             var val = item.dataset.value;

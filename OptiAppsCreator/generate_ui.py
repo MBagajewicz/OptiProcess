@@ -228,12 +228,19 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
             resolved["color"] = go_color
             resolved["width_class"] = "w-44"
             resolved["variable"] = section.get("variable", "")
+            resolved["static"] = bool(section.get("static"))
             # Handle title with line breaks for narrow columns
             resolved["title_nobreak"] = title.replace(" ", "&nbsp;")
 
             if section.get("static"):
                 items = []
                 for item in section.get("items", []):
+                    if "label" in item:
+                        print(
+                            f"  WARNING static checkbox section '{section_id}' uses label/value split. "
+                            "For preview-only static sections prefer {value: '...'} unless the internal value "
+                            "is intentionally reserved for a future model variable."
+                        )
                     items.append({
                         "label": str(item.get("label", item["value"])),
                         "value": item["value"],

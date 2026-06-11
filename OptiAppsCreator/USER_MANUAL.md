@@ -660,14 +660,72 @@ configurations:
   color: brown
   static: true                      # No vinculado a variable del modelo
   items:
-    - {value: "series", label: "Series"}
-    - {value: "parallel", label: "Parallel"}
+    - {value: "Series"}
+    - {value: "Parallel"}
 ```
 
 | Etiqueta | Significado |
 |----------|-------------|
-| `static` | `true` para panel decorativo sin vinculación a variable |
-| `items` | Lista explícita de opciones con `value` y `label` |
+| `static` | `true` para previsualizar alternativas futuras sin vinculación al modelo |
+| `items` | Lista explícita de opciones visibles |
+
+Una sección `static: true` se usa para mostrar alternativas que todavía no existen como variables reales del modelo. Estas opciones:
+
+- se leen solamente desde el YAML;
+- no se leen desde `Standard_Variables_Values`;
+- no se leen desde `Discrete_Values_of_Variables`;
+- se muestran siempre marcadas (`checked`);
+- no pueden ser modificadas por el usuario;
+- se muestran con el indicador azul `(future)` junto al título;
+- no se guardan en `sessionStorage` como variables geométricas;
+- no se envían al solver.
+
+Formato recomendado para una previsualización simple:
+
+```yaml
+items:
+  - {value: "Series"}
+  - {value: "Parallel"}
+  - {value: "Hot series cold parallel"}
+  - {value: "Cold series hot parallel"}
+```
+
+También se admite separar valor interno y texto visible:
+
+```yaml
+items:
+  - {value: "series", label: "Series"}
+```
+
+Esto no genera problemas de renderizado, porque el generador usa `label` para mostrar texto y `value` como valor interno. Sin embargo, en secciones `static: true` el generador emite un warning si detecta `label`, ya que para previsualizaciones puramente visuales se recomienda `{value: "Texto visible"}`. El formato `value + label` solo debería usarse si se quiere reservar desde ahora el identificador interno que luego usará el modelo.
+
+**Cómo convertir una sección `static: true` en variable real del modelo**
+
+Cuando las alternativas estén implementadas en el solver, la sección debe dejar de ser estática y conectarse al modelo:
+
+1. Elegir un nombre interno de variable, por ejemplo `Config` o `Nshell`.
+2. Agregar ese nombre a `Model_Def_{M}.py → Model_Info["List_of_Variables"]`.
+3. Agregar sus alternativas a `Model_Def_{M}.py → Model_Info["Standard_Variables_Values"]`.
+4. Agregar la lista de alternativas seleccionadas en cada proyecto, dentro de `Discrete_Values_of_Variables`, respetando el orden de `List_of_Variables`.
+5. Cambiar el YAML de:
+
+```yaml
+static: true
+items:
+  - {value: "Series"}
+```
+
+a:
+
+```yaml
+variable: "Config"
+value_labels:
+  series: "Series"
+  parallel: "Parallel"
+```
+
+6. Adaptar `Parameters_Update`, `Constraints_and_OF`, módulos de `Calculations` y `Output_Info` si la nueva variable cambia cálculos, restricciones, costos, hidráulica o resultados.
+7. Probar que la nueva variable aparece en `optimal_variables`, que afecta la solución esperada y que no rompe proyectos existentes.
 
 ##### `form_group` (en geometric_options)
 

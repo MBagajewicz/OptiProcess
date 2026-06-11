@@ -409,6 +409,7 @@
 
     document.querySelectorAll('.checkbox-item').forEach(function(el) {
         el.addEventListener('click', function() {
+            if (this.dataset.static === 'true') return;
             this.classList.toggle('checked');
             var icon = this.querySelector('i');
             if (icon) icon.classList.toggle('fa-check');

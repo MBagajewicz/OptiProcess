@@ -139,17 +139,18 @@ pages:
       - [baffle_count]
 
     sections:
-
+      # 'configurations' and 'shell_counts' are pre-visualizations of future geometric options
+      # Instead are declared with 'static=true' 
       configurations:
         title: "Configurations Available"
         element: checkbox_grid
         color: brown
         static: true
         items:
-          - {value: "series", label: "Series"}
-          - {value: "parallel", label: "Parallel"}
-          - {value: "hot_series_cold_parallel", label: "Hot series cold parallel"}
-          - {value: "cold_series_hot_parallel", label: "Cold series hot parallel"}
+          - {value: "Series"}
+          - {value: "Parallel"}
+          - {value: "Hot series cold parallel"}
+          - {value: "Cold series hot parallel"}
 
       shell_count:
         title: "Number of Shells Available"
@@ -165,7 +166,8 @@ pages:
           - {value: 6}
           - {value: 7}
           - {value: 8}
-
+      
+      # Next are the implemented model options
       tube_passes:
         title: "Number of Tube Passes"
         element: checkbox_grid
