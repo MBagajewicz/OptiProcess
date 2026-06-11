@@ -89,6 +89,7 @@ class OptimizationRequest(BaseModel):
     discrete_variables: dict
     selected_of: str = "TAC_OF"
     number_of_equipment: int = 1
+    consistency_checks: dict | None = None
 
 
 class OptimizationResponse(BaseModel):
@@ -367,6 +368,7 @@ async def optimize(req: OptimizationRequest, user: dict = Depends(require_sessio
         "discrete_variables": req.discrete_variables,
         "selected_of": req.selected_of,
         "number_of_equipment": req.number_of_equipment,
+        "consistency_checks": req.consistency_checks,
     }
     with open(input_path, "w", encoding="utf-8") as f:
         json.dump(input_data, f)
