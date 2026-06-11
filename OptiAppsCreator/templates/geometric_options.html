@@ -23,7 +23,7 @@
             {% for item in section.grid_items %}
             <div class="flex items-center justify-between">
                 <div class="checkbox-grid-input min-w-0 {{ '!text-black !border-black/20' if section.color.text_class == 'text-black' }}">{{ item.label }}</div>
-                <div class="checkbox-item ml-2 mr-3 flex-shrink-0 {{ 'checked' if item.checked else '' }}" data-value="{{ item.value }}"><i class="fas fa-check"></i></div>
+                <div class="checkbox-item ml-2 mr-3 flex-shrink-0 {{ 'checked' if item.checked else '' }}" data-value="{{ item.value }}"><i class="fas {{ 'fa-check' if item.checked else '' }}"></i></div>
             </div>
             {% endfor %}
         </div>
