@@ -45,10 +45,26 @@ import importlib
 from pathlib import Path
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+from auth_db import (
+    create_reset_token,
+    create_session,
+    get_session_user,
+    get_user_by_email,
+    get_user_by_username,
+    init_db,
+    record_login,
+    reset_password_with_token,
+    revoke_session,
+    validate_reset_token,
+    verify_password,
+)
+from email_service import send_password_reset_email
 
 from project_store import (
     ProjectError,
@@ -62,6 +78,8 @@ from project_store import (
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+SESSION_COOKIE_NAME = os.getenv("SESSION_COOKIE_NAME", "optihex_session")
+SESSION_HOURS = int(os.getenv("SESSION_HOURS", "8"))
 
 # --- Pydantic models ---
 
@@ -97,12 +115,28 @@ class LocalProjectParseRequest(BaseModel):
     source: str
 
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+    confirm_password: str
+
+
 # --- App setup ---
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Ensure tmp directory exists on startup."""
     os.makedirs("/tmp/opencode", exist_ok=True)
+    init_db()
     yield
 
 
@@ -116,6 +150,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def protect_ui_pages(request: Request, call_next):
+    path = request.url.path
+    public_ui = {"/ui/login.html", "/ui/reset_password.html"}
+    protected = path == "/ui/main_menu.html" or path.startswith("/ui/STHE/") or path.startswith("/ui/GPHE/")
+    if protected and path not in public_ui and not get_session_user(request.cookies.get(SESSION_COOKIE_NAME)):
+        return RedirectResponse(url="/ui/login.html", status_code=303)
+    return await call_next(request)
+
 # Serve generated HTML from output/ at /ui path
 output_dir = SCRIPT_DIR / "output"
 if output_dir.exists():
@@ -123,6 +167,19 @@ if output_dir.exists():
 
 
 # --- Routes ---
+
+def client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",", 1)[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def require_session(request: Request) -> dict:
+    user = get_session_user(request.cookies.get(SESSION_COOKIE_NAME))
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    return user
 
 def load_model_def(model_name: str) -> dict:
     module = importlib.import_module(f"{model_name}.Model.Model_Def_{model_name}")
@@ -162,8 +219,84 @@ async def health():
     return {"status": "ok", "service": "OptiProcess Solver API"}
 
 
+@app.post("/api/auth/login")
+async def auth_login(req: LoginRequest, request: Request, response: Response):
+    username = req.username.strip()
+    ip_address = client_ip(request)
+    user = get_user_by_username(username)
+    if not user:
+        record_login(None, username, ip_address, False, "unknown_user")
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    if not user.get("is_active"):
+        record_login(user["id"], username, ip_address, False, "inactive_user")
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    if not verify_password(req.password, user.get("password_hash")):
+        record_login(user["id"], username, ip_address, False, "bad_password")
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    record_login(user["id"], username, ip_address, True, None)
+
+    if user.get("must_change_password") and verify_password(req.password, user.get("initial_password_hash")):
+        token = create_reset_token(user["id"], "first_login_password_change", 24, request_ip=ip_address)
+        send_password_reset_email(user["email"], token, first_login=True)
+        return {"status": "must_change_password", "message": "A password update link was sent to your email."}
+
+    session_token = create_session(
+        user["id"], ip_address, request.headers.get("user-agent"), SESSION_HOURS
+    )
+    response.set_cookie(
+        SESSION_COOKIE_NAME,
+        session_token,
+        httponly=True,
+        samesite="lax",
+        max_age=SESSION_HOURS * 3600,
+    )
+    return {"status": "ok", "username": user["username"], "email": user["email"]}
+
+
+@app.post("/api/auth/logout")
+async def auth_logout(request: Request, response: Response):
+    revoke_session(request.cookies.get(SESSION_COOKIE_NAME))
+    response.delete_cookie(SESSION_COOKIE_NAME)
+    return {"status": "ok"}
+
+
+@app.get("/api/auth/me")
+async def auth_me(user: dict = Depends(require_session)):
+    return {"status": "ok", "username": user["username"], "email": user["email"]}
+
+
+@app.post("/api/auth/forgot-password")
+async def auth_forgot_password(req: ForgotPasswordRequest, request: Request):
+    email = req.email.strip().lower()
+    user = get_user_by_email(email)
+    if user and user.get("is_active"):
+        token = create_reset_token(user["id"], "forgot_password", 1, request_ip=client_ip(request))
+        send_password_reset_email(user["email"], token, first_login=False)
+    return {"status": "ok", "message": "If the email exists, a reset link was sent."}
+
+
+@app.get("/api/auth/validate-reset-token")
+async def auth_validate_reset_token(token: str):
+    token_data = validate_reset_token(token)
+    if not token_data:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    return {"status": "ok", "username": token_data["username"], "email": token_data["email"]}
+
+
+@app.post("/api/auth/reset-password")
+async def auth_reset_password(req: ResetPasswordRequest):
+    if req.new_password != req.confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+    if len(req.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must contain at least 8 characters")
+    if not reset_password_with_token(req.token, req.new_password):
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    return {"status": "ok"}
+
+
 @app.get("/api/projects/{model}")
-async def api_list_projects(model: str, scope: str = Query("users")):
+async def api_list_projects(model: str, scope: str = Query("users"), user: dict = Depends(require_session)):
     try:
         return {"model": model, "scope": scope, "projects": list_projects(model, scope=scope)}
     except ProjectError as exc:
@@ -171,7 +304,7 @@ async def api_list_projects(model: str, scope: str = Query("users")):
 
 
 @app.post("/api/projects/{model}/parse-local")
-async def api_parse_local_project(model: str, req: LocalProjectParseRequest):
+async def api_parse_local_project(model: str, req: LocalProjectParseRequest, user: dict = Depends(require_session)):
     try:
         return build_project_source_response(model, req.name, req.source)
     except ProjectError as exc:
@@ -181,7 +314,7 @@ async def api_parse_local_project(model: str, req: LocalProjectParseRequest):
 
 
 @app.get("/api/projects/{model}/{project_name}")
-async def api_load_project(model: str, project_name: str, scope: str = Query("users")):
+async def api_load_project(model: str, project_name: str, scope: str = Query("users"), user: dict = Depends(require_session)):
     try:
         return build_project_response(model, project_name, scope=scope)
     except ProjectError as exc:
@@ -191,7 +324,7 @@ async def api_load_project(model: str, project_name: str, scope: str = Query("us
 
 
 @app.post("/api/projects/{model}")
-async def api_save_project_as(model: str, req: ProjectSaveRequest):
+async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = Depends(require_session)):
     if not req.name:
         raise HTTPException(status_code=400, detail="Project name is required")
     try:
@@ -207,7 +340,7 @@ async def api_save_project_as(model: str, req: ProjectSaveRequest):
 
 
 @app.post("/api/projects/{model}/{project_name}")
-async def api_save_project(model: str, project_name: str, req: ProjectSaveRequest):
+async def api_save_project(model: str, project_name: str, req: ProjectSaveRequest, user: dict = Depends(require_session)):
     try:
         model_def = load_model_def(model)
         var_order = model_def["Model_Info"]["List_of_Variables"]
@@ -221,7 +354,7 @@ async def api_save_project(model: str, project_name: str, req: ProjectSaveReques
 
 
 @app.post("/api/optimize", response_model=OptimizationResponse)
-async def optimize(req: OptimizationRequest):
+async def optimize(req: OptimizationRequest, user: dict = Depends(require_session)):
     """Run a heat exchanger design optimization with the submitted parameters."""
     job_id = uuid.uuid4().hex[:8]
     input_path = f"/tmp/opencode/input_{job_id}.json"

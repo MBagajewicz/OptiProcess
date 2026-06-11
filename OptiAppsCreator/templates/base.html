@@ -13,8 +13,8 @@
         .input-container { position: relative; margin-top: 12px; margin-bottom: 8px; }
         .input-label { position: absolute; top: -10px; left: 10px; padding: 0 4px; font-size: 0.7rem; z-index: 10; }
         .custom-input { width: 100%; border: 1px solid; border-radius: 4px; padding: 4px 8px; font-size: 0.9rem; background: transparent; }
-        .checkbox-item { width: 18px; height: 18px; background-color: white; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
-        .checkbox-item.checked { background-color: #3b82f6; color: white; }
+        .checkbox-item { width: 18px; height: 18px; background-color: white !important; color: black !important; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+        .checkbox-item.checked { background-color: white !important; color: black !important; }
         .checkbox-grid-input { background-color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; padding: 4px 8px; font-size: 12px; width: 100%; text-align: left; color: inherit; }
         .bg-industrial { background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('https://placehold.co/1920x1080/2c3e50/ffffff?text=Industrial+Heat+Exchanger+Background'); background-size: cover; background-position: center; }
     </style>
@@ -116,6 +116,11 @@
             const raw = sessionStorage.getItem(key);
             return raw ? JSON.parse(raw) : fallback;
         } catch(e) { return fallback; }
+    }
+
+    async function requireAuth() {
+        const response = await fetch('/api/auth/me', {credentials: 'include'});
+        if (!response.ok) window.location.href = '/ui/login.html';
     }
 
     function setJson(key, value) {
@@ -373,9 +378,10 @@
         });
     }
 
-    function finishCloseSession() {
+    async function finishCloseSession() {
         clearModelSession();
-        window.location.href = '../main_menu.html';
+        await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+        window.location.href = '/ui/login.html';
     }
 
     function logout() {
@@ -409,6 +415,7 @@
             setDirty(true);
         });
     });
+    requireAuth();
     document.addEventListener('DOMContentLoaded', updateProjectIndicator);
     </script>
 </body>

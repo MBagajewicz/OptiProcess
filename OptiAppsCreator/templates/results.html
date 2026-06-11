@@ -104,7 +104,7 @@
     <div id="results-content" class="flex flex-row items-start gap-3 p-4 overflow-x-auto">
 
         {% for column in columns %}
-        <div class="flex flex-col gap-3 shrink-0 w-[260px]">
+        <div class="flex flex-col gap-3 shrink-0 w-[300px]">
             {% for section in column %}
             <div class="{{ section.color.border }} {{ section.color.bg }} rounded-lg p-1 {{ 'h-full' if section.full_height }}">
                 {% if section.title %}
@@ -125,7 +125,7 @@
                             <tbody>
                                 {% for row in sub.rows %}
                                 <tr>
-                                    <td>{{ row.label }}</td>
+                                    <td><span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span></td>
                                     <td id="result-{{ row.key }}" class="{{ 'font-bold text-black' if row.highlight }}">—</td>
                                 </tr>
                                 {% endfor %}
@@ -141,7 +141,7 @@
                         <tbody>
                             {% for row in section.rows %}
                             <tr>
-                                <td>{{ row.label }}</td>
+                                <td><span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span></td>
                                 <td id="result-{{ row.key }}" class="{{ 'font-bold text-black' if row.highlight }}">—</td>
                             </tr>
                             {% endfor %}
@@ -156,7 +156,7 @@
                         <tbody>
                             {% for row in section.footer_rows %}
                             <tr>
-                                <td>{{ row.label }}</td>
+                                <td><span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span></td>
                                 <td id="result-{{ row.key }}">—</td>
                             </tr>
                             {% endfor %}
@@ -204,6 +204,10 @@ function isDirty() { return sessionStorage.getItem(STORAGE_KEY_DIRTY) === 'true'
 function setDirty(value) { sessionStorage.setItem(STORAGE_KEY_DIRTY, value ? 'true' : 'false'); updateProjectIndicator(); }
 function isTemporalLocal() { return sessionStorage.getItem(STORAGE_KEY_TEMPORAL) === 'true'; }
 function setTemporalLocal(value) { sessionStorage.setItem(STORAGE_KEY_TEMPORAL, value ? 'true' : 'false'); updateProjectIndicator(); }
+async function requireAuth() {
+    const response = await fetch('/api/auth/me', {credentials: 'include'});
+    if (!response.ok) window.location.href = '/ui/login.html';
+}
 function updateProjectIndicator() {
     const el = document.getElementById('project-indicator');
     if (!el) return;
@@ -486,9 +490,10 @@ function clearModelSession() {
         sessionStorage.removeItem(key);
     });
 }
-function finishCloseSession() {
+async function finishCloseSession() {
     clearModelSession();
-    window.location.href = '../main_menu.html';
+    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+    window.location.href = '/ui/login.html';
 }
 function logout() {
     if (isDirty()) showCloseSessionModal();
@@ -684,6 +689,7 @@ function downloadResults() {
 }
 
 // --- Init ---
+requireAuth();
 updateProjectIndicator();
 runOptimization().then(data => {
     if (data) populateResults(data.result, data.sessionData);

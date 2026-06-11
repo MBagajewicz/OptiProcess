@@ -136,6 +136,7 @@ def build_problem_data_context(yaml_data, model_def, example):
             resolved["color"] = PD_COLORS.get(color, PD_COLORS["gray"])
             resolved["width_class"] = "w-56" if color in ("red", "blue") else "w-72" if color == "green" else "w-64"
             fields = []
+            has_computed_field = False
             for key, field_meta in section.get("fields", {}).items():
                 try:
                     default_val = get_example_default(example, f"{source}.{key}")
@@ -158,8 +159,12 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "computed_hint": field_meta.get("computed_hint", False),
                     "options": field_meta.get("options"),
                 }
+                if field["computed_hint"]:
+                    has_computed_field = True
                 fields.append(field)
             resolved["fields"] = fields
+            if has_computed_field and _width_value(resolved["width_class"]) < 64:
+                resolved["width_class"] = "w-64"
 
         elif element == "limit_table":
             resolved["color"] = {}
@@ -182,7 +187,7 @@ def build_problem_data_context(yaml_data, model_def, example):
 
         elif element == "computed_display":
             resolved["color"] = PD_COLORS.get("pink")
-            resolved["width_class"] = "w-56"
+            resolved["width_class"] = "w-64"
             resolved["rows"] = section.get("rows", [])
 
         sections_out.append(resolved)
@@ -343,6 +348,7 @@ def build_results_context(yaml_data, model_def):
                         "key": row["key"],
                         "unit": row.get("unit", ""),
                         "highlight": row.get("highlight", False),
+                        "computed": row.get("computed", False),
                     })
                 resolved["subsections"].append({"title": sub.get("title", ""), "rows": sub_rows})
                 all_rows_flat.extend([r["key"] for r in sub_rows])
@@ -356,6 +362,7 @@ def build_results_context(yaml_data, model_def):
                     "unit": row.get("unit", ""),
                     "highlight": row.get("highlight", False),
                     "display_factor": row.get("display_factor", 1),
+                    "computed": row.get("computed", False),
                 })
                 all_rows_flat.append(row["key"])
 
@@ -366,6 +373,7 @@ def build_results_context(yaml_data, model_def):
                     "label": row["label"],
                     "key": row["key"],
                     "unit": row.get("unit", ""),
+                    "computed": row.get("computed", False),
                 })
                 all_rows_flat.append(row["key"])
 
@@ -486,6 +494,11 @@ def generate():
     html = template.render(**login_context)
     (output_dir / "login.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/login.html")
+
+    template = env.get_template("reset_password.html")
+    html = template.render(header=header_data)
+    (output_dir / "reset_password.html").write_text(html, encoding="utf-8")
+    print(f"  ✓ output/reset_password.html")
 
     # --- Main Menu page (once, in output/) ---
     models_raw = common_ui.get("available_models", [])

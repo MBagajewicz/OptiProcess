@@ -25,7 +25,9 @@
         <div class="space-y-1">
             {% for field in section.fields %}
             <div class="input-container {{ section.color.bg }}">
-                <label class="input-label {{ section.color.label }}">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}</label>
+                <label class="input-label {{ section.color.label }}">
+                    <span class="whitespace-nowrap">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}{% if field.computed_hint %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span>
+                </label>
                 {% if field.element == 'select' %}
                 <select data-key="{{ field.key }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold">
                     {% for opt in field.options %}
@@ -68,7 +70,9 @@
         <div class="bg-pink-50/80 p-2 rounded-lg border border-pink-200 shadow-md {{ section.width_class }}">
             {% for row in section.rows %}
             <div class="input-container bg-pink-50 mt-2">
-                <label class="input-label text-gray-500 text-[10px]">{{ row.label }}</label>
+                <label class="input-label text-gray-500 text-[10px]">
+                    <span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span>
+                </label>
                 <input type="text" value="—" class="custom-input border-pink-300 text-gray-400 font-semibold text-center" disabled>
             </div>
             {% endfor %}
