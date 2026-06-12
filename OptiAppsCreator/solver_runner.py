@@ -281,6 +281,11 @@ def main():
             consistency_report,
         )
         results = extract_results(sol_dict, active_models, model_name)
+        if not results.get("optimal_variables") or not results.get("number_of_solutions"):
+            raise ValueError(
+                "No feasible design found after applying the selected consistency policy. "
+                "Review the consistency warnings and widen or correct the selected geometric options."
+            )
         # Compute model-specific output info (thermo/hydraulic/economics)
         params = example_dict.get("Equipment1", {}).get("Model_Parameters", input_data.get("parameters", {}))
         optimal = results.get("optimal_variables", {})

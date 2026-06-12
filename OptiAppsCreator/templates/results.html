@@ -567,7 +567,7 @@ async function runOptimization() {
         if (!result.optimal_variables || !result.calculations) {
             console.warn('API response missing optimal_variables or calculations', result);
             errorBox.classList.remove('hidden');
-            errorBox.innerHTML = '<p><b>API response incomplete.</b> Missing optimal_variables or calculations. Check console (F12).</p>';
+            errorBox.innerHTML = '<p><b>No complete optimization result was returned.</b></p><p class="text-xs mt-1">The solver did not return optimal variables or derived calculations. Review the consistency warnings and selected geometric options.</p>';
             overlay.classList.add('hidden');
         }
 

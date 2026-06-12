@@ -401,3 +401,54 @@ Some tests are not pure validations. They modify input data:
 - `verification_Tco_Thi_STHE()` can force `Npt = [1]`.
 
 When such tests are set to `Deactive`, their corrective side effects are also disabled. When they are `Soft` or `Hard`, the implementation should preserve the current side effects unless a future model decision changes that behavior.
+
+### Possible Mislabeling Of STHE Tube Options
+
+The STHE UI currently labels `LBLD` and `UBLD` as tube-length limits:
+
+```yaml
+LBLD: {label: "Minimum Tube Length", unit: "m"}
+UBLD: {label: "Maximum Tube Length", unit: "m"}
+```
+
+However, in the solver these parameters are used as limits for the dimensionless ratio `L / Ds`, not as absolute tube-length limits.
+
+In `STHE/Model/Constraints_and_OF_STHE.py`:
+
+```python
+def LD_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+    fun_val = m_p['LBLD'] - L / Ds
+    return fun_val
+
+def LD_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+    fun_val = L / Ds - m_p['UBLD']
+    return fun_val
+```
+
+Therefore the effective hard solver restriction is:
+
+```text
+LBLD <= L / Ds <= UBLD
+```
+
+These checks are not part of the configurable consistency process. They are primordial set-trimming constraints listed in `Model_Def_STHE.py`:
+
+```python
+'Primordial_Set_Trimming_Constraints_List': ['LD_lb', 'LD_ub', 'lbc_lb', 'lbc_ub']
+```
+
+As a consequence, setting `UBLD = 5` in the UI imposes `L / Ds <= 5` as a hard solver constraint regardless of the selected mode for:
+
+- `variables_bounds`
+- `variables_standard_values`
+
+This can make a case infeasible even when the discrete-variable consistency checks are set to `Soft (Warnings)`.
+
+The UI labels should be reviewed. More accurate labels would be:
+
+```yaml
+LBLD: {label: "Minimum L/D ratio", unit: "-"}
+UBLD: {label: "Maximum L/D ratio", unit: "-"}
+```
+
+If these restrictions need to become optional, soft, or user-configurable, that should be handled by a separate solver-constraint policy. It should not be mixed with the data-consistency test policy unless the conceptual scope of the consistency system is deliberately expanded.
