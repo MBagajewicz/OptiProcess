@@ -17,6 +17,7 @@
         .checkbox-item.checked { background-color: white !important; color: black !important; }
         .checkbox-grid-input { background-color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; padding: 4px 8px; font-size: 12px; width: 100%; text-align: left; color: inherit; }
         .bg-industrial { background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('https://placehold.co/1920x1080/2c3e50/ffffff?text=Industrial+Heat+Exchanger+Background'); background-size: cover; background-position: center; }
+        .numeric-invalid { border-color: #dc2626 !important; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25); }
     </style>
     {% block extra_style %}{% endblock %}
 </head>
@@ -115,6 +116,8 @@
     function lastSavedTemporalKey() { return modelKey('last_saved_temporal_local'); }
     function lastSavedProblemClearedKey() { return modelKey('last_saved_problem_data_cleared'); }
 
+    function scalarGeometryParameterKeys() { return ['LBLD', 'UBLD', 'ktube', 'thk', 'Nss', 'plbmax1', 'plbmax2']; }
+
     function getJson(key, fallback) {
         try {
             const raw = sessionStorage.getItem(key);
@@ -129,6 +132,54 @@
 
     function setJson(key, value) {
         sessionStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function sanitizeNumericValue(value) {
+        let clean = String(value).replace(/[^0-9.\-]/g, '');
+        clean = clean.replace(/(?!^)-/g, '');
+        const dot = clean.indexOf('.');
+        if (dot !== -1) clean = clean.slice(0, dot + 1) + clean.slice(dot + 1).replace(/\./g, '');
+        return clean;
+    }
+
+    function isStrictNumber(value) {
+        return /^-?(?:\d+|\d*\.\d+)$/.test(String(value).trim());
+    }
+
+    function parseStrictNumber(value) {
+        return parseFloat(String(value).trim());
+    }
+
+    function markNumericValidity(input, valid) {
+        input.classList.toggle('numeric-invalid', !valid);
+        if (!valid) input.title = 'Only numeric values are accepted.';
+        else input.removeAttribute('title');
+    }
+
+    function validateNumericInputs(selector) {
+        const invalid = [];
+        document.querySelectorAll(selector).forEach(function(input) {
+            if (input.disabled || input.type === 'hidden') return;
+            const valid = isStrictNumber(input.value);
+            markNumericValidity(input, valid);
+            if (!valid) invalid.push(input);
+        });
+        if (invalid.length) {
+            invalid[0].focus();
+            alert('Only numeric values are accepted. Please correct the highlighted fields.');
+            return false;
+        }
+        return true;
+    }
+
+    function attachNumericFiltering(selector) {
+        document.querySelectorAll(selector).forEach(function(input) {
+            input.addEventListener('input', function() {
+                const clean = sanitizeNumericValue(this.value);
+                if (this.value !== clean) this.value = clean;
+                markNumericValidity(this, this.value ? isStrictNumber(this.value) : false);
+            });
+        });
     }
 
     function getCurrentProject() {
@@ -168,13 +219,14 @@
     }
 
     function syncCurrentPageState() {
-        if (typeof window.collectProblemData === 'function') window.collectProblemData(false);
-        if (typeof window.collectGeometricData === 'function') window.collectGeometricData(false);
+        if (typeof window.collectProblemData === 'function' && window.collectProblemData(false) === null) return false;
+        if (typeof window.collectGeometricData === 'function' && window.collectGeometricData(false) === null) return false;
+        return true;
     }
 
     function navigateModelPage(event, target) {
         if (event) event.preventDefault();
-        syncCurrentPageState();
+        if (!syncCurrentPageState()) return false;
         window.location.href = target;
         return false;
     }
@@ -219,7 +271,7 @@
     }
 
     function buildProjectPayload(name) {
-        syncCurrentPageState();
+        if (!syncCurrentPageState()) return null;
         const params = getJson(problemStorageKey(), {});
         const geom = getJson(geomStorageKey(), {});
         const selectedOf = params._selected_of || 'TAC_OF';
@@ -271,10 +323,12 @@
         if (!name || isTemporalLocal() || sessionStorage.getItem(originKey()) === 'example') {
             return await saveAsCloud();
         }
+        const payload = buildProjectPayload(name);
+        if (!payload) return false;
         const response = await fetch(API_PROJECTS_URL + '/' + encodeURIComponent(name), {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(buildProjectPayload(name))
+            body: JSON.stringify(payload)
         });
         if (!response.ok) {
             alert('Could not save project: ' + await response.text());
@@ -293,10 +347,12 @@
         sessionStorage.setItem(currentUserProjectNameKey(), userProjectName);
         const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
         if (!name) return false;
+        const payload = buildProjectPayload(name);
+        if (!payload) return false;
         const response = await fetch(API_PROJECTS_URL, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(buildProjectPayload(name))
+            body: JSON.stringify(payload)
         });
         if (!response.ok) {
             alert('Could not save project: ' + await response.text());
@@ -412,7 +468,7 @@
     }
 
     function logout() {
-        syncCurrentPageState();
+        if (!syncCurrentPageState()) return;
         if (isDirty()) showCloseSessionModal();
         else finishCloseSession();
     }

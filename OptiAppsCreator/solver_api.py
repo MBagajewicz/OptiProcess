@@ -127,6 +127,38 @@ class UserProjectCreateRequest(BaseModel):
     description: str | None = None
 
 
+TEXT_PARAMETER_KEYS = {"Shell_Method", "Tube_Method", "yfluid", "_selected_of"}
+
+
+def validate_numeric_parameters(parameters: dict) -> None:
+    for key, value in parameters.items():
+        if key in TEXT_PARAMETER_KEYS or value is None:
+            continue
+        if isinstance(value, bool):
+            raise HTTPException(status_code=400, detail=f"Parameter '{key}' must be numeric")
+        if isinstance(value, (int, float)):
+            continue
+        if isinstance(value, str):
+            try:
+                float(value.strip())
+            except ValueError:
+                raise HTTPException(status_code=400, detail=f"Parameter '{key}' must be numeric")
+            continue
+        raise HTTPException(status_code=400, detail=f"Parameter '{key}' must be numeric")
+
+
+def normalize_numeric_parameters(parameters: dict) -> dict:
+    normalized = {}
+    for key, value in parameters.items():
+        if key in TEXT_PARAMETER_KEYS or value is None:
+            normalized[key] = value
+        elif isinstance(value, str):
+            normalized[key] = float(value.strip())
+        else:
+            normalized[key] = value
+    return normalized
+
+
 class LoginRequest(BaseModel):
     username: str
     password: str
@@ -369,9 +401,11 @@ async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = 
     if not req.name:
         raise HTTPException(status_code=400, detail="Project name is required")
     try:
+        validate_numeric_parameters(req.parameters)
         model_def = load_model_def(model)
         var_order = model_def["Model_Info"]["List_of_Variables"]
         payload = req.model_dump()
+        payload["parameters"] = normalize_numeric_parameters(payload["parameters"])
         saved = save_user_design(user["id"], model, req.name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
         saved["variable_order"] = var_order
         return saved
@@ -384,9 +418,11 @@ async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = 
 @app.post("/api/projects/{model}/{project_name}")
 async def api_save_project(model: str, project_name: str, req: ProjectSaveRequest, user: dict = Depends(require_session)):
     try:
+        validate_numeric_parameters(req.parameters)
         model_def = load_model_def(model)
         var_order = model_def["Model_Info"]["List_of_Variables"]
         payload = req.model_dump()
+        payload["parameters"] = normalize_numeric_parameters(payload["parameters"])
         saved = save_user_design(user["id"], model, project_name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
         saved["variable_order"] = var_order
         return saved
@@ -399,6 +435,7 @@ async def api_save_project(model: str, project_name: str, req: ProjectSaveReques
 @app.post("/api/optimize", response_model=OptimizationResponse)
 async def optimize(req: OptimizationRequest, user: dict = Depends(require_session)):
     """Run a heat exchanger design optimization with the submitted parameters."""
+    validate_numeric_parameters(req.parameters)
     job_id = uuid.uuid4().hex[:8]
     input_path = f"/tmp/opencode/input_{job_id}.json"
     output_path = f"/tmp/opencode/output_{job_id}.json"
@@ -406,7 +443,7 @@ async def optimize(req: OptimizationRequest, user: dict = Depends(require_sessio
     # Write input JSON
     input_data = {
         "model": req.model,
-        "parameters": req.parameters,
+        "parameters": normalize_numeric_parameters(req.parameters),
         "discrete_variables": req.discrete_variables,
         "selected_of": req.selected_of,
         "number_of_equipment": req.number_of_equipment,

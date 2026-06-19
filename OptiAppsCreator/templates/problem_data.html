@@ -35,7 +35,7 @@
                     {% endfor %}
                 </select>
                 {% else %}
-                <input type="text" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
                 {% endif %}
             </div>
             {% endfor %}
@@ -56,9 +56,9 @@
             <tbody class="text-center">
                 {% for row in section.rows %}
                 <tr>
-                    <td class="border border-red-100 p-1 text-red-500">{{ row.lower }}<input type="hidden" data-key="{{ row.lower_key }}" value="{{ row.lower }}"></td>
+                    <td class="border border-red-100 p-1 text-red-500"><input type="text" inputmode="decimal" data-numeric="true" data-key="{{ row.lower_key }}" value="{{ row.lower }}" class="w-full bg-white border border-red-100 rounded px-1 py-0.5 text-center text-red-500 font-semibold"></td>
                     <td class="border border-red-100 p-1 text-gray-700">{{ row.item }}{% if row.unit %} [{{ row.unit }}]{% endif %}</td>
-                    <td class="border border-red-100 p-1 text-red-500">{{ row.upper }}<input type="hidden" data-key="{{ row.upper_key }}" value="{{ row.upper }}"></td>
+                    <td class="border border-red-100 p-1 text-red-500"><input type="text" inputmode="decimal" data-numeric="true" data-key="{{ row.upper_key }}" value="{{ row.upper }}" class="w-full bg-white border border-red-100 rounded px-1 py-0.5 text-center text-red-500 font-semibold"></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -94,6 +94,7 @@
 
 <script>
 function collectProblemData(markDirty) {
+    if (!validateNumericInputs('input[data-numeric="true"][data-key]')) return null;
     const data = getJson(problemStorageKey(), {});
 
     // Collect radio groups
@@ -108,10 +109,16 @@ function collectProblemData(markDirty) {
         var key = input.dataset.key;
         if (!key) return;
         var val = input.value;
-        data[key] = (input.type === 'number' || !isNaN(parseFloat(val))) ? parseFloat(val) : val;
+        data[key] = input.dataset.numeric === 'true' && isStrictNumber(val) ? parseStrictNumber(val) : ((!isNaN(parseFloat(val))) ? parseFloat(val) : val);
+    });
+
+    const geomData = getJson(geomStorageKey(), {});
+    scalarGeometryParameterKeys().forEach(function(key) {
+        if (data[key] !== undefined) geomData[key] = data[key];
     });
 
     setJson(problemStorageKey(), data);
+    setJson(geomStorageKey(), geomData);
     sessionStorage.setItem(problemClearedKey(), 'false');
     if (markDirty !== false) setDirty(true);
     return data;
@@ -161,12 +168,13 @@ function restoreProblemData() {
 }
 
 function saveAndNext() {
-    collectProblemData(false);
+    if (collectProblemData(false) === null) return;
     window.location.href = 'geometric_options.html';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     restoreProblemData();
+    attachNumericFiltering('input[data-numeric="true"][data-key]');
     document.querySelectorAll('input[data-key], select[data-key], input[type="radio"]').forEach(function(input) {
         input.addEventListener('change', function() {
             collectProblemData(true);

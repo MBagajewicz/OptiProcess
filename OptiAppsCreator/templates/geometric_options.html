@@ -38,7 +38,7 @@
             {% for field in section.fields %}
             <div class="relative">
                 <span class="tube-options-label">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}</span>
-                <input type="text" data-key="{{ field.key }}" class="tube-options-input" value="{{ field.default }}">
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" class="tube-options-input" value="{{ field.default }}">
             </div>
             {% endfor %}
         </div>
@@ -64,6 +64,7 @@
 
 <script>
 function collectGeometricData(markDirty) {
+    if (!validateNumericInputs('.tube-options-input[data-numeric="true"]')) return null;
     // Collect checked items from checkbox grids by variable name
     var discrete = getJson(geomStorageKey(), {});
     document.querySelectorAll('[data-var]').forEach(function(panel) {
@@ -82,11 +83,17 @@ function collectGeometricData(markDirty) {
         var key = input.dataset.key;
         if (key) {
             var val = input.value;
-            discrete[key] = isNaN(parseFloat(val)) ? val : parseFloat(val);
+            discrete[key] = parseStrictNumber(val);
         }
     });
 
+    const problemData = getJson(problemStorageKey(), {});
+    scalarGeometryParameterKeys().forEach(function(key) {
+        if (discrete[key] !== undefined) problemData[key] = discrete[key];
+    });
+
     setJson(geomStorageKey(), discrete);
+    setJson(problemStorageKey(), problemData);
     if (markDirty !== false) setDirty(true);
     return discrete;
 }
@@ -117,12 +124,13 @@ function restoreGeometricData() {
 }
 
 function saveAndOptimize() {
-    collectGeometricData(false);
+    if (collectGeometricData(false) === null) return;
     window.location.href = 'results.html';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     restoreGeometricData();
+    attachNumericFiltering('.tube-options-input[data-numeric="true"]');
     document.querySelectorAll('.tube-options-input').forEach(function(input) {
         input.addEventListener('change', function() {
             collectGeometricData(true);
