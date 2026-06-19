@@ -50,6 +50,12 @@ if SCRIPT_DIR not in sys.path:
     sys.path.insert(0, SCRIPT_DIR)
 
 
+class ConsistencyError(RuntimeError):
+    def __init__(self, report):
+        super().__init__("Mandatory consistency checks failed. Solver was not executed.")
+        self.report = report
+
+
 def json_safe(obj):
     """Recursively convert numpy types to native Python for JSON serialization."""
     if isinstance(obj, (np.integer,)):
@@ -175,14 +181,16 @@ def run_solver(model_name, example_name, example_dict):
         pass
 
     # Consistency check + initial set up
-    Calculations_Consistency_Check.Consistency_Check(active_example, active_models, save_result)
+    consistency_report = Calculations_Consistency_Check.Consistency_Check(active_example, active_models, save_result)
+    if not consistency_report.get("passed", True):
+        raise ConsistencyError(consistency_report)
     Calculations_Prep_Organizer.Prep_Organizer(active_example, active_models, model_name, example_name, save_result)
 
     # Run solver
     solution = Calculations_Solver_Selection.Solver_Selection(
         active_example, active_models, model_name, example_name, save_result
     )
-    return solution, active_example, active_models
+    return solution, active_example, active_models, consistency_report
 
 
 def extract_results(sol_dict, active_models, model_name):
@@ -269,8 +277,13 @@ def main():
     try:
         # Build example dict (validation errors are caught and returned gracefully)
         example_dict = build_example_dict(input_data)
-        sol_dict, active_example, active_models = run_solver(model_name, example_name, example_dict)
+        sol_dict, active_example, active_models, consistency_report = run_solver(model_name, example_name, example_dict)
         results = extract_results(sol_dict, active_models, model_name)
+        if not results.get("optimal_variables") or not results.get("number_of_solutions"):
+            raise ValueError(
+                "No feasible design found after passing mandatory consistency checks. "
+                "Review any consistency warnings and the selected geometric options."
+            )
         # Compute model-specific output info (thermo/hydraulic/economics)
         params = example_dict.get("Equipment1", {}).get("Model_Parameters", input_data.get("parameters", {}))
         optimal = results.get("optimal_variables", {})
@@ -281,7 +294,16 @@ def main():
             results["objective"] = output_info.get("objective", objective)
         results["status"] = "ok"
         results["model"] = model_name
+        results["consistency"] = consistency_report
         results["elapsed_seconds"] = round(time.time() - start, 4)
+    except ConsistencyError as e:
+        results = {
+            "status": "error",
+            "error": str(e),
+            "consistency": e.report,
+            "model": model_name,
+            "elapsed_seconds": round(time.time() - start, 4),
+        }
     except Exception as e:
         error_msg = str(e)
         # Translate cryptic solver errors into user-friendly messages
@@ -298,6 +320,7 @@ def main():
         results = {
             "status": "error",
             "error": error_msg,
+            "consistency": locals().get("consistency_report"),
             "model": model_name,
             "elapsed_seconds": round(time.time() - start, 4),
         }
