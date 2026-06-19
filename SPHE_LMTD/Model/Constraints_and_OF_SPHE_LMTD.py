@@ -7,10 +7,9 @@
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
 #   0.0          2024            Diego Oliva               Original
 #   0.2          01-Dec-2024     Mariana Mello             Add constraints
-#   0.3          03-Mar-2025     Mariana Mello             Changes after add options of tube and shell methods
-#   0.4          23-Apr-2025     Mariana Mello             Update to fix error and add constraint Fmin
-#   0.5          12-May-2025     Mariana Mello             Changed name from 'pd' to 'm_p'
-##################################################################################################################
+#   0.3          28-Feb-2025     Alice Peccini             Relocating folders 
+#   0.4          07-Jun-2025     Qiqi Zhang                Adaptation from original STHE
+###################################################################################################################
 # INPUT: Define Constraints as def and return + or - values depending the > or < inequality
 ##################################################################################################################
 # INSTRUCTIONS
@@ -24,163 +23,104 @@
 
 ##################################################################################################################
 # region Import Library
-from STHE.Calculations import (
-    Calculations_STHE_Reynolds_tubeside,
-    Calculations_STHE_velocity_tubeside,
-    Calculations_STHE_Reynolds_shellside,
-    Calculations_STHE_correction_factor,
-    Calculations_STHE_velocity_shellside,
-    Calculations_STHE_DeltaPshellside,
-    Calculations_STHE_DeltaPtubeside,
-    Calculations_STHE_area,
-    Calculations_STHE_TAC,
-    Calculations_STHE_CAPEX,
-    Calculations_STHE_U
+from SPHE_LMTD.Calculations import (
+    Calculations_SPHE_LMTD_Reynolds,
+    Calculations_SPHE_LMTD_velocity,
+    Calculations_SPHE_LMTD_correction_factor,
+    Calculations_SPHE_LMTD_area,
+    Calculations_SPHE_LMTD_TAC,
+    Calculations_SPHE_LMTD_DeltaP,
+    Calculations_SPHE_LMTD_U
 )
 from Common_Equations_HEX import Calculations_HEX_LMTD, Calculations_HEX_heatload
 # endregion
 ##################################################################################################################
 
 ##################################################################################################################
-# region Constraints
+# region Example 1
 
-
-def LD_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Lower bound on L/Ds
-    fun_val = m_p['LBLD'] - L / Ds
+def LH_lb(L, H, ds, dh, dc,m_p):
+    # Lower bound on L/H
+    fun_val = m_p['LBLH'] - L / H
     return fun_val
 
-def LD_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Upper bound on L/Ds
-    fun_val = L / Ds - m_p['UBLD']
-    return fun_val
-def lbc_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Lower bound on lbc
-    lbc = (L / (Nb + 1))
-    fun_val = 0.2 * Ds - lbc
+def LH_ub(L, H, ds, dh, dc, m_p):
+    # Upper bound on L/H
+    fun_val = L / H - m_p['UBLH']
     return fun_val
 
-def lbc_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Upper bound on lbc
-    lbc = (L / (Nb + 1))
-    fun_val = lbc - 1 * Ds
+def vh_lb(L, H, ds, dh, dc, m_p):
+    # Lower bound on vh
+    vh, _ = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
+    fun_val = m_p['vhmin'] - vh
     return fun_val
 
-def lbmax(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    lbc = (L / (Nb + 1))
-    if m_p['Shell_Method'] == 'Bell':
-        lbmax = (m_p['plbmax1']*dte + m_p['plbmax2'])*0.5
-    elif m_p['Shell_Method'] == 'Kern':
-        lbmax = lbc*1e10
-    fun_val = lbc - lbmax
+def vh_ub(L, H, ds, dh, dc, m_p):
+    # Upper bound on vh
+    vh, _ = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
+    fun_val = vh - m_p['vhmax']
     return fun_val
 
-def vs_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Lower bound on vs
-    vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(m_p['ms'], m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p)
-    fun_val = m_p['vsmin'] - vs
-    return fun_val
-
-def vs_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Upper bound on vs
-    vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(m_p['ms'], m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p)
-    fun_val = vs - m_p['vsmax']
-    return fun_val
-
-def vt_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+def vc_lb(L, H, ds, dh, dc, m_p):
     # Lower bound on vt
-    vt = Calculations_STHE_velocity_tubeside.STHE_tubeside_velocity(m_p['mt'], m_p['rot'], m_p['thk'], Ds, dte, Npt, rp,
-                                                                    lay, m_p)
-    #print('vt',vt)
-    fun_val = m_p['vtmin'] - vt
+    _, vc = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
+    fun_val = m_p['vcmin'] - vc
     return fun_val
 
-def vt_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+def vc_ub(L, H, ds, dh, dc, m_p):
     # Upper bound on vt
-    vt = Calculations_STHE_velocity_tubeside.STHE_tubeside_velocity(m_p['mt'], m_p['rot'], m_p['thk'], Ds, dte, Npt, rp,
-                                                                    lay, m_p)
-    fun_val = vt - m_p['vtmax']
+    _, vc = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
+    fun_val = vc - m_p['vcmax']
     return fun_val
 
-def Ret_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Lower bound on Ret
-    Ret = Calculations_STHE_Reynolds_tubeside.STHE_Reynolds_tubeside(m_p['mt'], m_p['rot'], m_p['mit'], m_p['thk'], Ds,
-                                                                     dte, Npt, rp, lay, m_p)
-    fun_val = m_p['Retmin'] - Ret
+def Reh_lb(L, H, ds, dh, dc,m_p):
+    # Lower bound on Reh
+    _, _, Reeh, _ = Calculations_SPHE_LMTD_Reynolds.SPHE_Reynolds(dh, dc, H, m_p['mh'], m_p['mc'], m_p['mih'], m_p['mic'], L, m_p['thk'], ds)
+    Reh, _, _, _ = Calculations_SPHE_LMTD_Reynolds.SPHE_Reynolds(dh, dc, H, m_p['mh'], m_p['mc'], m_p['mih'], m_p['mic'], L, m_p['thk'], ds)
+    fun_val = Reeh - Reh
     return fun_val
 
-def Ret_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Upper bound on Ret
-    Ret = Calculations_STHE_Reynolds_tubeside.STHE_Reynolds_tubeside(m_p['mt'], m_p['rot'], m_p['mit'], m_p['thk'], Ds,
-                                                                     dte, Npt, rp, lay, m_p)
-    fun_val = Ret - m_p['Retmax']
+def Rec_lb(L, H, ds, dh, dc, m_p):
+    # Lower bound on Rec
+    _, _, _, Reec = Calculations_SPHE_LMTD_Reynolds.SPHE_Reynolds(dh, dc, H, m_p['mh'], m_p['mc'], m_p['mih'], m_p['mic'], L, m_p['thk'], ds)
+    _, Rec, _, _ = Calculations_SPHE_LMTD_Reynolds.SPHE_Reynolds(dh, dc, H, m_p['mh'], m_p['mc'], m_p['mih'], m_p['mic'], L, m_p['thk'], ds)
+    fun_val = Reec - Rec
     return fun_val
 
-def Res_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Lower bound on Ret
-    Res = Calculations_STHE_Reynolds_shellside.STHE_Reynolds_shellside(m_p['ms'], m_p['ros'], m_p['mis'], Ds, dte, rp,
-                                                                       lay, L, Nb, m_p)
-    fun_val = m_p['Resmin'] - Res
+def dltph_ub(L, H, ds, dh, dc, m_p):
+    # Upper bound on dltph
+    dltph, _ = Calculations_SPHE_LMTD_DeltaP.SPHE_DeltaP(L, m_p['roh'], m_p['roc'], m_p['mh'], m_p['mc'], H, dh, dc, m_p['mih'], m_p['mic'])
+    fun_val = dltph - m_p['DPhdisp']
     return fun_val
 
-def Res_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    # Upper bound on Res
-    Res = Calculations_STHE_Reynolds_shellside.STHE_Reynolds_shellside(m_p['ms'], m_p['ros'], m_p['mis'], Ds, dte, rp,
-                                                                       lay, L, Nb, m_p)
-    fun_val = Res - m_p['Resmax']
+def dltpc_ub(L, H, ds, dh, dc, m_p):
+    # Upper bound on dltpc
+    _, dltpc = Calculations_SPHE_LMTD_DeltaP.SPHE_DeltaP(L, m_p['roh'], m_p['roc'], m_p['mh'], m_p['mc'], H, dh, dc, m_p['mih'], m_p['mic'])
+    fun_val = dltpc - m_p['DPcdisp']
     return fun_val
 
-def DPs_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    DPs = Calculations_STHE_DeltaPshellside.STHE_shellside_DeltaP(m_p['ms'], m_p['ros'], m_p['mis'], Ds, dte, Npt, rp,
-                                                                  lay, L, Nb, Bc, m_p)
-    fun_val = DPs - m_p['DPsdisp']
-    return fun_val
-
-def DPt_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    DPt = Calculations_STHE_DeltaPtubeside.STHE_tubeside_DeltaP(m_p['mt'], m_p['rot'], m_p['mit'], m_p['thk'], Ds, dte,
-                                                                Npt, rp, lay, L, m_p)
-    fun_val = DPt - m_p['DPtdisp']
-    return fun_val
-
-def F_min(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    F = Calculations_STHE_correction_factor.STHE_correction_factor(m_p['Thi'], m_p['Tho'], m_p['Tci'], m_p['Tco'], Npt,
-                                                                   m_p['Xp'])
-    fun_val = m_p['F_min'] - F
-    return fun_val
-
-def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+def Areq(L, H, ds, dh, dc, m_p):
     # Required area constraint
     Q = Calculations_HEX_heatload.HEX_heat_load(m_p['mh'], m_p['Cph'], m_p['Thi'], m_p['Tho'])
-    U = Calculations_STHE_U.STHE_overall_coefficient(m_p['mt'], m_p['rot'], m_p['Cpt'], m_p['mit'], m_p['kt'], m_p['Rft'],
-                                                     m_p['ms'], m_p['ros'], m_p['Cps'], m_p['mis'], m_p['ks'], m_p['Rfs'],
-                                                     m_p['thk'], m_p['ktube'], m_p['yfluid'], Ds, dte, Npt, rp, lay, L,
-                                                     Nb, Bc, m_p)
+    U = Calculations_SPHE_LMTD_U.SPHE_overall_coefficient(L, dh, dc, ds, H, m_p['thk'], m_p['mh'], m_p['mc'], m_p['mih'],
+                                                     m_p['mic'], m_p['Cph'], m_p['Cpc'], m_p['kh'], m_p['kc'], m_p['Rfh'],
+                                                     m_p['Rfc'], m_p['kplate'])
     LMTD = Calculations_HEX_LMTD.HEX_lmtd(m_p['Thi'], m_p['Tho'], m_p['Tci'], m_p['Tco'])
-    #print('LMTD',LMTD)
-    F = Calculations_STHE_correction_factor.STHE_correction_factor(m_p['Thi'], m_p['Tho'], m_p['Tci'], m_p['Tco'], Npt,
-                                                                   m_p['Xp'])
-    #print('F',F)
-    A = Calculations_STHE_area.STHE_area(Ds, dte, Npt, rp, lay, L, m_p)
-    #print('A',A)
-    Areq = Q / (U * LMTD * F)
-    #print('Areq',Areq)
-    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A
+    F = Calculations_SPHE_LMTD_correction_factor.SPHE_correction_factor(L, H, dh, dc, ds, m_p['thk'], m_p['mh'], m_p['mc'],
+                                                                   m_p['mih'], m_p['mic'], m_p['Cph'], m_p['Cpc'], m_p['kh'],
+                                                                   m_p['kc'], m_p['Rfh'], m_p['Rfc'], m_p['kplate'])
+    A = Calculations_SPHE_LMTD_area.SPHE_area(L, H)
+    Areq = (Q * 3.412152) / (U*1.8 * LMTD * F)
+    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A/(0.3048**2)
     return fun_val
 
-def TAC_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+def SPHE_OF(L, H, ds, dh, dc, m_p):
     # Objective function
-    TAC = Calculations_STHE_TAC.STHE_TAC(m_p['int_rate'], m_p['n'], m_p['par_a'], m_p['par_b'], m_p['Nop'], m_p['pc'],
-                                         m_p['eta'], Ds, dte, Npt, rp, lay, L, m_p['ms'], m_p['mt'], m_p['ros'],
-                                         m_p['rot'], m_p['mis'], m_p['mit'], m_p['thk'], Nb, Bc, m_p)
-    return TAC
-
-def AREA_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    Area = Calculations_STHE_area.STHE_area(Ds, dte, Npt, rp, lay, L, m_p)
-    return Area
-    
-def CAPEX_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
-    CAPEX = Calculations_STHE_CAPEX.STHE_CAPEX(m_p['par_a'], m_p['par_b'], Ds, dte, Npt, rp, lay, L, m_p)
-    return CAPEX
+    OF_Solution = Calculations_SPHE_LMTD_TAC.SPHE_TAC(m_p['int_rate'], m_p['n'], m_p['par_a'], m_p['par_b'], H, L, m_p['pc'],
+                                                 m_p['eta'], m_p['mh'], m_p['mc'], m_p['roh'], m_p['roc'], dh, dc, m_p['mih'],
+                                                 m_p['mic'], m_p['Nop'])
+    return OF_Solution
 
 # endregion
 ##################################################################################################################
+

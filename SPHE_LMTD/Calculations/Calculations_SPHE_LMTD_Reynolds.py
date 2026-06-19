@@ -4,49 +4,48 @@
 # Methodology: Set trimming
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
-#   0.0          01-Dec-2024     Mariana Mello             Proposed
-#   0.2          27-Feb-2025     Mariana Mello             Add options of Shell Method
-#   0.3          12-May-2025     Mariana Mello             Changed name from 'pd' to 'm_p'
+#   0.0          01-Dec-2024     Mariana Mello               Original
+#   0.1          07-Jun-2025     Qiqi Zhang                  Adaptation from original STHE
 ##################################################################################################################
 #endregion
 
 
 #region Import Library
-from STHE.Calculations import Calculations_STHE_velocity_shellside
+from SPHE_LMTD.Calculations import Calculations_SPHE_LMTD_velocity
 from math import pi
 import numpy as np
 #endregion
 
 #region Calculations
 
-def STHE_Reynolds_shellside(ms, ros, mis, Ds, dte, rp, lay, L, Nb, m_p):
+def SPHE_Reynolds(dh, dc, H, mh, mc, mih, mic, L, thk, ds):
     # Shell-side Reynolds number
-    if m_p['Shell_Method'] == "Bell":
-        # Shell velocity
-        vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(ms, ros, Ds, rp, L, Nb, dte, lay, m_p)
+    
+    Ds = np.sqrt(1.28 * (L) * ((dh + dc + 2 * thk) ) + ((ds ) ** 2))  # the spiral outer diameter (ft)
+    Dh = 2 * (dh ) * (H ) / ((dh + H) )  # the hydraulic diameter of hot side  (ft)
+    Dc = 2 * (dc ) * (H ) / ((dc + H) )  # the hydraulic diameter of cold side  (ft)
+    Gh = (mh ) / ((dh ) * (H ))  # The mass flux of hot side    lb/(h*ft2)
+    Gc = (mc ) / ((dc ) * (H ))  # The mass flux of cold side   lb/(h*ft2)
 
-        # Reynolds number with the fouling layer
-        #Res = (dte + 2 * fts_thk) * vs * m_p['ros'] / m_p['mis']
+    Reh = Dh * Gh / (mih )
+    Rec = Dc * Gc / (mic )
+    Reeh = 20000 * ((Dh / Ds) ** 0.32)
+    Reec = 20000 * ((Dc / Ds) ** 0.32)
+    
+    return Reh, Rec, Reeh, Reec
 
-        # Reynolds number without the fouling layer
-        Res = (dte*vs*ros) / mis
+def SPHE_Reynolds_ub(dh, dc, H, mh, mc, mimin, L, thk, ds):
 
-        #print('Res',Res)
+    Ds = (1.28 * (L ) * ((dh + dc + 2 * thk) ) + ((ds ) ** 2)) ** 0.5  # the spiral outer diameter (ft)
+    Dh = 2 * (dh ) * (H ) / ((dh + H) )  # the hydraulic diameter of hot side  (ft)
+    Dc = 2 * (dc ) * (H ) / ((dc + H) )  # the hydraulic diameter of cold side  (ft)
+    Gh = (mh ) / ((dh ) * (H ))  # The mass flux of hot side    lb/(h*ft2)
+    Gc = (mc ) / ((dc ) * (H ))  # The mass flux of cold side   lb/(h*ft2)
 
-    elif m_p['Shell_Method'] == "Kern":
-        vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(ms, ros, Ds, rp, L, Nb, dte, lay, m_p)
-        K_Deq = 4 * np.ones(lay.shape)
-        if isinstance(lay, float) or isinstance(lay, int):
-            if lay == 2: K_Deq = 3.46
-        else:
-            K_Deq[lay == 2] = 3.46
-        ltp = rp * dte
-        Deq = (K_Deq * ltp**2) / (pi * dte) - dte
-        Res = (Deq * vs * ros) / mis
+    Rehub = Dh * Gh / (mimin )
+    Recub = Dc * Gc / (mimin )
+    Reeh = 20000 * ((Dh / Ds) ** 0.32)
+    Reec = 20000 * ((Dc / Ds) ** 0.32)
 
-    else:
-        raise ValueError(f"Invalid Shell Method: {m_p['Shell_Method']}.")
-
-    return Res
-
+    return Rehub, Recub, Reeh, Reec
 #endregion
