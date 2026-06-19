@@ -18,7 +18,6 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from project_store import load_project
-from consistency_utils import get_tests
 
 
 # --- Color CSS class maps ---
@@ -489,7 +488,6 @@ def generate():
     nav_pages = [
         {"label": "Problem Data", "file": "problem_data.html"},
         {"label": "Geometric Options", "file": "geometric_options.html"},
-        {"label": "Consistency Check", "file": "consistency_check.html"},
         {"label": "Results", "file": "results.html"},
         {"label": "Projects", "file": "projects.html"},
     ]
@@ -579,21 +577,6 @@ def generate():
         )
         (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/geometric_options.html")
-
-        # Consistency Check page
-        nav_cc = [{"label": p["label"], "active": p["file"] == "consistency_check.html", "file": p["file"]} for p in nav_pages]
-        consistency_tests = get_tests(model_name)
-        template = env.get_template("consistency_check.html")
-        html = template.render(
-            page_title="Consistency Check",
-            nav_pages=nav_cc,
-            header=header_data,
-            model_name=model_name,
-            consistency_tests=consistency_tests,
-            consistency_test_ids=[test["id"] for test in consistency_tests],
-        )
-        (model_output_dir / "consistency_check.html").write_text(html, encoding="utf-8")
-        print(f"  ✓ output/{model_name}/consistency_check.html")
 
         # Results page
         nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]

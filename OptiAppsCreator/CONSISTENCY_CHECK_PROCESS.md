@@ -330,6 +330,96 @@ The desired behavior is:
 
 The current implementation has no explicit policy layer. Some tests already abort with `sys.exit()` while others only write warning messages. This should be normalized by wrapping each test call with policy-aware execution while keeping the test definitions inside `consistency()`.
 
+## Flag-Based Consistency Flow
+
+The current implementation is being refactored so each consistency test returns an explicit result flag instead of aborting from inside the test.
+
+Each test returns a dictionary with the following structure:
+
+```python
+{
+    "id": "thi_tho",
+    "label": "Hot stream cools down (Thi > Tho)",
+    "passed": False,
+    "mandatory": True,
+    "message": "Error data consistency: Tho > Thi"
+}
+```
+
+The return value is now used by `consistency()` to build a model-level report:
+
+```python
+{
+    "passed": False,
+    "results": [...],
+    "mandatory_failures": [...],
+    "warnings": [...]
+}
+```
+
+`OptiCode/Calculations_Consistency_Check.py` consolidates the model reports into a global report:
+
+```python
+{
+    "passed": False,
+    "equipments": [...],
+    "warnings": [...],
+    "mandatory_failures": [...]
+}
+```
+
+The solver is allowed to continue only when:
+
+```python
+consistency_report["passed"] is True
+```
+
+If one or more mandatory tests fail, `Main.py` and `solver_runner.py` stop before initial set preparation and before solver execution. The individual test functions no longer call `sys.exit()`.
+
+### Mandatory Tests
+
+Tests that previously aborted the process with `sys.exit()` are treated as mandatory:
+
+- `positive_variables`
+- `thi_tho`
+- `tco_tci`
+- `tco_thi`
+- `tci_tho`
+- `tco_thi_sthe`
+
+If any mandatory test fails:
+
+- the optimization/simulation is not executed;
+- the report identifies the failing test by `id`, `label`, and `message`;
+- the web UI displays the failures as mandatory consistency errors.
+
+### Non-Mandatory Tests
+
+Tests that previously warned, corrected data, or adjusted discrete choices without aborting are treated as non-mandatory:
+
+- `delta_t_min`
+- `heatload`
+- `variables_bounds`
+- `variables_standard_values`
+- `sthe_multipass_exclusion`
+
+If a non-mandatory test fails:
+
+- it is included in the report under `warnings`;
+- the web UI displays it as a consistency warning;
+- the solver is still allowed to run, provided all mandatory tests passed.
+
+Non-mandatory tests can still mutate `m_p` or `m_d`. For example, `delta_t_min` can add a default `DeltaT_min`, `heatload` can adjust `Tco`, and `sthe_multipass_exclusion` can force `Npt = [1]`.
+
+### Centralized Stop Point
+
+The process stop is now centralized:
+
+- command-line execution stops in `Main.py` after reading `consistency_report`;
+- web execution stops in `solver_runner.py` and returns JSON with `status: "error"` and the full `consistency` report.
+
+This makes failed tests visible to the caller and avoids hidden exits inside low-level validation functions.
+
 ## Issues To Review
 
 ### Exact Intent Of `verification_heatload()`

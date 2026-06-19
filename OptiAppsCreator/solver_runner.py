@@ -43,12 +43,17 @@ import importlib
 import numpy as np
 
 from project_store import load_project
-from consistency_utils import ConsistencyHardError, new_report
 
 # Ensure OptiAppsCreator is on sys.path for imports
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRIPT_DIR not in sys.path:
     sys.path.insert(0, SCRIPT_DIR)
+
+
+class ConsistencyError(RuntimeError):
+    def __init__(self, report):
+        super().__init__("Mandatory consistency checks failed. Solver was not executed.")
+        self.report = report
 
 
 def json_safe(obj):
@@ -146,7 +151,7 @@ def build_example_dict(input_data):
     return example
 
 
-def run_solver(model_name, example_name, example_dict, consistency_config=None, consistency_report=None):
+def run_solver(model_name, example_name, example_dict):
     """Run the full OptiProcess pipeline for the given model and example. Returns (Sol_Dict, active_example, active_models)."""
     from OptiCode import (
         Calculations_Prep_Organizer,
@@ -176,16 +181,16 @@ def run_solver(model_name, example_name, example_dict, consistency_config=None, 
         pass
 
     # Consistency check + initial set up
-    Calculations_Consistency_Check.Consistency_Check(
-        active_example, active_models, save_result, consistency_config, consistency_report
-    )
+    consistency_report = Calculations_Consistency_Check.Consistency_Check(active_example, active_models, save_result)
+    if not consistency_report.get("passed", True):
+        raise ConsistencyError(consistency_report)
     Calculations_Prep_Organizer.Prep_Organizer(active_example, active_models, model_name, example_name, save_result)
 
     # Run solver
     solution = Calculations_Solver_Selection.Solver_Selection(
         active_example, active_models, model_name, example_name, save_result
     )
-    return solution, active_example, active_models
+    return solution, active_example, active_models, consistency_report
 
 
 def extract_results(sol_dict, active_models, model_name):
@@ -269,22 +274,15 @@ def main():
 
     start = time.time()
 
-    consistency_report = new_report()
     try:
         # Build example dict (validation errors are caught and returned gracefully)
         example_dict = build_example_dict(input_data)
-        sol_dict, active_example, active_models = run_solver(
-            model_name,
-            example_name,
-            example_dict,
-            input_data.get("consistency_checks"),
-            consistency_report,
-        )
+        sol_dict, active_example, active_models, consistency_report = run_solver(model_name, example_name, example_dict)
         results = extract_results(sol_dict, active_models, model_name)
         if not results.get("optimal_variables") or not results.get("number_of_solutions"):
             raise ValueError(
-                "No feasible design found after applying the selected consistency policy. "
-                "Review the consistency warnings and widen or correct the selected geometric options."
+                "No feasible design found after passing mandatory consistency checks. "
+                "Review any consistency warnings and the selected geometric options."
             )
         # Compute model-specific output info (thermo/hydraulic/economics)
         params = example_dict.get("Equipment1", {}).get("Model_Parameters", input_data.get("parameters", {}))
@@ -298,12 +296,11 @@ def main():
         results["model"] = model_name
         results["consistency"] = consistency_report
         results["elapsed_seconds"] = round(time.time() - start, 4)
-    except ConsistencyHardError as e:
+    except ConsistencyError as e:
         results = {
             "status": "error",
-            "error": "Consistency check failed. The solver was not executed.",
-            "details": str(e),
-            "consistency": consistency_report,
+            "error": str(e),
+            "consistency": e.report,
             "model": model_name,
             "elapsed_seconds": round(time.time() - start, 4),
         }
@@ -323,7 +320,7 @@ def main():
         results = {
             "status": "error",
             "error": error_msg,
-            "consistency": consistency_report,
+            "consistency": locals().get("consistency_report"),
             "model": model_name,
             "elapsed_seconds": round(time.time() - start, 4),
         }

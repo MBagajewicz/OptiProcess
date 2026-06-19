@@ -137,7 +137,12 @@ Active_Models['Parameters_Update'] = Import_Functions.Import_Functions(Active_Mo
 start_time = time.time()
 
 # Calls for Example Data Consistency Check 
-Calculations_Consistency_Check.Consistency_Check(Active_Example, Active_Models, save_result)
+consistency_report = Calculations_Consistency_Check.Consistency_Check(Active_Example, Active_Models, save_result)
+if not consistency_report.get('passed', True):
+    save_result('\nMandatory consistency checks failed. Solver was not executed.\n')
+    for failure in consistency_report.get('mandatory_failures', []):
+        save_result(f" - {failure.get('label', failure.get('id', 'unknown'))}: {failure.get('message', '')}\n")
+    sys.exit()
 
 # Active Example Initial Set Up (Parameters, Primordial and Initial Set Generation)
 Calculations_Prep_Organizer.Prep_Organizer(Active_Example, Active_Models, Selected_Model, Selected_Example, save_result)
