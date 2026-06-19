@@ -38,7 +38,7 @@
     <div class="px-6 border-b border-gray-300 flex items-center justify-between gap-4 text-sm text-gray-600">
         <div class="flex gap-8">
             {% for nav in nav_pages %}
-            <a href="{{ nav.file }}" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
+            <a href="{{ nav.file }}" onclick="return navigateModelPage(event, '{{ nav.file }}')" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
             {% endfor %}
         </div>
         <div class="flex items-center gap-3 py-1">
@@ -66,6 +66,9 @@
             </div>
             <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
                 Reset
+            </button>
+            <button type="button" onclick="window.location.href='/ui/main_menu.html'" class="bg-slate-500 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-600">
+                Main Menu
             </button>
             <button type="button" onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
                 LOGOUT
@@ -213,6 +216,11 @@ function updateProjectIndicator() {
     const name = getCurrentProject() || 'Unsaved';
     el.innerHTML = (isTemporalLocal() ? '<span class="text-red-600 font-bold mr-1">(temporal local copy)</span>' : '')
         + 'Current project: ' + name + (isDirty() ? '*' : '');
+}
+function navigateModelPage(event, target) {
+    if (event) event.preventDefault();
+    window.location.href = target;
+    return false;
 }
 function toggleSaveMenu() { document.getElementById('save-menu').classList.toggle('hidden'); }
 function toggleLoadMenu() { document.getElementById('load-menu').classList.toggle('hidden'); }

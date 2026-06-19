@@ -35,7 +35,7 @@
     <div class="bg-white border-b border-gray-300 px-4 flex items-center justify-between gap-4 text-sm font-medium text-gray-600">
         <div class="flex space-x-8">
             {% for nav_page in nav_pages %}
-            <a href="{{ nav_page.file }}" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
+            <a href="{{ nav_page.file }}" onclick="return navigateModelPage(event, '{{ nav_page.file }}')" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
                 {{ nav_page.label }}
             </a>
             {% endfor %}
@@ -65,6 +65,9 @@
             </div>
             <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
                 Reset
+            </button>
+            <button type="button" onclick="window.location.href='/ui/main_menu.html'" class="bg-slate-500 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-600">
+                Main Menu
             </button>
             <button type="button" onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
                 LOGOUT
@@ -162,6 +165,13 @@
     function syncCurrentPageState() {
         if (typeof window.collectProblemData === 'function') window.collectProblemData(false);
         if (typeof window.collectGeometricData === 'function') window.collectGeometricData(false);
+    }
+
+    function navigateModelPage(event, target) {
+        if (event) event.preventDefault();
+        syncCurrentPageState();
+        window.location.href = target;
+        return false;
     }
 
     function saveSnapshot() {
