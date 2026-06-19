@@ -2,6 +2,8 @@
 
 **OptiHexx** es una aplicación web para optimización de intercambiadores de calor usando **Set Trimming** y **Smart Enumeration** con garantía de optimalidad global. La UI se genera automáticamente a partir de modelos Python y archivos YAML de metadatos de presentación.
 
+> **Nota de nomenclatura actual:** los diseños de referencia read-only se muestran como **Design Tutorial Library**. Los antiguos `ExampleX.py` se tratan como tutoriales. Los **User Projects** son ahora contenedores de usuario que pueden incluir distintos **Designs** de uno o más modelos; cada Design equivale al caso resoluble individual que antes se guardaba como proyecto `.py`.
+
 ---
 
 ## 1. Arquitectura

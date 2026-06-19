@@ -49,8 +49,8 @@
                     Load <i class="fas fa-caret-down ml-1"></i>
                 </button>
                 <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
-                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Example</button>
-                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load User Project</button>
+                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Tutorial Design</button>
+                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load User Project Design</button>
                     <button type="button" onclick="loadLocalFile()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Local File</button>
                 </div>
             </div>
@@ -188,6 +188,8 @@ const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
 const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
 const STORAGE_KEY_PROJECT = 'optihex_' + MODEL + '_current_project';
+const STORAGE_KEY_USER_PROJECT_ID = 'optihex_' + MODEL + '_current_user_project_id';
+const STORAGE_KEY_USER_PROJECT_NAME = 'optihex_' + MODEL + '_current_user_project_name';
 const STORAGE_KEY_DIRTY = 'optihex_' + MODEL + '_project_dirty';
 const STORAGE_KEY_ORIGIN = 'optihex_' + MODEL + '_project_origin';
 const STORAGE_KEY_TEMPORAL = 'optihex_' + MODEL + '_project_temporal_local';
@@ -196,6 +198,8 @@ const STORAGE_KEY_PROBLEM_CLEARED = 'optihex_' + MODEL + '_problem_data_cleared'
 const STORAGE_KEY_LAST_SAVED_PROBLEM = 'optihex_' + MODEL + '_last_saved_problem_data';
 const STORAGE_KEY_LAST_SAVED_GEOM = 'optihex_' + MODEL + '_last_saved_geometric_data';
 const STORAGE_KEY_LAST_SAVED_PROJECT = 'optihex_' + MODEL + '_last_saved_project_name';
+const STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID = 'optihex_' + MODEL + '_last_saved_user_project_id';
+const STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME = 'optihex_' + MODEL + '_last_saved_user_project_name';
 const STORAGE_KEY_LAST_SAVED_ORIGIN = 'optihex_' + MODEL + '_last_saved_origin';
 const STORAGE_KEY_LAST_SAVED_TEMPORAL = 'optihex_' + MODEL + '_last_saved_temporal_local';
 const STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED = 'optihex_' + MODEL + '_last_saved_problem_data_cleared';
@@ -213,9 +217,10 @@ async function requireAuth() {
 function updateProjectIndicator() {
     const el = document.getElementById('project-indicator');
     if (!el) return;
-    const name = getCurrentProject() || 'Unsaved';
+    const userProjectName = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || 'No User Project';
+    const name = getCurrentProject() || 'Unsaved Design';
     el.innerHTML = (isTemporalLocal() ? '<span class="text-red-600 font-bold mr-1">(temporal local copy)</span>' : '')
-        + 'Current project: ' + name + (isDirty() ? '*' : '');
+        + 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
 }
 function navigateModelPage(event, target) {
     if (event) event.preventDefault();
@@ -241,6 +246,8 @@ function saveSnapshot() {
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROBLEM, sessionStorage.getItem(STORAGE_KEY_PROBLEM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_GEOM, sessionStorage.getItem(STORAGE_KEY_GEOM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROJECT, getCurrentProject());
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) || '');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || '');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_ORIGIN, sessionStorage.getItem(STORAGE_KEY_ORIGIN) || '');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_TEMPORAL, isTemporalLocal() ? 'true' : 'false');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, sessionStorage.getItem(STORAGE_KEY_PROBLEM_CLEARED) === 'true' ? 'true' : 'false');
@@ -258,6 +265,8 @@ function resetProjectState() {
     sessionStorage.setItem(STORAGE_KEY_PROBLEM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_GEOM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_PROJECT, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROJECT) || '');
+    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID) || '');
+    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME) || '');
     sessionStorage.setItem(STORAGE_KEY_ORIGIN, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_ORIGIN) || '');
     sessionStorage.setItem(STORAGE_KEY_TEMPORAL, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_TEMPORAL) === 'true' ? 'true' : 'false');
     sessionStorage.setItem(STORAGE_KEY_PROBLEM_CLEARED, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED) === 'true' ? 'true' : 'false');
@@ -362,6 +371,8 @@ function buildProjectPayload(name) {
     const solverPayload = buildPayload(sessionData);
     return {
         name: name || getCurrentProject(),
+        user_project_id: sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) ? parseInt(sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID), 10) : null,
+        user_project_name: sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || null,
         parameters: solverPayload.parameters,
         discrete_variables: solverPayload.discrete_variables,
         selected_of: solverPayload.selected_of,
@@ -394,7 +405,10 @@ async function saveCloud() {
 
 async function saveAsCloud() {
     document.getElementById('save-menu').classList.add('hidden');
-    const name = prompt('Project name:', getCurrentProject() || 'NewProject');
+    const userProjectName = prompt('User project name:', sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || 'My_Designs');
+    if (!userProjectName) return false;
+    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, userProjectName);
+    const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
     if (!name) return false;
     const payload = buildProjectPayload(name);
     if (!payload) return alert('No project data available to save.');
@@ -409,6 +423,8 @@ async function saveAsCloud() {
     }
     const data = await response.json();
     setCurrentProject(data.name || name);
+    if (data.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, data.user_project_id);
+    if (data.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, data.user_project_name);
     sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
     setTemporalLocal(false);
     setDirty(false);
@@ -459,6 +475,10 @@ function applyProjectPayload(project, source) {
     sessionStorage.setItem(STORAGE_KEY_PROBLEM, JSON.stringify(params));
     sessionStorage.setItem(STORAGE_KEY_GEOM, JSON.stringify(geom));
     setCurrentProject(project.name || 'LocalProject');
+    if (project.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, project.user_project_id);
+    else sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_ID);
+    if (project.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, project.user_project_name);
+    else sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_NAME);
     sessionStorage.setItem(STORAGE_KEY_ORIGIN, source || 'cloud');
     sessionStorage.setItem(STORAGE_KEY_SAVED_LOCAL, source === 'local' ? 'true' : 'false');
     setTemporalLocal(source === 'local');
@@ -493,7 +513,7 @@ async function loadLocalProjectFile(files) {
 function hideCloseSessionModal() { document.getElementById('close-session-modal').classList.add('hidden'); }
 function showCloseSessionModal() { document.getElementById('close-session-modal').classList.remove('hidden'); }
 function clearModelSession() {
-    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PROJECT, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_TEMPORAL, STORAGE_KEY_SAVED_LOCAL, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_TEMPORAL, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED].forEach(function(key) {
+    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_TEMPORAL, STORAGE_KEY_SAVED_LOCAL, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_TEMPORAL, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED].forEach(function(key) {
         sessionStorage.removeItem(key);
     });
 }

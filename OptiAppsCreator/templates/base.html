@@ -48,8 +48,8 @@
                     Load <i class="fas fa-caret-down ml-1"></i>
                 </button>
                 <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
-                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Example</button>
-                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load User Project</button>
+                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Tutorial Design</button>
+                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load User Project Design</button>
                     <button type="button" onclick="loadLocalFile()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Local File</button>
                 </div>
             </div>
@@ -99,6 +99,8 @@
     function problemStorageKey() { return modelKey('problem_data'); }
     function geomStorageKey() { return modelKey('geometric_data'); }
     function currentProjectKey() { return modelKey('current_project'); }
+    function currentUserProjectIdKey() { return modelKey('current_user_project_id'); }
+    function currentUserProjectNameKey() { return modelKey('current_user_project_name'); }
     function dirtyKey() { return modelKey('project_dirty'); }
     function originKey() { return modelKey('project_origin'); }
     function temporalLocalKey() { return modelKey('project_temporal_local'); }
@@ -107,6 +109,8 @@
     function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
     function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
     function lastSavedProjectKey() { return modelKey('last_saved_project_name'); }
+    function lastSavedUserProjectIdKey() { return modelKey('last_saved_user_project_id'); }
+    function lastSavedUserProjectNameKey() { return modelKey('last_saved_user_project_name'); }
     function lastSavedOriginKey() { return modelKey('last_saved_origin'); }
     function lastSavedTemporalKey() { return modelKey('last_saved_temporal_local'); }
     function lastSavedProblemClearedKey() { return modelKey('last_saved_problem_data_cleared'); }
@@ -157,9 +161,10 @@
     function updateProjectIndicator() {
         const el = document.getElementById('project-indicator');
         if (!el) return;
-        const name = getCurrentProject() || 'Unsaved';
+        const userProjectName = sessionStorage.getItem(currentUserProjectNameKey()) || 'No User Project';
+        const name = getCurrentProject() || 'Unsaved Design';
         el.innerHTML = (isTemporalLocal() ? '<span class="text-red-600 font-bold mr-1">(temporal local copy)</span>' : '')
-            + 'Current project: ' + name + (isDirty() ? '*' : '');
+            + 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
     }
 
     function syncCurrentPageState() {
@@ -178,6 +183,8 @@
         sessionStorage.setItem(lastSavedProblemKey(), sessionStorage.getItem(problemStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedGeomKey(), sessionStorage.getItem(geomStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedProjectKey(), getCurrentProject());
+        sessionStorage.setItem(lastSavedUserProjectIdKey(), sessionStorage.getItem(currentUserProjectIdKey()) || '');
+        sessionStorage.setItem(lastSavedUserProjectNameKey(), sessionStorage.getItem(currentUserProjectNameKey()) || '');
         sessionStorage.setItem(lastSavedOriginKey(), sessionStorage.getItem(originKey()) || '');
         sessionStorage.setItem(lastSavedTemporalKey(), isTemporalLocal() ? 'true' : 'false');
         sessionStorage.setItem(lastSavedProblemClearedKey(), sessionStorage.getItem(problemClearedKey()) === 'true' ? 'true' : 'false');
@@ -195,6 +202,8 @@
         sessionStorage.setItem(problemStorageKey(), sessionStorage.getItem(lastSavedProblemKey()) || '{}');
         sessionStorage.setItem(geomStorageKey(), sessionStorage.getItem(lastSavedGeomKey()) || '{}');
         sessionStorage.setItem(currentProjectKey(), sessionStorage.getItem(lastSavedProjectKey()) || '');
+        sessionStorage.setItem(currentUserProjectIdKey(), sessionStorage.getItem(lastSavedUserProjectIdKey()) || '');
+        sessionStorage.setItem(currentUserProjectNameKey(), sessionStorage.getItem(lastSavedUserProjectNameKey()) || '');
         sessionStorage.setItem(originKey(), sessionStorage.getItem(lastSavedOriginKey()) || '');
         sessionStorage.setItem(temporalLocalKey(), sessionStorage.getItem(lastSavedTemporalKey()) === 'true' ? 'true' : 'false');
         sessionStorage.setItem(problemClearedKey(), sessionStorage.getItem(lastSavedProblemClearedKey()) === 'true' ? 'true' : 'false');
@@ -224,6 +233,8 @@
         });
         return {
             name: name || getCurrentProject(),
+            user_project_id: sessionStorage.getItem(currentUserProjectIdKey()) ? parseInt(sessionStorage.getItem(currentUserProjectIdKey()), 10) : null,
+            user_project_name: sessionStorage.getItem(currentUserProjectNameKey()) || null,
             parameters: cleanParams,
             discrete_variables: discrete,
             selected_of: selectedOf,
@@ -277,7 +288,10 @@
 
     async function saveAsCloud() {
         document.getElementById('save-menu').classList.add('hidden');
-        const name = prompt('Project name:', getCurrentProject() || 'NewProject');
+        const userProjectName = prompt('User project name:', sessionStorage.getItem(currentUserProjectNameKey()) || 'My_Designs');
+        if (!userProjectName) return false;
+        sessionStorage.setItem(currentUserProjectNameKey(), userProjectName);
+        const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
         if (!name) return false;
         const response = await fetch(API_PROJECTS_URL, {
             method: 'POST',
@@ -290,6 +304,8 @@
         }
         const data = await response.json();
         setCurrentProject(data.name || name);
+        if (data.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), data.user_project_id);
+        if (data.user_project_name) sessionStorage.setItem(currentUserProjectNameKey(), data.user_project_name);
         sessionStorage.setItem(originKey(), 'cloud');
         setTemporalLocal(false);
         setDirty(false);
@@ -340,6 +356,10 @@
         setJson(problemStorageKey(), params);
         setJson(geomStorageKey(), geom);
         setCurrentProject(project.name || 'LocalProject');
+        if (project.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), project.user_project_id);
+        else sessionStorage.removeItem(currentUserProjectIdKey());
+        if (project.user_project_name) sessionStorage.setItem(currentUserProjectNameKey(), project.user_project_name);
+        else sessionStorage.removeItem(currentUserProjectNameKey());
         sessionStorage.setItem(originKey(), source || 'cloud');
         sessionStorage.setItem(savedLocalKey(), source === 'local' ? 'true' : 'false');
         setTemporalLocal(source === 'local');
@@ -380,7 +400,7 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), currentProjectKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedOriginKey(), lastSavedTemporalKey(), lastSavedProblemClearedKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedTemporalKey(), lastSavedProblemClearedKey()].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
     }

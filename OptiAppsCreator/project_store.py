@@ -10,12 +10,15 @@ from __future__ import annotations
 
 import ast
 import copy
+import json
 import pprint
 import re
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+
+from auth_db import connect, init_db, utc_iso
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -257,6 +260,209 @@ def save_project(model: str, project_name: str, project: dict[str, Any], scope: 
     text = "import numpy as np\n\nProject = " + pprint.pformat(project_copy, width=120, sort_dicts=False) + "\n"
     path.write_text(text, encoding="utf-8")
     return path
+
+
+def list_user_projects(user_id: int) -> list[dict[str, Any]]:
+    init_db()
+    with connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT p.*, COUNT(d.id) AS design_count
+            FROM user_projects p
+            LEFT JOIN user_designs d ON d.project_id = p.id
+            WHERE p.user_id = ?
+            GROUP BY p.id
+            ORDER BY p.name COLLATE NOCASE
+            """,
+            (user_id,),
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_user_project(user_id: int, project_id: int) -> dict[str, Any]:
+    init_db()
+    with connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM user_projects WHERE id = ? AND user_id = ?",
+            (project_id, user_id),
+        ).fetchone()
+    if not row:
+        raise ProjectError("User project not found")
+    return dict(row)
+
+
+def get_or_create_user_project(user_id: int, name: str | None = None) -> dict[str, Any]:
+    project_name = normalize_project_name(name or "My_Designs")
+    init_db()
+    now = utc_iso()
+    with connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM user_projects WHERE user_id = ? AND name = ?",
+            (user_id, project_name),
+        ).fetchone()
+        if row:
+            return dict(row)
+        cursor = conn.execute(
+            """
+            INSERT INTO user_projects (user_id, name, description, created_at, updated_at)
+            VALUES (?, ?, NULL, ?, ?)
+            """,
+            (user_id, project_name, now, now),
+        )
+        project_id = cursor.lastrowid
+        row = conn.execute("SELECT * FROM user_projects WHERE id = ?", (project_id,)).fetchone()
+    return dict(row)
+
+
+def create_user_project(user_id: int, name: str, description: str | None = None) -> dict[str, Any]:
+    project_name = normalize_project_name(name)
+    init_db()
+    now = utc_iso()
+    try:
+        with connect() as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO user_projects (user_id, name, description, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (user_id, project_name, description, now, now),
+            )
+            row = conn.execute("SELECT * FROM user_projects WHERE id = ?", (cursor.lastrowid,)).fetchone()
+        return dict(row)
+    except Exception as exc:
+        raise ProjectError(f"Could not create user project: {exc}")
+
+
+def list_user_designs(user_id: int, model: str | None = None, project_id: int | None = None) -> list[dict[str, Any]]:
+    init_db()
+    filters = ["p.user_id = ?"]
+    params: list[Any] = [user_id]
+    if model:
+        filters.append("d.model = ?")
+        params.append(validate_model_name(model))
+    if project_id:
+        filters.append("p.id = ?")
+        params.append(project_id)
+    where = " AND ".join(filters)
+    with connect() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT d.id, d.project_id, d.model, d.name, d.created_at, d.updated_at,
+                   p.name AS user_project_name
+            FROM user_designs d
+            JOIN user_projects p ON p.id = d.project_id
+            WHERE {where}
+            ORDER BY p.name COLLATE NOCASE, d.model COLLATE NOCASE, d.name COLLATE NOCASE
+            """,
+            params,
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def _design_payload_to_json(model: str, name: str, payload: dict[str, Any]) -> str:
+    design = {
+        "model": model,
+        "name": normalize_project_name(name),
+        "parameters": json_safe(payload.get("parameters") or {}),
+        "discrete_variables": json_safe(payload.get("discrete_variables") or {}),
+        "selected_of": payload.get("selected_of") or "TAC_OF",
+        "number_of_equipment": int(payload.get("number_of_equipment") or 1),
+    }
+    return json.dumps(design, ensure_ascii=False, sort_keys=True)
+
+
+def save_user_design(
+    user_id: int,
+    model: str,
+    name: str,
+    payload: dict[str, Any],
+    project_id: int | None = None,
+    user_project_name: str | None = None,
+) -> dict[str, Any]:
+    model = validate_model_name(model)
+    design_name = normalize_project_name(name)
+    if project_id:
+        user_project = get_user_project(user_id, int(project_id))
+    else:
+        user_project = get_or_create_user_project(user_id, user_project_name)
+    now = utc_iso()
+    design_json = _design_payload_to_json(model, design_name, payload)
+    with connect() as conn:
+        existing = conn.execute(
+            "SELECT id FROM user_designs WHERE project_id = ? AND model = ? AND name = ?",
+            (user_project["id"], model, design_name),
+        ).fetchone()
+        if existing:
+            conn.execute(
+                "UPDATE user_designs SET design_json = ?, updated_at = ? WHERE id = ?",
+                (design_json, now, existing["id"]),
+            )
+            design_id = existing["id"]
+        else:
+            cursor = conn.execute(
+                """
+                INSERT INTO user_designs (project_id, model, name, design_json, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (user_project["id"], model, design_name, design_json, now, now),
+            )
+            design_id = cursor.lastrowid
+        conn.execute("UPDATE user_projects SET updated_at = ? WHERE id = ?", (now, user_project["id"]))
+        row = conn.execute(
+            """
+            SELECT d.id, d.project_id, d.model, d.name, d.design_json, d.created_at, d.updated_at,
+                   p.name AS user_project_name
+            FROM user_designs d
+            JOIN user_projects p ON p.id = d.project_id
+            WHERE d.id = ?
+            """,
+            (design_id,),
+        ).fetchone()
+    return _design_row_to_ui_payload(row)
+
+
+def load_user_design(user_id: int, model: str, name: str, project_id: int | None = None) -> dict[str, Any]:
+    model = validate_model_name(model)
+    design_name = normalize_project_name(name)
+    filters = ["p.user_id = ?", "d.model = ?", "d.name = ?"]
+    params: list[Any] = [user_id, model, design_name]
+    if project_id:
+        filters.append("p.id = ?")
+        params.append(project_id)
+    where = " AND ".join(filters)
+    with connect() as conn:
+        row = conn.execute(
+            f"""
+            SELECT d.id, d.project_id, d.model, d.name, d.design_json, d.created_at, d.updated_at,
+                   p.name AS user_project_name
+            FROM user_designs d
+            JOIN user_projects p ON p.id = d.project_id
+            WHERE {where}
+            ORDER BY d.updated_at DESC
+            LIMIT 1
+            """,
+            params,
+        ).fetchone()
+    if not row:
+        raise ProjectError("Design not found")
+    return _design_row_to_ui_payload(row)
+
+
+def _design_row_to_ui_payload(row: Any) -> dict[str, Any]:
+    data = json.loads(row["design_json"])
+    return {
+        "id": row["id"],
+        "project_id": row["project_id"],
+        "user_project_id": row["project_id"],
+        "user_project_name": row["user_project_name"],
+        "name": row["name"],
+        "model": row["model"],
+        "parameters": data.get("parameters", {}),
+        "discrete_variables": data.get("discrete_variables", {}),
+        "selected_of": data.get("selected_of", "TAC_OF"),
+        "number_of_equipment": data.get("number_of_equipment", 1),
+        "scope": "users",
+    }
 
 
 def project_to_ui_payload(model: str, project_name: str, project: dict[str, Any]) -> dict[str, Any]:

@@ -68,11 +68,16 @@ from email_service import send_password_reset_email
 
 from project_store import (
     ProjectError,
+    create_user_project,
+    list_user_designs,
+    list_user_projects,
     list_projects,
     load_project,
     load_project_source,
+    load_user_design,
     project_to_ui_payload,
     save_project,
+    save_user_design,
     ui_payload_to_project,
 )
 
@@ -104,6 +109,8 @@ class OptimizationResponse(BaseModel):
 
 class ProjectSaveRequest(BaseModel):
     name: str | None = None
+    user_project_id: int | None = None
+    user_project_name: str | None = None
     parameters: dict
     discrete_variables: dict
     selected_of: str = "TAC_OF"
@@ -113,6 +120,11 @@ class ProjectSaveRequest(BaseModel):
 class LocalProjectParseRequest(BaseModel):
     name: str
     source: str
+
+
+class UserProjectCreateRequest(BaseModel):
+    name: str
+    description: str | None = None
 
 
 class LoginRequest(BaseModel):
@@ -186,9 +198,15 @@ def load_model_def(model_name: str) -> dict:
     return getattr(module, f"Model_{model_name}")
 
 
-def build_project_response(model: str, project_name: str, scope: str = "users") -> dict:
+def build_project_response(model: str, project_name: str, scope: str = "users", user_id: int | None = None, user_project_id: int | None = None) -> dict:
     model_def = load_model_def(model)
     var_order = model_def["Model_Info"]["List_of_Variables"]
+    if scope == "users":
+        if user_id is None:
+            raise ProjectError("Authentication required")
+        payload = load_user_design(user_id, model, project_name, project_id=user_project_id)
+        payload["variable_order"] = var_order
+        return payload
     project = load_project(model, project_name, scope=scope)
     payload = project_to_ui_payload(model, project_name, project)
     discrete_values = payload.pop("discrete_values")
@@ -295,9 +313,32 @@ async def auth_reset_password(req: ResetPasswordRequest):
     return {"status": "ok"}
 
 
+@app.get("/api/user-projects")
+async def api_list_user_projects(user: dict = Depends(require_session)):
+    return {"projects": list_user_projects(user["id"])}
+
+
+@app.post("/api/user-projects")
+async def api_create_user_project(req: UserProjectCreateRequest, user: dict = Depends(require_session)):
+    try:
+        return create_user_project(user["id"], req.name, req.description)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/user-projects/{project_id}/designs")
+async def api_list_user_project_designs(project_id: int, model: str | None = None, user: dict = Depends(require_session)):
+    try:
+        return {"project_id": project_id, "designs": list_user_designs(user["id"], model=model, project_id=project_id)}
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
 @app.get("/api/projects/{model}")
 async def api_list_projects(model: str, scope: str = Query("users"), user: dict = Depends(require_session)):
     try:
+        if scope == "users":
+            return {"model": model, "scope": scope, "projects": list_user_designs(user["id"], model=model)}
         return {"model": model, "scope": scope, "projects": list_projects(model, scope=scope)}
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -314,9 +355,9 @@ async def api_parse_local_project(model: str, req: LocalProjectParseRequest, use
 
 
 @app.get("/api/projects/{model}/{project_name}")
-async def api_load_project(model: str, project_name: str, scope: str = Query("users"), user: dict = Depends(require_session)):
+async def api_load_project(model: str, project_name: str, scope: str = Query("users"), user_project_id: int | None = None, user: dict = Depends(require_session)):
     try:
-        return build_project_response(model, project_name, scope=scope)
+        return build_project_response(model, project_name, scope=scope, user_id=user["id"], user_project_id=user_project_id)
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
@@ -330,9 +371,10 @@ async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = 
     try:
         model_def = load_model_def(model)
         var_order = model_def["Model_Info"]["List_of_Variables"]
-        project = ui_payload_to_project(model, req.model_dump(), var_order)
-        save_project(model, req.name, project)
-        return build_project_response(model, req.name, scope="users")
+        payload = req.model_dump()
+        saved = save_user_design(user["id"], model, req.name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
+        saved["variable_order"] = var_order
+        return saved
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
@@ -344,9 +386,10 @@ async def api_save_project(model: str, project_name: str, req: ProjectSaveReques
     try:
         model_def = load_model_def(model)
         var_order = model_def["Model_Info"]["List_of_Variables"]
-        project = ui_payload_to_project(model, req.model_dump(), var_order)
-        save_project(model, project_name, project)
-        return build_project_response(model, project_name, scope="users")
+        payload = req.model_dump()
+        saved = save_user_design(user["id"], model, project_name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
+        saved["variable_order"] = var_order
+        return saved
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
