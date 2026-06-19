@@ -104,7 +104,6 @@
     function temporalLocalKey() { return modelKey('project_temporal_local'); }
     function savedLocalKey() { return modelKey('project_saved_local'); }
     function problemClearedKey() { return modelKey('problem_data_cleared'); }
-    function consistencyChecksStorageKey() { return modelKey('consistency_checks'); }
     function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
     function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
     function lastSavedProjectKey() { return modelKey('last_saved_project_name'); }
@@ -374,7 +373,7 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), consistencyChecksStorageKey(), currentProjectKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedOriginKey(), lastSavedTemporalKey(), lastSavedProblemClearedKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), currentProjectKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedOriginKey(), lastSavedTemporalKey(), lastSavedProblemClearedKey()].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
     }

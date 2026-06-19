@@ -10,18 +10,10 @@
 ##################################################################################################################
 #endregion
 
-import inspect
-
 ##################################################################################################################
 #region Calculations organizer to call Initial Set Up
 
-def _call_consistency_function(function_obj, model_declarations, model_parameters, save_result, consistency_config, consistency_report):
-    signature = inspect.signature(function_obj)
-    if len(signature.parameters) >= 5:
-        return function_obj(model_declarations, model_parameters, save_result, consistency_config, consistency_report)
-    return function_obj(model_declarations, model_parameters, save_result)
-
-def Consistency_Check(Active_Example, Active_Models, save_result, consistency_config=None, consistency_report=None):
+def Consistency_Check(Active_Example, Active_Models, save_result):
 
     # First Level Optimization Equipment Data Consistency Check:
     for i in range(1, Active_Example['Number_of_Equipment'] + 1):
@@ -37,7 +29,7 @@ def Consistency_Check(Active_Example, Active_Models, save_result, consistency_co
         Parameters_Update_Module = Active_Models['Parameters_Update'][Type_Equipment]
         Consistency_Funcions = equipment_def['Model_Info'].setdefault('Consistency_Check_Functions', [])
         for function in Consistency_Funcions:
-            _call_consistency_function(getattr(Parameters_Update_Module, function), model_declarations, model_parameters, save_result, consistency_config, consistency_report)
+            getattr(Parameters_Update_Module, function)(model_declarations, model_parameters, save_result)
         
     # Next Level Equipment Data Consistency Check:
     if Active_Example.get('Next_Level_Equipments'):
@@ -55,7 +47,7 @@ def Consistency_Check(Active_Example, Active_Models, save_result, consistency_co
             Parameters_Update_Module = Active_Models['Parameters_Update'][Type_Equipment]
             Consistency_Funcions = equipment_def['Model_Info'].setdefault('Consistency_Check_Functions', [])
             for function in Consistency_Funcions:
-                _call_consistency_function(getattr(Parameters_Update_Module, function), model_declarations, model_parameters, save_result, consistency_config, consistency_report)
+                getattr(Parameters_Update_Module, function)(model_declarations, model_parameters, save_result)
                 
 #endregion
 ####################################################################################################################

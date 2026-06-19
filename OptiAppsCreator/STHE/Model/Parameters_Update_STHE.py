@@ -26,7 +26,6 @@
 # region Import Library
 import sys
 from Common_Equations_HEX import Calculations_HEX_Consistency
-from consistency_utils import normalize_config, run_test
 from STHE.Model.Model_Def_STHE import Model_STHE
 # endregion
 ##################################################################################################################
@@ -74,11 +73,10 @@ def allocation(m_p):
     
     return m_p
 
-def consistency(m_d, m_p, save_result, consistency_config=None, consistency_report=None):
+def consistency(m_d, m_p, save_result):
     save_result('\n******* Testing consistency *******\n')
-    config = normalize_config('STHE', consistency_config)
 
-    def variables_bounds(m_d, test_save_result):
+    def variables_bounds(m_d):
         m_i = Model_STHE['Model_Info']
         variables = m_i['List_of_Variables']
 
@@ -101,14 +99,14 @@ def consistency(m_d, m_p, save_result, consistency_config=None, consistency_repo
                     out_of_limit[name].append(v)
 
         if out_of_limit:
-            test_save_result("WARNING: Variables out of range:")
+            save_result("WARNING: Variables out of range:")
             for var, vals in out_of_limit.items():
-                test_save_result(f" - {var}: Invalid values {vals}\n")
+                save_result(f" - {var}: Invalid values {vals}\n")
         else:
             pass
         return m_d
 
-    def variables_standard_values(m_d, test_save_result):
+    def variables_standard_values(m_d):
         m_i = Model_STHE['Model_Info']
         variables = m_i['List_of_Variables']
 
@@ -128,14 +126,14 @@ def consistency(m_d, m_p, save_result, consistency_config=None, consistency_repo
                         out[name] = []
                     out[name].append(v)
         if out:
-            test_save_result("WARNING: Variables do not match standard values")
+            save_result("WARNING: Variables do not match standard values")
             for var, vals in out.items():
-                test_save_result(f" - {var}: Invalid values {vals}\n")
+                save_result(f" - {var}: Invalid values {vals}\n")
         else:
             pass
         return m_d
 
-    def verification_Tco_Thi_STHE(m_p, m_d, test_save_result):
+    def verification_Tco_Thi_STHE(m_p, m_d):
         if 'Tco' in m_p and 'Thi' in m_p and 'Tho' in m_p:
             Thi = m_p['Thi']
             Tco = m_p['Tco']
@@ -143,27 +141,28 @@ def consistency(m_d, m_p, save_result, consistency_config=None, consistency_repo
             deltaTmin = m_p['DeltaT_min']
             if Tco < Thi - deltaTmin:
                 if Tco > Tho - deltaTmin:
-                    test_save_result('Exchanger cannot be multipass (Tco > Tho - DeltaTmin). All passes > 1 are excluded.\n')
+                    save_result('Exchanger cannot be multipass (Tco > Tho - DeltaTmin). All passes > 1 are excluded.\n')
                     m_d['Discrete_Values_of_Variables'][2] = [1] # Npt = 1
                 else:
                     pass
             else:
-                test_save_result('Error data consistency: Tco > Thi - DeltaTmin\n')
+                save_result('Error data consistency: Tco > Thi - DeltaTmin\n')
                 sys.exit()
             return m_p
 
-    run_test(model='STHE', test_id='positive_variables', label='Positive numeric variables', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_positive_variables(m_p, sr))
-    run_test(model='STHE', test_id='delta_t_min', label='Minimum temperature difference', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_DeltaTmin(m_p, sr))
-    run_test(model='STHE', test_id='heatload', label='Heat load balance', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_heatload(m_p, sr))
-    run_test(model='STHE', test_id='thi_tho', label='Hot stream cools down (Thi > Tho)', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_Thi_Tho(m_p, sr))
-    run_test(model='STHE', test_id='tco_tci', label='Cold stream heats up (Tco > Tci)', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_Tco_Tci(m_p, sr))
-    run_test(model='STHE', test_id='tco_thi_sthe', label='STHE cold outlet vs hot inlet approach', config=config, report=consistency_report, save_result=save_result, call=lambda sr: verification_Tco_Thi_STHE(m_p, m_d, sr))
-    run_test(model='STHE', test_id='tci_tho', label='Cold inlet vs hot outlet approach', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_Tci_Tho(m_p, sr))
-    run_test(model='STHE', test_id='variables_bounds', label='Discrete variables inside standard bounds', config=config, report=consistency_report, save_result=save_result, call=lambda sr: variables_bounds(m_d, sr))
-    run_test(model='STHE', test_id='variables_standard_values', label='Discrete variables match standard values', config=config, report=consistency_report, save_result=save_result, call=lambda sr: variables_standard_values(m_d, sr))
+    verif1 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
+    verif2 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
+    verif3 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
+    verif4 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
+    verif5 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
+    verif6 = verification_Tco_Thi_STHE(m_p, m_d)
+    verif7 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
+    verif8 = variables_bounds(m_d)
+    verif9 = variables_standard_values(m_d)
 
     return m_d, m_p
 
 
 # endregion
 ##################################################################################################################
+

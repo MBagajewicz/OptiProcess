@@ -20,7 +20,6 @@
         .spinner { border: 3px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error-box { background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; text-align: center; color: #dc2626; }
-        .consistency-box { border-radius: 8px; padding: 12px; font-size: 12px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -100,7 +99,6 @@
 
     <!-- Error message -->
     <div id="error-box" class="hidden mx-4 mt-4 error-box"></div>
-    <div id="consistency-box" class="hidden mx-4 mt-4 consistency-box"></div>
 
     <!-- Main Content -->
     <div id="results-content" class="flex flex-row items-start gap-3 p-4 overflow-x-auto">
@@ -192,7 +190,6 @@ const STORAGE_KEY_DIRTY = 'optihex_' + MODEL + '_project_dirty';
 const STORAGE_KEY_ORIGIN = 'optihex_' + MODEL + '_project_origin';
 const STORAGE_KEY_TEMPORAL = 'optihex_' + MODEL + '_project_temporal_local';
 const STORAGE_KEY_SAVED_LOCAL = 'optihex_' + MODEL + '_project_saved_local';
-const STORAGE_KEY_CONSISTENCY = 'optihex_' + MODEL + '_consistency_checks';
 const STORAGE_KEY_PROBLEM_CLEARED = 'optihex_' + MODEL + '_problem_data_cleared';
 const STORAGE_KEY_LAST_SAVED_PROBLEM = 'optihex_' + MODEL + '_last_saved_problem_data';
 const STORAGE_KEY_LAST_SAVED_GEOM = 'optihex_' + MODEL + '_last_saved_geometric_data';
@@ -200,13 +197,6 @@ const STORAGE_KEY_LAST_SAVED_PROJECT = 'optihex_' + MODEL + '_last_saved_project
 const STORAGE_KEY_LAST_SAVED_ORIGIN = 'optihex_' + MODEL + '_last_saved_origin';
 const STORAGE_KEY_LAST_SAVED_TEMPORAL = 'optihex_' + MODEL + '_last_saved_temporal_local';
 const STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED = 'optihex_' + MODEL + '_last_saved_problem_data_cleared';
-
-function getJson(key, fallback) {
-    try {
-        const raw = sessionStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-    } catch(e) { return fallback; }
-}
 
 function getCurrentProject() { return sessionStorage.getItem(STORAGE_KEY_PROJECT) || ''; }
 function setCurrentProject(name) { sessionStorage.setItem(STORAGE_KEY_PROJECT, name || ''); updateProjectIndicator(); }
@@ -355,8 +345,7 @@ function buildPayload(data) {
         parameters: params,
         discrete_variables: discreteVars,
         selected_of: selectedOf,
-        number_of_equipment: 1,
-        consistency_checks: getJson(STORAGE_KEY_CONSISTENCY, null)
+        number_of_equipment: 1
     };
 }
 
@@ -497,7 +486,7 @@ async function loadLocalProjectFile(files) {
 function hideCloseSessionModal() { document.getElementById('close-session-modal').classList.add('hidden'); }
 function showCloseSessionModal() { document.getElementById('close-session-modal').classList.remove('hidden'); }
 function clearModelSession() {
-    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_CONSISTENCY, STORAGE_KEY_PROJECT, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_TEMPORAL, STORAGE_KEY_SAVED_LOCAL, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_TEMPORAL, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED].forEach(function(key) {
+    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PROJECT, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_TEMPORAL, STORAGE_KEY_SAVED_LOCAL, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_TEMPORAL, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED].forEach(function(key) {
         sessionStorage.removeItem(key);
     });
 }
@@ -523,7 +512,6 @@ async function runOptimization() {
     const sessionData = getSessionData();
     const overlay = document.getElementById('loading-overlay');
     const errorBox = document.getElementById('error-box');
-    const consistencyBox = document.getElementById('consistency-box');
 
     if (!sessionData) {
         errorBox.classList.remove('hidden');
@@ -533,7 +521,6 @@ async function runOptimization() {
 
     overlay.classList.remove('hidden');
     errorBox.classList.add('hidden');
-    consistencyBox.classList.add('hidden');
 
     try {
         const payload = buildPayload(sessionData);
@@ -553,15 +540,11 @@ async function runOptimization() {
         console.log('OptiHexx response:', result);
 
         if (result.status !== 'ok') {
-            renderConsistencyMessages(result.consistency || null, true);
             errorBox.classList.remove('hidden');
-            var detail = result.details ? '<p class="text-xs mt-2">' + escapeHtml(result.details) + '</p>' : '';
-            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p>' + detail + '<p class="text-xs mt-1">Check browser console (F12) for details.</p>';
+            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + (result.error || 'unknown error') + '</p><p class="text-xs mt-1">Check browser console (F12) for details.</p>';
             overlay.classList.add('hidden');
             return null;
         }
-
-        renderConsistencyMessages(result.consistency || null, false);
 
         // Debug: check what we got
         if (!result.optimal_variables || !result.calculations) {
@@ -580,39 +563,6 @@ async function runOptimization() {
     } finally {
         overlay.classList.add('hidden');
     }
-}
-
-function escapeHtml(value) {
-    return String(value).replace(/[&<>"]/g, function(ch) {
-        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[ch];
-    });
-}
-
-function renderConsistencyMessages(consistency, hasError) {
-    const box = document.getElementById('consistency-box');
-    if (!box || !consistency) return;
-    const warnings = consistency.warnings || [];
-    const errors = consistency.errors || [];
-    if (!warnings.length && !errors.length) {
-        box.classList.add('hidden');
-        return;
-    }
-    const parts = [];
-    if (warnings.length) {
-        parts.push('<div class="font-bold text-amber-800 mb-1">Consistency warnings</div>');
-        parts.push('<ul class="list-disc pl-5 space-y-1">' + warnings.map(function(item) {
-            return '<li><b>' + escapeHtml(item.label || item.id) + ':</b> ' + escapeHtml(item.message || '') + '</li>';
-        }).join('') + '</ul>');
-    }
-    if (errors.length) {
-        parts.push('<div class="font-bold text-red-800 mt-2 mb-1">Consistency errors</div>');
-        parts.push('<ul class="list-disc pl-5 space-y-1">' + errors.map(function(item) {
-            return '<li><b>' + escapeHtml(item.label || item.id) + ':</b> ' + escapeHtml(item.message || '') + '</li>';
-        }).join('') + '</ul>');
-    }
-    box.className = 'mx-4 mt-4 consistency-box ' + (hasError || errors.length ? 'bg-red-50 border border-red-200 text-red-800' : 'bg-amber-50 border border-amber-200 text-amber-900');
-    box.innerHTML = parts.join('');
-    box.classList.remove('hidden');
 }
 
 // --- Populate results ---

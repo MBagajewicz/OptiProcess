@@ -23,7 +23,6 @@
 ##################################################################################################################
 # region Import Library
 from Common_Equations_HEX import Calculations_HEX_Consistency
-from consistency_utils import normalize_config, run_test
 from GPHE.Model.Model_Def_GPHE import Model_GPHE
 # endregion
 ##################################################################################################################
@@ -32,11 +31,10 @@ from GPHE.Model.Model_Def_GPHE import Model_GPHE
 ##################################################################################################################
 # region Parameters Calculation functions
 
-def consistency(m_d, m_p, save_result, consistency_config=None, consistency_report=None):
+def consistency(m_d, m_p, save_result):
     save_result('\n******* Testing consistency *******\n')
-    config = normalize_config('GPHE', consistency_config)
 
-    def variables_bounds(m_d, test_save_result):
+    def variables_bounds(m_d):
         m_i = Model_GPHE['Model_Info']
         variables = m_i['List_of_Variables']
 
@@ -59,14 +57,14 @@ def consistency(m_d, m_p, save_result, consistency_config=None, consistency_repo
                     out_of_limit[name].append(v)
 
         if out_of_limit:
-            test_save_result("WARNING: Variables out of range:")
+            save_result("WARNING: Variables out of range:")
             for var, vals in out_of_limit.items():
-                test_save_result(f" - {var}: Invalid values {vals}\n")
+                save_result(f" - {var}: Invalid values {vals}\n")
         else:
             pass
         return m_d
 
-    def variables_standard_values(m_d, test_save_result):
+    def variables_standard_values(m_d):
         m_i = Model_GPHE['Model_Info']
         variables = m_i['List_of_Variables']
 
@@ -86,21 +84,21 @@ def consistency(m_d, m_p, save_result, consistency_config=None, consistency_repo
                         out[name] = []
                     out[name].append(v)
         if out:
-            test_save_result("WARNING: Variables do not match standard values")
+            save_result("WARNING: Variables do not match standard values")
             for var, vals in out.items():
-                test_save_result(f" - {var}: Invalid values {vals}\n")
+                save_result(f" - {var}: Invalid values {vals}\n")
         else:
             pass
         return m_d
 
-    run_test(model='GPHE', test_id='positive_variables', label='Positive numeric variables', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_positive_variables(m_p, sr))
-    run_test(model='GPHE', test_id='delta_t_min', label='Minimum temperature difference', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_DeltaTmin(m_p, sr))
-    run_test(model='GPHE', test_id='heatload', label='Heat load balance', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_heatload(m_p, sr))
-    run_test(model='GPHE', test_id='thi_tho', label='Hot stream cools down (Thi > Tho)', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_Thi_Tho(m_p, sr))
-    run_test(model='GPHE', test_id='tco_tci', label='Cold stream heats up (Tco > Tci)', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_Tco_Tci(m_p, sr))
-    run_test(model='GPHE', test_id='tci_tho', label='Cold inlet vs hot outlet approach', config=config, report=consistency_report, save_result=save_result, call=lambda sr: Calculations_HEX_Consistency.verification_Tci_Tho(m_p, sr))
-    run_test(model='GPHE', test_id='variables_bounds', label='Discrete variables inside standard bounds', config=config, report=consistency_report, save_result=save_result, call=lambda sr: variables_bounds(m_d, sr))
-    run_test(model='GPHE', test_id='variables_standard_values', label='Discrete variables match standard values', config=config, report=consistency_report, save_result=save_result, call=lambda sr: variables_standard_values(m_d, sr))
+    verif1 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
+    verif2 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
+    verif3 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
+    verif4 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
+    verif5 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
+    verif6 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
+    verif7 = variables_bounds(m_d)
+    verif8 = variables_standard_values(m_d)
 
     return m_d, m_p
 
