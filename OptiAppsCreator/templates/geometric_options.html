@@ -17,9 +17,9 @@
 <div class="flex flex-col gap-4 h-full min-h-0">
     {% for section in column %}
         {% if section.element == 'checkbox_grid' %}
-    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col" data-var="{{ section.variable }}">
+    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col {{ 'opacity-70 grayscale cursor-not-allowed' if section.static else '' }}" data-var="{{ section.variable }}">
         <h3 class="text-xs font-bold mb-3 leading-tight flex-shrink-0">
-            {{ section.title_nobreak|safe }}{% if section.static %} <span class="ml-1 text-blue-700 text-[9px] font-bold whitespace-nowrap">(future)</span>{% endif %}
+            {{ section.title_nobreak|safe }}{% if section.static %} <span class="block mt-1 text-gray-700 text-[9px] font-bold whitespace-nowrap">Not Available Yet</span>{% endif %}
         </h3>
         <div class="checkbox-scroll flex-1 min-h-0 overflow-y-auto space-y-2 pr-8">
             {% for item in section.grid_items %}

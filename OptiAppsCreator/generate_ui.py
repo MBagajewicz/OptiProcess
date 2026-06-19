@@ -56,6 +56,7 @@ GO_COLORS = {
     "brown_dark": {"panel": "bg-[#3d2b24]", "text": "text-white"},
     "red_dark": {"panel": "bg-[#b91c1c]", "text": "text-white"},
     "green": {"panel": "bg-[#4caf50]", "text": "text-white"},
+    "disabled": {"panel": "bg-gray-400", "text": "text-gray-100", "text_class": "!text-gray-600"},
 }
 
 RS_COLORS = {
@@ -225,6 +226,8 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
 
         if element == "checkbox_grid":
             go_color = GO_COLORS.get(color, GO_COLORS["brown"])
+            if section.get("static"):
+                go_color = GO_COLORS["disabled"]
             resolved["color"] = go_color
             resolved["width_class"] = "w-44"
             resolved["variable"] = section.get("variable", "")
