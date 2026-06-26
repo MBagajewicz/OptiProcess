@@ -35,13 +35,24 @@
     </div>
 
     <!-- Navigation -->
-    <div class="px-6 border-b border-gray-300 flex items-center justify-between gap-4 text-sm text-gray-600">
+    <div class="px-6 border-b border-gray-300 grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-sm text-gray-600">
         <div class="flex gap-8">
             {% for nav in nav_pages %}
             <a href="{{ nav.file }}" onclick="return navigateModelPage(event, '{{ nav.file }}')" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
             {% endfor %}
         </div>
-        <div class="flex items-center gap-3 py-1">
+        <div class="flex items-center justify-center gap-2 py-1">
+            <button id="nav-back-btn" type="button" onclick="goNavStep(-1)" class="bg-gray-500 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                Back
+            </button>
+            <button id="nav-next-btn" type="button" onclick="goNavStep(1)" class="bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+            <button id="nav-run-btn" type="button" onclick="runFromNavbar()" class="bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed" disabled>
+                RUN
+            </button>
+        </div>
+        <div class="flex items-center justify-end gap-3 py-1">
             <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
             <div class="relative">
                 <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
@@ -181,6 +192,7 @@
 const API_URL = window.location.origin + '/api/optimize';
 const MODEL = '{{ model_name }}';
 const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
+const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
 const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
 const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
@@ -197,11 +209,20 @@ const STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID = 'optihex_' + MODEL + '_last_saved
 const STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME = 'optihex_' + MODEL + '_last_saved_user_project_name';
 const STORAGE_KEY_LAST_SAVED_ORIGIN = 'optihex_' + MODEL + '_last_saved_origin';
 const STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED = 'optihex_' + MODEL + '_last_saved_problem_data_cleared';
+const STORAGE_KEY_LAST_OPT_SIGNATURE = 'optihex_' + MODEL + '_last_optimization_signature';
+const STORAGE_KEY_LAST_OPT_RESULT = 'optihex_' + MODEL + '_last_optimization_result';
+const STORAGE_KEY_LAST_OPT_SESSION_DATA = 'optihex_' + MODEL + '_last_optimization_session_data';
+const STORAGE_KEY_OPT_DIRTY = 'optihex_' + MODEL + '_optimization_dirty';
 
 function getCurrentProject() { return sessionStorage.getItem(STORAGE_KEY_PROJECT) || ''; }
 function setCurrentProject(name) { sessionStorage.setItem(STORAGE_KEY_PROJECT, name || ''); updateProjectIndicator(); }
 function isDirty() { return sessionStorage.getItem(STORAGE_KEY_DIRTY) === 'true'; }
-function setDirty(value) { sessionStorage.setItem(STORAGE_KEY_DIRTY, value ? 'true' : 'false'); updateProjectIndicator(); }
+function setDirty(value) {
+    sessionStorage.setItem(STORAGE_KEY_DIRTY, value ? 'true' : 'false');
+    if (value) sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'true');
+    updateProjectIndicator();
+    updateRunButtonState();
+}
 async function requireAuth() {
     const response = await fetch('/api/auth/me', {credentials: 'include'});
     if (!response.ok) window.location.href = '/ui/login.html';
@@ -217,6 +238,62 @@ function navigateModelPage(event, target) {
     if (event) event.preventDefault();
     window.location.href = target;
     return false;
+}
+
+function currentPageFile() { return window.location.pathname.split('/').pop() || 'problem_data.html'; }
+function currentNavIndex() {
+    const file = currentPageFile();
+    return NAV_ORDER.findIndex(function(page) { return page.file === file; });
+}
+function goNavStep(step) {
+    const idx = currentNavIndex();
+    if (idx < 0) return;
+    const target = NAV_ORDER[idx + step];
+    if (!target) return;
+    window.location.href = target.file;
+}
+function stableStringify(value) {
+    if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+    if (value && typeof value === 'object') {
+        return '{' + Object.keys(value).sort().map(function(key) {
+            return JSON.stringify(key) + ':' + stableStringify(value[key]);
+        }).join(',') + '}';
+    }
+    return JSON.stringify(value);
+}
+function currentOptimizationSignature() {
+    const data = getSessionData();
+    if (!data) return '';
+    return stableStringify({problem: data.parameters, geometric: data.discrete_variables || {}});
+}
+function hasOptimizationChanges() {
+    if (sessionStorage.getItem(STORAGE_KEY_OPT_DIRTY) === 'true') return true;
+    const signature = currentOptimizationSignature();
+    if (!signature) return false;
+    return signature !== sessionStorage.getItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
+}
+function updateRunButtonState() {
+    const runBtn = document.getElementById('nav-run-btn');
+    if (!runBtn) return;
+    const enabled = hasOptimizationChanges();
+    runBtn.disabled = !enabled;
+    runBtn.className = enabled
+        ? 'bg-green-600 text-white px-5 py-1 rounded-full text-xs font-bold hover:bg-green-700'
+        : 'bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed';
+}
+function updateNavButtons() {
+    const idx = currentNavIndex();
+    const backBtn = document.getElementById('nav-back-btn');
+    const nextBtn = document.getElementById('nav-next-btn');
+    if (backBtn) backBtn.disabled = idx <= 0;
+    if (nextBtn) nextBtn.disabled = idx < 0 || idx >= NAV_ORDER.length - 1;
+    updateRunButtonState();
+}
+function runFromNavbar() {
+    if (!hasOptimizationChanges()) return;
+    runOptimization().then(function(data) {
+        if (data) populateResults(data.result, data.sessionData);
+    });
 }
 function toggleSaveMenu() { document.getElementById('save-menu').classList.toggle('hidden'); }
 function toggleLoadMenu() { document.getElementById('load-menu').classList.toggle('hidden'); }
@@ -254,6 +331,7 @@ function resetProjectState() {
     sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME) || '');
     sessionStorage.setItem(STORAGE_KEY_ORIGIN, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_ORIGIN) || '');
     sessionStorage.setItem(STORAGE_KEY_PROBLEM_CLEARED, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED) === 'true' ? 'true' : 'false');
+    sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'false');
     setDirty(false);
     window.location.reload();
 }
@@ -426,6 +504,10 @@ function applyProjectPayload(project, source) {
     });
     sessionStorage.setItem(STORAGE_KEY_PROBLEM, JSON.stringify(params));
     sessionStorage.setItem(STORAGE_KEY_GEOM, JSON.stringify(geom));
+    sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
+    sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_RESULT);
+    sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SESSION_DATA);
+    sessionStorage.removeItem(STORAGE_KEY_OPT_DIRTY);
     setCurrentProject(project.name || 'LocalProject');
     if (project.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, project.user_project_id);
     else sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_ID);
@@ -440,7 +522,7 @@ function applyProjectPayload(project, source) {
 function hideCloseSessionModal() { document.getElementById('close-session-modal').classList.add('hidden'); }
 function showCloseSessionModal() { document.getElementById('close-session-modal').classList.remove('hidden'); }
 function clearModelSession() {
-    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED].forEach(function(key) {
+    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, STORAGE_KEY_LAST_OPT_SIGNATURE, STORAGE_KEY_LAST_OPT_RESULT, STORAGE_KEY_LAST_OPT_SESSION_DATA, STORAGE_KEY_OPT_DIRTY].forEach(function(key) {
         sessionStorage.removeItem(key);
     });
     ['optihex_' + MODEL + '_project_temporal_local', 'optihex_' + MODEL + '_project_saved_local', 'optihex_' + MODEL + '_last_saved_temporal_local'].forEach(function(key) {
@@ -515,7 +597,13 @@ async function runOptimization() {
             overlay.classList.add('hidden');
         }
 
-        return { result, sessionData };
+        const data = { result, sessionData };
+        sessionStorage.setItem(STORAGE_KEY_LAST_OPT_SIGNATURE, currentOptimizationSignature());
+        sessionStorage.setItem(STORAGE_KEY_LAST_OPT_RESULT, JSON.stringify(result));
+        sessionStorage.setItem(STORAGE_KEY_LAST_OPT_SESSION_DATA, JSON.stringify(sessionData));
+        sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'false');
+        updateRunButtonState();
+        return data;
 
     } catch(err) {
         errorBox.classList.remove('hidden');
@@ -685,9 +773,27 @@ function downloadResults() {
 // --- Init ---
 requireAuth();
 updateProjectIndicator();
-runOptimization().then(data => {
-    if (data) populateResults(data.result, data.sessionData);
-});
+updateNavButtons();
+const shouldRun = new URLSearchParams(window.location.search).get('run') === '1';
+if (shouldRun && hasOptimizationChanges()) {
+    runOptimization().then(function(data) {
+        if (data) populateResults(data.result, data.sessionData);
+    });
+} else {
+    const resultRaw = sessionStorage.getItem(STORAGE_KEY_LAST_OPT_RESULT);
+    const sessionRaw = sessionStorage.getItem(STORAGE_KEY_LAST_OPT_SESSION_DATA);
+    if (resultRaw && sessionRaw) {
+        populateResults(JSON.parse(resultRaw), JSON.parse(sessionRaw));
+    } else {
+        const errorBox = document.getElementById('error-box');
+        errorBox.classList.remove('hidden');
+        errorBox.innerHTML = '<p>No optimization results available. Press RUN to calculate.</p>';
+    }
+    updateRunButtonState();
+}
+if (shouldRun && window.history.replaceState) {
+    window.history.replaceState({}, document.title, 'results.html');
+}
 </script>
 
 </body>

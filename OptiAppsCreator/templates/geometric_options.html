@@ -55,16 +55,6 @@
 
     </div>
 
-    <!-- Navigation Bar -->
-    <div class="flex justify-center gap-4 mt-4">
-        <button onclick="collectGeometricData(false); window.location.href='problem_data.html'" class="bg-gray-500 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-gray-600 transition-colors shadow-md">
-            <i class="fas fa-arrow-left mr-1"></i> Back
-        </button>
-        <button id="btn-optimize" onclick="saveAndOptimize()" class="bg-green-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-green-700 transition-colors shadow-md">
-            <i class="fas fa-play mr-1"></i> Run Optimization
-        </button>
-    </div>
-
 </main>
 
 <script>
@@ -126,11 +116,6 @@ function restoreGeometricData() {
         var key = input.dataset.key;
         if (key && discrete[key] !== undefined) input.value = discrete[key];
     });
-}
-
-function saveAndOptimize() {
-    if (collectGeometricData(false) === null) return;
-    window.location.href = 'results.html';
 }
 
 document.addEventListener('DOMContentLoaded', function() {

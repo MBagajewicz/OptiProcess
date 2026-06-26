@@ -93,13 +93,6 @@
 </div>
 {% endfor %}
 
-    <!-- Navigation Bar -->
-    <div class="flex justify-center gap-4 mt-4 mb-4">
-        <button id="btn-next" onclick="saveAndNext()" class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
-            Next: Geometric Options <i class="fas fa-arrow-right ml-1"></i>
-        </button>
-    </div>
-
 </div>
 
 <script>
@@ -175,11 +168,6 @@ function restoreProblemData() {
         var yf = document.querySelector('input[name="yfluid"][value="' + data.yfluid + '"]');
         if (yf) yf.checked = true;
     }
-}
-
-function saveAndNext() {
-    if (collectProblemData(false) === null) return;
-    window.location.href = 'geometric_options.html';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
