@@ -164,6 +164,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                     has_computed_field = True
                 fields.append(field)
             resolved["fields"] = fields
+            resolved["default_keys"] = [field["key"] for field in fields]
             if has_computed_field and _width_value(resolved["width_class"]) < 64:
                 resolved["width_class"] = "w-64"
 
@@ -185,6 +186,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "upper_key": upper_key,
                 })
             resolved["rows"] = rows
+            resolved["default_keys"] = [key for row in rows for key in (row["lower_key"], row["upper_key"])]
 
         elif element == "computed_display":
             resolved["color"] = PD_COLORS.get("pink")
