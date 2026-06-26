@@ -40,7 +40,6 @@ import sys
 import json
 import uuid
 import subprocess
-import shutil
 import importlib
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -69,17 +68,16 @@ from email_service import send_password_reset_email
 from project_store import (
     ProjectError,
     create_user_project,
+    export_user_backup,
     list_user_designs,
     list_user_projects,
     list_projects,
     load_default_design,
     load_project,
-    load_project_source,
     load_user_design,
     project_to_ui_payload,
-    save_project,
     save_user_design,
-    ui_payload_to_project,
+    restore_user_backup,
 )
 
 
@@ -118,14 +116,14 @@ class ProjectSaveRequest(BaseModel):
     number_of_equipment: int = 1
 
 
-class LocalProjectParseRequest(BaseModel):
-    name: str
-    source: str
-
-
 class UserProjectCreateRequest(BaseModel):
     name: str
     description: str | None = None
+
+
+class BackupRestoreRequest(BaseModel):
+    backup: dict
+    overwrite: bool = True
 
 
 TEXT_PARAMETER_KEYS = {"Shell_Method", "Tube_Method", "yfluid", "_selected_of"}
@@ -252,20 +250,6 @@ def build_project_response(model: str, project_name: str, scope: str = "users", 
     return payload
 
 
-def build_project_source_response(model: str, project_name: str, source: str) -> dict:
-    model_def = load_model_def(model)
-    var_order = model_def["Model_Info"]["List_of_Variables"]
-    project = load_project_source(model, project_name, source)
-    payload = project_to_ui_payload(model, project_name, project)
-    discrete_values = payload.pop("discrete_values")
-    payload["discrete_variables"] = {
-        var: discrete_values[idx] if idx < len(discrete_values) else []
-        for idx, var in enumerate(var_order)
-    }
-    payload["variable_order"] = var_order
-    return payload
-
-
 def build_default_design_response(model: str) -> dict:
     model_def = load_model_def(model)
     var_order = model_def["Model_Info"]["List_of_Variables"]
@@ -382,6 +366,26 @@ async def api_list_user_project_designs(project_id: int, model: str | None = Non
         raise HTTPException(status_code=400, detail=str(exc))
 
 
+@app.get("/api/user-backup")
+async def api_export_user_backup(user: dict = Depends(require_session)):
+    try:
+        return export_user_backup(user["id"])
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/user-backup/restore")
+async def api_restore_user_backup(req: BackupRestoreRequest, user: dict = Depends(require_session)):
+    try:
+        return restore_user_backup(user["id"], req.backup, overwrite=req.overwrite)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 @app.get("/api/projects/{model}")
 async def api_list_projects(model: str, scope: str = Query("users"), user: dict = Depends(require_session)):
     try:
@@ -390,16 +394,6 @@ async def api_list_projects(model: str, scope: str = Query("users"), user: dict 
         return {"model": model, "scope": scope, "projects": list_projects(model, scope=scope)}
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
-
-
-@app.post("/api/projects/{model}/parse-local")
-async def api_parse_local_project(model: str, req: LocalProjectParseRequest, user: dict = Depends(require_session)):
-    try:
-        return build_project_source_response(model, req.name, req.source)
-    except ProjectError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @app.get("/api/projects/{model}/default-design")

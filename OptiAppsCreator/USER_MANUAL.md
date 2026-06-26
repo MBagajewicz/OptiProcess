@@ -2,7 +2,9 @@
 
 **OptiHexx** es una aplicación web para optimización de intercambiadores de calor usando **Set Trimming** y **Smart Enumeration** con garantía de optimalidad global. La UI se genera automáticamente a partir de modelos Python y archivos YAML de metadatos de presentación.
 
-> **Nota de nomenclatura actual:** los diseños de referencia read-only se muestran como **Design Tutorial Library**. Los antiguos `ExampleX.py` se tratan como tutoriales. Los **User Projects** son ahora contenedores de usuario que pueden incluir distintos **Designs** de uno o más modelos; cada Design equivale al caso resoluble individual que antes se guardaba como proyecto `.py`.
+> **Nota de nomenclatura actual:** los diseños de referencia read-only se muestran como **Design Tutorial Library**. Los antiguos `ExampleX.py` se tratan como tutoriales. Los **User Projects** son ahora contenedores de usuario que pueden incluir distintos **Designs** de uno o más modelos; cada Design es el caso resoluble individual y se almacena únicamente en el servidor.
+
+> **Backup/Restore:** la aplicación ya no importa ni exporta Designs como archivos `.py`. Los Projects y Designs del usuario autenticado se respaldan mediante **Backup My Projects** y se restauran con **Restore Backup** desde un archivo JSON local. La restauración sobrescribe por defecto Projects/Designs con nombres coincidentes, incluyendo la descripción del Project.
 
 ---
 
@@ -278,7 +280,7 @@ Ejemplos:
 
 ```bash
 python generate_ui.py                                    # solo STHE
-python generate_ui.py --model STHE GPHE --example Example1
+python generate_ui.py --model STHE GPHE
 python generate_ui.py --all                              # todos los activos
 python generate_ui.py --all --no-sort-numeric-options    # sin ordenar
 ```

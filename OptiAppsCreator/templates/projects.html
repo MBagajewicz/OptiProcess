@@ -52,12 +52,13 @@
                         Save Design As...
                     </button>
                 </div>
-                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Files</div>
-                <button onclick="loadLocalFile()" class="w-full bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-100 mb-2">
-                    Import Design File
+                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Backup</div>
+                <input id="backup-restore-input" type="file" accept=".json,application/json" class="hidden" onchange="restoreBackupFile(this.files)">
+                <button onclick="backupMyProjects()" class="w-full bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-100 mb-2">
+                    Backup My Projects
                 </button>
-                <button onclick="saveAsLocal()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-blue-50 mb-3">
-                    Export Design File
+                <button onclick="selectBackupFile()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-blue-50 mb-3">
+                    Restore Backup
                 </button>
                 <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Navigation</div>
                 <button onclick="window.location.href='problem_data.html'" class="w-full bg-slate-700 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-800">
@@ -80,6 +81,11 @@ function escapeHtml(value) {
 
 function jsString(value) {
     return JSON.stringify(String(value));
+}
+
+function backupFilename() {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
+    return 'optiapps-backup-' + stamp + '.json';
 }
 
 function showProjectError(message) {
@@ -200,11 +206,59 @@ async function createNewDesign() {
         sessionStorage.setItem(modelKey('current_user_project_id'), selectedUserProjectId);
         sessionStorage.setItem(modelKey('current_user_project_name'), selectedUserProjectName || '');
         setCurrentProject('');
-        setTemporalLocal(false);
         setDirty(true);
         window.location.href = 'problem_data.html';
     } catch(e) {
         showProjectError(e.message);
+    }
+}
+
+async function backupMyProjects() {
+    clearProjectError();
+    try {
+        const response = await fetch('/api/user-backup');
+        if (!response.ok) throw new Error(await response.text());
+        const backup = await response.json();
+        const blob = new Blob([JSON.stringify(backup, null, 2) + '\n'], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = backupFilename();
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch(e) {
+        showProjectError(e.message);
+    }
+}
+
+function selectBackupFile() {
+    document.getElementById('backup-restore-input').click();
+}
+
+async function restoreBackupFile(files) {
+    clearProjectError();
+    const input = document.getElementById('backup-restore-input');
+    const file = files && files[0];
+    if (!file) return;
+    try {
+        if (!confirm('This will restore projects and designs from the backup. Existing Projects and Designs with matching names will be overwritten. Continue?')) return;
+        const backup = JSON.parse(await file.text());
+        const response = await fetch('/api/user-backup/restore', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({backup: backup, overwrite: true})
+        });
+        if (!response.ok) throw new Error(await response.text());
+        const summary = await response.json();
+        alert('Backup restored. Projects created: ' + summary.projects_created
+            + ', projects updated: ' + summary.projects_updated
+            + ', designs created: ' + summary.designs_created
+            + ', designs overwritten: ' + summary.designs_overwritten + '.');
+        await loadProjectList();
+    } catch(e) {
+        showProjectError(e.message);
+    } finally {
+        input.value = '';
     }
 }
 

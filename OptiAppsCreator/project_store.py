@@ -481,6 +481,136 @@ def load_user_design(user_id: int, model: str, name: str, project_id: int | None
     return _design_row_to_ui_payload(row)
 
 
+def export_user_backup(user_id: int) -> dict[str, Any]:
+    init_db()
+    with connect() as conn:
+        project_rows = conn.execute(
+            """
+            SELECT id, name, description
+            FROM user_projects
+            WHERE user_id = ?
+            ORDER BY name COLLATE NOCASE
+            """,
+            (user_id,),
+        ).fetchall()
+        projects = []
+        for project in project_rows:
+            design_rows = conn.execute(
+                """
+                SELECT model, name, design_json
+                FROM user_designs
+                WHERE project_id = ?
+                ORDER BY model COLLATE NOCASE, name COLLATE NOCASE
+                """,
+                (project["id"],),
+            ).fetchall()
+            designs = []
+            for design in design_rows:
+                data = json.loads(design["design_json"])
+                designs.append({
+                    "model": design["model"],
+                    "name": design["name"],
+                    "parameters": data.get("parameters", {}),
+                    "discrete_variables": data.get("discrete_variables", {}),
+                    "selected_of": data.get("selected_of", "TAC_OF"),
+                    "number_of_equipment": data.get("number_of_equipment", 1),
+                })
+            projects.append({
+                "name": project["name"],
+                "description": project["description"],
+                "designs": designs,
+            })
+    return {
+        "format": "optiapps_user_backup",
+        "version": 1,
+        "created_at": utc_iso(),
+        "projects": projects,
+    }
+
+
+def restore_user_backup(user_id: int, backup: dict[str, Any], overwrite: bool = True) -> dict[str, int]:
+    if not isinstance(backup, dict):
+        raise ProjectError("Backup payload must be a JSON object")
+    if backup.get("format") != "optiapps_user_backup" or backup.get("version") != 1:
+        raise ProjectError("Invalid backup format or version")
+    projects = backup.get("projects")
+    if not isinstance(projects, list):
+        raise ProjectError("Backup must contain a projects list")
+
+    summary = {
+        "projects_created": 0,
+        "projects_updated": 0,
+        "designs_created": 0,
+        "designs_overwritten": 0,
+        "designs_skipped": 0,
+    }
+    init_db()
+    now = utc_iso()
+    with connect() as conn:
+        for project in projects:
+            if not isinstance(project, dict):
+                raise ProjectError("Each project in the backup must be an object")
+            project_name = normalize_project_name(project.get("name"))
+            description = project.get("description")
+            if description is not None:
+                description = str(description)
+            row = conn.execute(
+                "SELECT * FROM user_projects WHERE user_id = ? AND name = ?",
+                (user_id, project_name),
+            ).fetchone()
+            if row:
+                project_id = row["id"]
+                conn.execute(
+                    "UPDATE user_projects SET description = ?, updated_at = ? WHERE id = ?",
+                    (description, now, project_id),
+                )
+                summary["projects_updated"] += 1
+            else:
+                cursor = conn.execute(
+                    """
+                    INSERT INTO user_projects (user_id, name, description, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (user_id, project_name, description, now, now),
+                )
+                project_id = cursor.lastrowid
+                summary["projects_created"] += 1
+
+            designs = project.get("designs") or []
+            if not isinstance(designs, list):
+                raise ProjectError(f"Project '{project_name}' designs must be a list")
+            for design in designs:
+                if not isinstance(design, dict):
+                    raise ProjectError(f"Design in project '{project_name}' must be an object")
+                model = validate_model_name(design.get("model"))
+                design_name = normalize_project_name(design.get("name"))
+                design_json = _design_payload_to_json(model, design_name, design)
+                existing = conn.execute(
+                    "SELECT id FROM user_designs WHERE project_id = ? AND model = ? AND name = ?",
+                    (project_id, model, design_name),
+                ).fetchone()
+                if existing:
+                    if not overwrite:
+                        summary["designs_skipped"] += 1
+                        continue
+                    conn.execute(
+                        "UPDATE user_designs SET design_json = ?, updated_at = ? WHERE id = ?",
+                        (design_json, now, existing["id"]),
+                    )
+                    summary["designs_overwritten"] += 1
+                else:
+                    conn.execute(
+                        """
+                        INSERT INTO user_designs (project_id, model, name, design_json, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """,
+                        (project_id, model, design_name, design_json, now, now),
+                    )
+                    summary["designs_created"] += 1
+            conn.execute("UPDATE user_projects SET updated_at = ? WHERE id = ?", (now, project_id))
+    return summary
+
+
 def _design_row_to_ui_payload(row: Any) -> dict[str, Any]:
     data = json.loads(row["design_json"])
     return {

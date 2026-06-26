@@ -42,8 +42,7 @@
             {% endfor %}
         </div>
         <div class="flex items-center gap-3 py-1">
-            <span id="project-indicator" class="text-xs text-gray-700"><span id="temporal-copy-label" class="hidden text-red-600 font-bold mr-1">(temporal local copy)</span>Current project: —</span>
-            <input id="local-project-input" type="file" accept=".py" class="hidden" onchange="loadLocalProjectFile(this.files)">
+            <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
             <div class="relative">
                 <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
                     Load <i class="fas fa-caret-down ml-1"></i>
@@ -51,7 +50,6 @@
                 <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
                     <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open Tutorial Library</button>
                     <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open User Projects</button>
-                    <button type="button" onclick="loadLocalFile()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Import Design File</button>
                 </div>
             </div>
             <div class="relative">
@@ -61,7 +59,6 @@
                 <div id="save-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] text-xs">
                     <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design</button>
                     <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design As...</button>
-                    <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Export Design File</button>
                 </div>
             </div>
             <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
@@ -83,7 +80,6 @@
             <div class="space-y-2">
                 <button type="button" onclick="closeAfterSaveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700">Save Design</button>
                 <button type="button" onclick="closeAfterSaveAsCloud()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600">Save Design As...</button>
-                <button type="button" onclick="closeAfterSaveAsLocal()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-50">Export Design File</button>
                 <button type="button" onclick="hideCloseSessionModal()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Cancel LOGOUT</button>
                 <button type="button" onclick="logoutWithoutSave()" class="w-full bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">LOGOUT without Save</button>
             </div>
@@ -106,8 +102,6 @@
     function currentUserProjectNameKey() { return modelKey('current_user_project_name'); }
     function dirtyKey() { return modelKey('project_dirty'); }
     function originKey() { return modelKey('project_origin'); }
-    function temporalLocalKey() { return modelKey('project_temporal_local'); }
-    function savedLocalKey() { return modelKey('project_saved_local'); }
     function problemClearedKey() { return modelKey('problem_data_cleared'); }
     function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
     function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
@@ -115,7 +109,6 @@
     function lastSavedUserProjectIdKey() { return modelKey('last_saved_user_project_id'); }
     function lastSavedUserProjectNameKey() { return modelKey('last_saved_user_project_name'); }
     function lastSavedOriginKey() { return modelKey('last_saved_origin'); }
-    function lastSavedTemporalKey() { return modelKey('last_saved_temporal_local'); }
     function lastSavedProblemClearedKey() { return modelKey('last_saved_problem_data_cleared'); }
 
     function scalarGeometryParameterKeys() { return SYNC_SCALAR_KEYS || []; }
@@ -203,22 +196,12 @@
         return sessionStorage.getItem(dirtyKey()) === 'true';
     }
 
-    function setTemporalLocal(value) {
-        sessionStorage.setItem(temporalLocalKey(), value ? 'true' : 'false');
-        updateProjectIndicator();
-    }
-
-    function isTemporalLocal() {
-        return sessionStorage.getItem(temporalLocalKey()) === 'true';
-    }
-
     function updateProjectIndicator() {
         const el = document.getElementById('project-indicator');
         if (!el) return;
         const userProjectName = sessionStorage.getItem(currentUserProjectNameKey()) || 'No User Project';
         const name = getCurrentProject() || 'Unsaved Design';
-        el.innerHTML = (isTemporalLocal() ? '<span class="text-red-600 font-bold mr-1">(temporal local copy)</span>' : '')
-            + 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
+        el.innerHTML = 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
     }
 
     function syncCurrentPageState() {
@@ -241,7 +224,6 @@
         sessionStorage.setItem(lastSavedUserProjectIdKey(), sessionStorage.getItem(currentUserProjectIdKey()) || '');
         sessionStorage.setItem(lastSavedUserProjectNameKey(), sessionStorage.getItem(currentUserProjectNameKey()) || '');
         sessionStorage.setItem(lastSavedOriginKey(), sessionStorage.getItem(originKey()) || '');
-        sessionStorage.setItem(lastSavedTemporalKey(), isTemporalLocal() ? 'true' : 'false');
         sessionStorage.setItem(lastSavedProblemClearedKey(), sessionStorage.getItem(problemClearedKey()) === 'true' ? 'true' : 'false');
     }
 
@@ -260,7 +242,6 @@
         sessionStorage.setItem(currentUserProjectIdKey(), sessionStorage.getItem(lastSavedUserProjectIdKey()) || '');
         sessionStorage.setItem(currentUserProjectNameKey(), sessionStorage.getItem(lastSavedUserProjectNameKey()) || '');
         sessionStorage.setItem(originKey(), sessionStorage.getItem(lastSavedOriginKey()) || '');
-        sessionStorage.setItem(temporalLocalKey(), sessionStorage.getItem(lastSavedTemporalKey()) === 'true' ? 'true' : 'false');
         sessionStorage.setItem(problemClearedKey(), sessionStorage.getItem(lastSavedProblemClearedKey()) === 'true' ? 'true' : 'false');
         setDirty(false);
         window.location.reload();
@@ -315,15 +296,10 @@
         window.location.href = 'projects.html?scope=users';
     }
 
-    function loadLocalFile() {
-        document.getElementById('load-menu').classList.add('hidden');
-        document.getElementById('local-project-input').click();
-    }
-
     async function saveCloud() {
         document.getElementById('save-menu').classList.add('hidden');
         const name = getCurrentProject();
-        if (!name || isTemporalLocal() || sessionStorage.getItem(originKey()) === 'example') {
+        if (!name || sessionStorage.getItem(originKey()) === 'example' || sessionStorage.getItem(originKey()) === 'default') {
             return await saveAsCloud();
         }
         const payload = buildProjectPayload(name);
@@ -368,39 +344,6 @@
         if (data.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), data.user_project_id);
         if (data.user_project_name) sessionStorage.setItem(currentUserProjectNameKey(), data.user_project_name);
         sessionStorage.setItem(originKey(), 'cloud');
-        setTemporalLocal(false);
-        setDirty(false);
-        saveSnapshot();
-        return true;
-    }
-
-    function saveAsLocal() {
-        document.getElementById('save-menu').classList.add('hidden');
-        const name = getCurrentProject() || 'Project';
-        const payload = buildProjectPayload(name);
-        if (!payload) {
-            alert('No project data available to save.');
-            return false;
-        }
-        const text = 'import numpy as np\n\nProject = ' + JSON.stringify({
-            Number_of_Equipment: payload.number_of_equipment,
-            Equipment1: {
-                Model_Declarations: {
-                    Type_Equipment: MODEL,
-                    Discrete_Values_of_Variables: Object.values(payload.discrete_variables),
-                    Selected_OF: [payload.selected_of]
-                },
-                Model_Parameters: payload.parameters
-            }
-        }, null, 4) + '\n';
-        const blob = new Blob([text], {type: 'text/x-python'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = name + '.py';
-        a.click();
-        URL.revokeObjectURL(url);
-        sessionStorage.setItem(savedLocalKey(), 'true');
         setDirty(false);
         saveSnapshot();
         return true;
@@ -422,34 +365,9 @@
         if (project.user_project_name) sessionStorage.setItem(currentUserProjectNameKey(), project.user_project_name);
         else sessionStorage.removeItem(currentUserProjectNameKey());
         sessionStorage.setItem(originKey(), source || 'cloud');
-        sessionStorage.setItem(savedLocalKey(), source === 'local' ? 'true' : 'false');
-        setTemporalLocal(source === 'local');
         sessionStorage.setItem(problemClearedKey(), 'false');
         setDirty(false);
         saveSnapshot();
-    }
-
-    async function loadLocalProjectFile(files) {
-        const input = document.getElementById('local-project-input');
-        const file = files && files[0];
-        if (!file) return;
-        const name = file.name.replace(/\.py$/i, '');
-        try {
-            const source = await file.text();
-            const response = await fetch(API_PROJECTS_URL + '/parse-local', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({name: name, source: source})
-            });
-            if (!response.ok) throw new Error(await response.text());
-            const project = await response.json();
-            applyProjectPayload(project, 'local');
-            window.location.href = 'problem_data.html';
-        } catch(e) {
-            alert('Could not load local project: ' + e.message);
-        } finally {
-            input.value = '';
-        }
     }
 
     function hideCloseSessionModal() {
@@ -461,7 +379,10 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), temporalLocalKey(), savedLocalKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedTemporalKey(), lastSavedProblemClearedKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey()].forEach(function(key) {
+            sessionStorage.removeItem(key);
+        });
+        [modelKey('project_temporal_local'), modelKey('project_saved_local'), modelKey('last_saved_temporal_local')].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
     }
@@ -489,10 +410,6 @@
 
     async function closeAfterSaveAsCloud() {
         if (await saveAsCloud()) finishCloseSession();
-    }
-
-    async function closeAfterSaveAsLocal() {
-        if (saveAsLocal()) finishCloseSession();
     }
 
     document.querySelectorAll('.checkbox-item').forEach(function(el) {
