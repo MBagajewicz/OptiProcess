@@ -173,6 +173,7 @@ function restoreProblemData() {
 document.addEventListener('DOMContentLoaded', function() {
     restoreProblemData();
     attachNumericFiltering('input[data-numeric="true"][data-key]');
+    attachEnterToAdvance('input[data-key]:not(:disabled), select[data-key]', 'collectProblemData');
     document.querySelectorAll('input[data-key], select[data-key], input[type="radio"]').forEach(function(input) {
         input.addEventListener('change', function() {
             collectProblemData(true);

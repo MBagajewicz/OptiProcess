@@ -40,6 +40,7 @@ import json
 import time
 import argparse
 import importlib
+import re
 import numpy as np
 
 from project_store import load_default_design
@@ -54,6 +55,48 @@ class ConsistencyError(RuntimeError):
     def __init__(self, report):
         super().__init__("Mandatory consistency checks failed. Solver was not executed.")
         self.report = report
+
+
+CONSTRAINT_LABELS = {
+    "LD_lb": "Minimum L/D ratio",
+    "LD_ub": "Maximum L/D ratio",
+    "lbc_lb": "Minimum baffle spacing",
+    "lbc_ub": "Maximum baffle spacing",
+    "vs_lb": "Minimum shell-side velocity",
+    "vs_ub": "Maximum shell-side velocity",
+    "vt_lb": "Minimum tube-side velocity",
+    "vt_ub": "Maximum tube-side velocity",
+    "Ret_lb": "Minimum tube-side Reynolds number",
+    "Ret_ub": "Maximum tube-side Reynolds number",
+    "Res_lb": "Minimum shell-side Reynolds number",
+    "Res_ub": "Maximum shell-side Reynolds number",
+    "DPs_ub": "Maximum shell-side pressure drop",
+    "DPt_ub": "Maximum tube-side pressure drop",
+    "F_min": "Minimum LMTD correction factor",
+    "Areq": "Required heat transfer area",
+}
+
+
+def build_solver_diagnostics(messages):
+    """Extract user-facing infeasibility diagnostics from internal solver traces."""
+    diagnostics = {"messages": messages[-80:]}
+    joined = "\n".join(str(message) for message in messages)
+    match = re.search(r"empty set using constraint:\s*([A-Za-z0-9_]+)", joined)
+    if match:
+        constraint = match.group(1)
+        diagnostics["infeasible_constraint"] = constraint
+        diagnostics["infeasible_constraint_label"] = CONSTRAINT_LABELS.get(constraint, constraint)
+
+    cardinalities = []
+    for message in messages:
+        if "Space Size" not in str(message):
+            continue
+        number_match = re.search(r":\s*([0-9]+)\s*$", str(message))
+        if number_match:
+            cardinalities.append(int(number_match.group(1)))
+    if cardinalities:
+        diagnostics["candidate_cardinalities"] = cardinalities
+    return diagnostics
 
 
 def json_safe(obj):
@@ -177,8 +220,10 @@ def run_solver(model_name, example_name, example_dict):
     active_models["Parameters_Update"] = Import_Functions.Import_Functions(active_models_list, "Parameters_Update_")
 
     # Dummy save_result to suppress console output
+    solver_messages = []
+
     def save_result(*texts):
-        pass
+        solver_messages.append(" ".join(str(text) for text in texts))
 
     # Consistency check + initial set up
     consistency_report = Calculations_Consistency_Check.Consistency_Check(active_example, active_models, save_result)
@@ -190,7 +235,7 @@ def run_solver(model_name, example_name, example_dict):
     solution = Calculations_Solver_Selection.Solver_Selection(
         active_example, active_models, model_name, example_name, save_result
     )
-    return solution, active_example, active_models, consistency_report
+    return solution, active_example, active_models, consistency_report, build_solver_diagnostics(solver_messages)
 
 
 def extract_results(sol_dict, active_models, model_name):
@@ -277,12 +322,16 @@ def main():
     try:
         # Build example dict (validation errors are caught and returned gracefully)
         example_dict = build_example_dict(input_data)
-        sol_dict, active_example, active_models, consistency_report = run_solver(model_name, example_name, example_dict)
+        sol_dict, active_example, active_models, consistency_report, solver_diagnostics = run_solver(model_name, example_name, example_dict)
         results = extract_results(sol_dict, active_models, model_name)
         if not results.get("optimal_variables") or not results.get("number_of_solutions"):
+            label = solver_diagnostics.get("infeasible_constraint_label")
+            constraint = solver_diagnostics.get("infeasible_constraint")
+            detail = f" The candidate set became empty at: {label} ({constraint})." if constraint else ""
             raise ValueError(
                 "No feasible design found after passing mandatory consistency checks. "
-                "Review any consistency warnings and the selected geometric options."
+                "Review the limiting constraint, consistency warnings, and selected geometric options."
+                + detail
             )
         # Compute model-specific output info (thermo/hydraulic/economics)
         params = example_dict.get("Equipment1", {}).get("Model_Parameters", input_data.get("parameters", {}))
@@ -295,6 +344,7 @@ def main():
         results["status"] = "ok"
         results["model"] = model_name
         results["consistency"] = consistency_report
+        results["solver_diagnostics"] = solver_diagnostics
         results["elapsed_seconds"] = round(time.time() - start, 4)
     except ConsistencyError as e:
         results = {
@@ -321,6 +371,7 @@ def main():
             "status": "error",
             "error": error_msg,
             "consistency": locals().get("consistency_report"),
+            "solver_diagnostics": locals().get("solver_diagnostics"),
             "model": model_name,
             "elapsed_seconds": round(time.time() - start, 4),
         }

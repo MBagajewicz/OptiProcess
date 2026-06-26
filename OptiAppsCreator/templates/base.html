@@ -195,6 +195,25 @@
         });
     }
 
+    function attachEnterToAdvance(selector, collectFnName) {
+        const fields = Array.from(document.querySelectorAll(selector)).filter(function(input) {
+            return !input.disabled && input.type !== 'hidden';
+        });
+        fields.forEach(function(input, index) {
+            input.addEventListener('keydown', function(event) {
+                if (event.key !== 'Enter') return;
+                event.preventDefault();
+                const collectFn = window[collectFnName];
+                if (typeof collectFn === 'function' && collectFn(true) === null) return;
+                const next = fields[index + 1];
+                if (next) {
+                    next.focus();
+                    if (typeof next.select === 'function') next.select();
+                }
+            });
+        });
+    }
+
     function getCurrentProject() {
         return sessionStorage.getItem(currentProjectKey()) || '';
     }

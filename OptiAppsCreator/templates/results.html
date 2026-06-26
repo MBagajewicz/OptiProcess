@@ -581,8 +581,9 @@ async function runOptimization() {
 
         if (result.status !== 'ok') {
             renderConsistencyMessages(result.consistency || null, true);
+            renderSolverDiagnostics(result.solver_diagnostics || null);
             errorBox.classList.remove('hidden');
-            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p><p class="text-xs mt-1">Check browser console (F12) for details.</p>';
+            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p>';
             overlay.classList.add('hidden');
             return null;
         }
@@ -643,6 +644,24 @@ function renderConsistencyMessages(consistency, hasError) {
         }).join('') + '</ul>');
     }
     box.className = 'mx-4 mt-4 consistency-box ' + (hasError || failures.length ? 'bg-red-50 border border-red-200 text-red-800' : 'bg-amber-50 border border-amber-200 text-amber-900');
+    box.innerHTML = parts.join('');
+    box.classList.remove('hidden');
+}
+
+function renderSolverDiagnostics(diagnostics) {
+    const box = document.getElementById('consistency-box');
+    if (!box || !diagnostics || !diagnostics.infeasible_constraint) return;
+    const label = diagnostics.infeasible_constraint_label || diagnostics.infeasible_constraint;
+    const constraint = diagnostics.infeasible_constraint;
+    const cardinalities = diagnostics.candidate_cardinalities || [];
+    const parts = [];
+    parts.push('<div class="font-bold text-red-800 mb-1">Limiting optimization constraint</div>');
+    parts.push('<p>The candidate set became empty at <b>' + escapeHtml(label) + '</b> (<code>' + escapeHtml(constraint) + '</code>).</p>');
+    if (cardinalities.length) {
+        parts.push('<p class="mt-1 text-xs">Candidate counts during trimming: ' + escapeHtml(cardinalities.join(' -> ')) + '</p>');
+    }
+    parts.push('<p class="mt-1 text-xs">This is not a mandatory consistency-test failure; it means no geometry in the selected options satisfies this optimization constraint.</p>');
+    box.className = 'mx-4 mt-4 consistency-box bg-red-50 border border-red-200 text-red-800';
     box.innerHTML = parts.join('');
     box.classList.remove('hidden');
 }
