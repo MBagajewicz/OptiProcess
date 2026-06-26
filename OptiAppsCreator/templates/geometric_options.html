@@ -32,8 +32,13 @@
     </div>
 
         {% elif section.element == 'form_group' %}
-    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} mt-auto">
-        <h3 class="text-[10px] font-bold mb-4">{{ section.title }}</h3>
+    <div class="relative {{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} mt-auto">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "geometric")' class="absolute top-2 right-2 bg-white/20 text-white border border-white/30 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-white/30 transition-colors" title="Load default values for this block">
+            <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+        </button>
+        {% endif %}
+        <h3 class="text-[10px] font-bold {{ 'mt-3' if section.default_button else '' }} mb-4">{{ section.title }}</h3>
         <div class="space-y-4">
             {% for field in section.fields %}
             <div class="relative">

@@ -21,10 +21,12 @@
 
         {% elif section.element == 'form_group' %}
     <div class="relative {{ section.color.bg }} p-4 rounded-2xl shadow-xl border {{ section.color.border }} {{ section.width_class }}">
-        <button type="button" onclick='loadDefaultProblemSection({{ section.default_keys | tojson }})' class="absolute top-2 right-2 bg-white/80 text-gray-600 border border-gray-300 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors" title="Load default values for this block">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-2 right-2 bg-white/80 text-gray-600 border border-gray-300 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors" title="Load default values for this block">
             <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
         </button>
-        <h2 class="{{ section.color.title }} font-bold text-center mt-2 mb-4">{{ section.title }}</h2>
+        {% endif %}
+        <h2 class="{{ section.color.title }} font-bold text-center {{ 'mt-2' if section.default_button else '' }} mb-4">{{ section.title }}</h2>
         <div class="space-y-1">
             {% for field in section.fields %}
             <div class="input-container {{ section.color.bg }}">
@@ -47,10 +49,12 @@
 
         {% elif section.element == 'limit_table' %}
     <div class="relative bg-white/90 rounded-xl shadow-lg border border-red-100 overflow-hidden {{ section.width_class }}">
-        <button type="button" onclick='loadDefaultProblemSection({{ section.default_keys | tojson }})' class="absolute top-1.5 right-2 bg-white/90 text-gray-600 border border-red-100 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors" title="Load default values for this block">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-1.5 right-2 bg-white/90 text-gray-600 border border-red-100 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors" title="Load default values for this block">
             <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
         </button>
-        <h2 class="text-red-500 font-bold text-center pt-4 pb-2 text-sm">{{ section.title }}</h2>
+        {% endif %}
+        <h2 class="text-red-500 font-bold text-center {{ 'pt-4' if section.default_button else 'py-2' }} {{ 'pb-2' if section.default_button else '' }} text-sm">{{ section.title }}</h2>
         <table class="w-full text-[10px] border-collapse">
             <thead>
                 <tr class="bg-red-50 text-red-600">
@@ -131,34 +135,6 @@ function collectProblemData(markDirty) {
 }
 
 window.collectProblemData = collectProblemData;
-
-function setProblemInputValue(key, value) {
-    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
-        if (input.dataset.key !== key) return;
-        input.value = value;
-        if (input.dataset.numeric === 'true') markNumericValidity(input, isStrictNumber(input.value));
-    });
-}
-
-async function loadDefaultProblemSection(keys) {
-    try {
-        const response = await fetch(API_PROJECTS_URL + '/default-design');
-        if (!response.ok) throw new Error(await response.text());
-        const design = await response.json();
-        const params = design.parameters || {};
-        (keys || []).forEach(function(key) {
-            if (params[key] === undefined) return;
-            let value = params[key];
-            if (key === 'int_rate' && typeof value === 'number') value = value * 100;
-            setProblemInputValue(key, value);
-        });
-        collectProblemData(true);
-    } catch(e) {
-        alert('Could not load default values: ' + e.message);
-    }
-}
-
-window.loadDefaultProblemSection = loadDefaultProblemSection;
 
 function clearProblemDataForm() {
     document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {

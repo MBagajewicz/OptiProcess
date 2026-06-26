@@ -370,6 +370,34 @@
         saveSnapshot();
     }
 
+    function setSectionDefaultInputValue(key, value) {
+        document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+            if (input.dataset.key !== key) return;
+            input.value = value;
+            if (input.dataset.numeric === 'true') markNumericValidity(input, isStrictNumber(input.value));
+        });
+    }
+
+    async function loadDefaultSectionValues(keys, target) {
+        try {
+            const response = await fetch(API_PROJECTS_URL + '/default-design');
+            if (!response.ok) throw new Error(await response.text());
+            const design = await response.json();
+            const params = design.parameters || {};
+            (keys || []).forEach(function(key) {
+                if (params[key] === undefined) return;
+                let value = params[key];
+                if (key === 'int_rate' && typeof value === 'number') value = value * 100;
+                setSectionDefaultInputValue(key, value);
+            });
+            if (target === 'geometric' && typeof window.collectGeometricData === 'function') window.collectGeometricData(true);
+            else if (typeof window.collectProblemData === 'function') window.collectProblemData(true);
+            else setDirty(true);
+        } catch(e) {
+            alert('Could not load default values: ' + e.message);
+        }
+    }
+
     function hideCloseSessionModal() {
         document.getElementById('close-session-modal').classList.add('hidden');
     }
