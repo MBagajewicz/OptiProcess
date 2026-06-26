@@ -42,7 +42,7 @@ import argparse
 import importlib
 import numpy as np
 
-from project_store import load_project
+from project_store import load_default_design
 
 # Ensure OptiAppsCreator is on sys.path for imports
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -80,8 +80,8 @@ def load_model_def(model_name):
 
 
 def load_project_defaults(model_name, project_name):
-    """Load a project dict from {Model}/Projects/{Project}.py."""
-    return load_project(model_name, project_name, scope="examples")
+    """Load internal parameter defaults from Projects/Default_Design.py."""
+    return load_default_design(model_name)
 
 
 def compute_output_info(optimal_vars, params, model_name, objective=None):
@@ -118,9 +118,9 @@ def build_example_dict(input_data):
             )
         discrete_values.append(vals)
 
-    # Merge user-submitted params with Example1 defaults (fills missing internal params)
+    # Merge user-submitted params with Default_Design defaults (fills missing internal params)
     try:
-        example_ref = load_project_defaults(model_name, "Example1")
+        example_ref = load_project_defaults(model_name, "Default_Design")
         ref_params = dict(example_ref["Equipment1"]["Model_Parameters"])
         # Convert numpy arrays to lists for JSON compatibility, then merge
         for k in list(ref_params.keys()):

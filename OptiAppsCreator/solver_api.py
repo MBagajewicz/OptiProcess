@@ -72,6 +72,7 @@ from project_store import (
     list_user_designs,
     list_user_projects,
     list_projects,
+    load_default_design,
     load_project,
     load_project_source,
     load_user_design,
@@ -264,6 +265,21 @@ def build_project_source_response(model: str, project_name: str, source: str) ->
     payload["variable_order"] = var_order
     return payload
 
+
+def build_default_design_response(model: str) -> dict:
+    model_def = load_model_def(model)
+    var_order = model_def["Model_Info"]["List_of_Variables"]
+    project = load_default_design(model)
+    payload = project_to_ui_payload(model, "Default_Design", project)
+    discrete_values = payload.pop("discrete_values")
+    payload["discrete_variables"] = {
+        var: discrete_values[idx] if idx < len(discrete_values) else []
+        for idx, var in enumerate(var_order)
+    }
+    payload["variable_order"] = var_order
+    payload["scope"] = "default"
+    return payload
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "OptiProcess Solver API"}
@@ -380,6 +396,16 @@ async def api_list_projects(model: str, scope: str = Query("users"), user: dict 
 async def api_parse_local_project(model: str, req: LocalProjectParseRequest, user: dict = Depends(require_session)):
     try:
         return build_project_source_response(model, req.name, req.source)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/api/projects/{model}/default-design")
+async def api_default_design(model: str, user: dict = Depends(require_session)):
+    try:
+        return build_default_design_response(model)
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:

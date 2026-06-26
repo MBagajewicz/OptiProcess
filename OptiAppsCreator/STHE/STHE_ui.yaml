@@ -5,6 +5,9 @@
 model:
   display_name: "Shell & Tube"
   icon: "fa-industry"
+  sync_scalar_keys:
+    - LBLD
+    - UBLD
 
 pages:
   # ============================================================
@@ -355,4 +358,3 @@ pages:
               - {label: "Shell side operational cost", key: "OPEX_s", unit: "$/y", computed: true}
               - {label: "Operational cost", key: "OPEX_total", unit: "$/y", computed: true}
               - {label: "Total annualized cost", key: "TAC", unit: "$/y", computed: true}
-

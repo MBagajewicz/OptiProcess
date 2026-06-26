@@ -5,6 +5,7 @@
 model:
   display_name: "Plate Exchanger"
   icon: "fa-industry"
+  sync_scalar_keys: []
 
 pages:
   # ============================================================

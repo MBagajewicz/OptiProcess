@@ -49,9 +49,9 @@
                     Load <i class="fas fa-caret-down ml-1"></i>
                 </button>
                 <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
-                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Tutorial Design</button>
-                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load User Project Design</button>
-                    <button type="button" onclick="loadLocalFile()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Load Local File</button>
+                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open Tutorial Library</button>
+                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open User Projects</button>
+                    <button type="button" onclick="loadLocalFile()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Import Design File</button>
                 </div>
             </div>
             <div class="relative">
@@ -59,9 +59,9 @@
                     Save <i class="fas fa-caret-down ml-1"></i>
                 </button>
                 <div id="save-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] text-xs">
-                    <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save (cloud)</button>
-                    <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (cloud)</button>
-                    <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save As (local)</button>
+                    <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design</button>
+                    <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design As...</button>
+                    <button type="button" onclick="saveAsLocal()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Export Design File</button>
                 </div>
             </div>
             <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
@@ -81,9 +81,9 @@
             <h2 class="text-lg font-bold text-gray-800 mb-2">Unsaved changes</h2>
             <p class="text-sm text-gray-600 mb-4">The current project has unsaved changes. Choose how to continue.</p>
             <div class="space-y-2">
-                <button type="button" onclick="closeAfterSaveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700">Save (cloud)</button>
-                <button type="button" onclick="closeAfterSaveAsCloud()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600">Save As (cloud)</button>
-                <button type="button" onclick="closeAfterSaveAsLocal()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-50">Save As (local)</button>
+                <button type="button" onclick="closeAfterSaveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700">Save Design</button>
+                <button type="button" onclick="closeAfterSaveAsCloud()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600">Save Design As...</button>
+                <button type="button" onclick="closeAfterSaveAsLocal()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-50">Export Design File</button>
                 <button type="button" onclick="hideCloseSessionModal()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Cancel LOGOUT</button>
                 <button type="button" onclick="logoutWithoutSave()" class="w-full bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">LOGOUT without Save</button>
             </div>
@@ -184,6 +184,7 @@
 // --- Configuration ---
 const API_URL = window.location.origin + '/api/optimize';
 const MODEL = '{{ model_name }}';
+const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
 const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
 const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
@@ -342,11 +343,10 @@ function buildPayload(data) {
 
     // Separate tube option params (scalar values) from discrete variable arrays
     var discreteVars = {};
-    var tubeOptKeys = ['LBLD', 'UBLD', 'ktube', 'thk', 'Nss', 'plbmax1', 'plbmax2'];
     var allKeys = Object.keys(geomData);
     for (var i = 0; i < allKeys.length; i++) {
         var k = allKeys[i];
-        if (tubeOptKeys.indexOf(k) >= 0) {
+        if (!Array.isArray(geomData[k])) {
             params[k] = geomData[k];        // scalar → parameters
         } else {
             discreteVars[k] = geomData[k];  // array → discrete_variables
@@ -405,8 +405,10 @@ async function saveCloud() {
 
 async function saveAsCloud() {
     document.getElementById('save-menu').classList.add('hidden');
-    const userProjectName = prompt('User project name:', sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || 'My_Designs');
+    const previousUserProjectName = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || '';
+    const userProjectName = prompt('User project name:', previousUserProjectName || 'My_Designs');
     if (!userProjectName) return false;
+    if (previousUserProjectName && userProjectName !== previousUserProjectName) sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_ID);
     sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, userProjectName);
     const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
     if (!name) return false;
@@ -469,7 +471,7 @@ function applyProjectPayload(project, source) {
     if (typeof params.int_rate === 'number') params.int_rate = params.int_rate * 100;
     params._selected_of = project.selected_of || 'TAC_OF';
     const geom = Object.assign({}, project.discrete_variables || {});
-    ['LBLD', 'UBLD', 'ktube', 'thk', 'Nss', 'plbmax1', 'plbmax2'].forEach(function(key) {
+    GEOMETRIC_SCALAR_KEYS.forEach(function(key) {
         if (params[key] !== undefined) geom[key] = params[key];
     });
     sessionStorage.setItem(STORAGE_KEY_PROBLEM, JSON.stringify(params));

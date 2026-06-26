@@ -17,7 +17,7 @@ from pathlib import Path
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from project_store import load_project
+from project_store import load_default_design, load_project
 
 
 # --- Color CSS class maps ---
@@ -82,9 +82,9 @@ def load_model_def(model_name):
     return getattr(module, var_name)
 
 
-def load_project_defaults(model_name, project_name):
-    """Load a project dict from {Model}/Projects/{Project}.py."""
-    return load_project(model_name, project_name, scope="examples")
+def load_project_defaults(model_name, project_name=None):
+    """Load model defaults from Projects/Default_Design.py."""
+    return load_default_design(model_name)
 
 
 def get_example_default(example, key_path, equipment=1):
@@ -311,6 +311,14 @@ def build_column_layout(sections, columns_spec):
     return columns
 
 
+def get_geometric_scalar_keys(model_ui):
+    keys = []
+    for section in model_ui.get("pages", {}).get("geometric_options", {}).get("sections", {}).values():
+        if section.get("element") == "form_group":
+            keys.extend(section.get("fields", {}).keys())
+    return keys
+
+
 _WC_MAP = {"w-44": 44, "w-56": 56, "w-64": 64, "w-72": 72}
 
 
@@ -441,7 +449,7 @@ def generate():
         "--all", action="store_true",
         help="Generate pages for every active model listed in common_ui.yaml",
     )
-    parser.add_argument("--example", default="Example1", help="Project name for defaults (default: Example1)")
+    parser.add_argument("--example", default=None, help="Deprecated: defaults now come from Projects/Default_Design.py")
     parser.add_argument("--output", default="output", help="Output directory (default: output)")
     parser.add_argument(
         "--no-sort-numeric-options",
@@ -541,6 +549,9 @@ def generate():
 
         model_def = load_model_def(model_name)
         example = load_project_defaults(model_name, args.example)
+        model_meta = model_ui.get("model", {})
+        sync_scalar_keys = model_meta.get("sync_scalar_keys", [])
+        geometric_scalar_keys = get_geometric_scalar_keys(model_ui)
 
         model_output_dir = output_dir / model_name
         model_output_dir.mkdir(parents=True, exist_ok=True)
@@ -559,6 +570,8 @@ def generate():
             all_sections=pd_sections,
             header=header_data,
             model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/problem_data.html")
@@ -577,6 +590,8 @@ def generate():
             all_sections=go_sections,
             header=header_data,
             model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/geometric_options.html")
@@ -600,6 +615,8 @@ def generate():
             var_keys=rs_var_keys,
             var_labels=rs_var_labels,
             var_units=rs_var_units,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/results.html")
@@ -612,6 +629,8 @@ def generate():
             nav_pages=nav_pr,
             header=header_data,
             model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "projects.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/projects.html")

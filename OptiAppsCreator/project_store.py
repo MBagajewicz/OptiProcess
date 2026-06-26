@@ -13,6 +13,7 @@ import copy
 import json
 import pprint
 import re
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -249,6 +250,38 @@ def load_project(model: str, project_name: str, scope: str | None = "users") -> 
     if not path.exists():
         raise ProjectError(f"Project not found: {project_name}")
     return load_project_source(model, project_name, path.read_text(encoding="utf-8"))
+
+
+def default_design_path(model: str) -> Path:
+    return projects_dir(model) / "Default_Design.py"
+
+
+def fallback_default_design_path(model: str) -> Path:
+    return project_scope_dir(model, "examples") / "Example1.py"
+
+
+def ensure_default_design(model: str) -> Path:
+    model = validate_model_name(model)
+    default_path = default_design_path(model)
+    if default_path.exists():
+        return default_path
+
+    fallback_path = fallback_default_design_path(model)
+    if fallback_path.exists():
+        shutil.copyfile(fallback_path, default_path)
+        return default_path
+
+    raise ProjectError(
+        f"Default design not found for model {model}. "
+        f"Expected {default_path.relative_to(SCRIPT_DIR)}. "
+        f"Fallback {fallback_path.relative_to(SCRIPT_DIR)} also does not exist. "
+        "Create Default_Design.py or restore Example1.py."
+    )
+
+
+def load_default_design(model: str) -> dict[str, Any]:
+    path = ensure_default_design(model)
+    return load_project_source(model, "Default_Design", path.read_text(encoding="utf-8"))
 
 
 def save_project(model: str, project_name: str, project: dict[str, Any], scope: str | None = "users") -> Path:
