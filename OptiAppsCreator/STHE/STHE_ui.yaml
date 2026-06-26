@@ -15,6 +15,7 @@ pages:
   # ============================================================
   problem_data:
     title: "Problem Data"
+    default_buttons: true
     columns:
       # Column layout: list of sections per column, left to right
       - [optimization_target, fluid_allocation]
@@ -133,6 +134,7 @@ pages:
   # ============================================================
   geometric_options:
     title: "Geometric Options"
+    default_buttons: false
     columns:
       - [configurations, shell_count]
       - [tube_passes, layouts, pitch_ratio]
@@ -226,6 +228,7 @@ pages:
       tube_options:
         title: "Tube Options"
         element: form_group
+        default_button: true
         color: brown_dark
         source: "Model_Parameters"
         fields:
@@ -237,6 +240,7 @@ pages:
       bell_params:
         title: "Bell Method Parameters"
         element: form_group
+        default_button: true
         color: brown_dark
         source: "Model_Parameters"
         fields:

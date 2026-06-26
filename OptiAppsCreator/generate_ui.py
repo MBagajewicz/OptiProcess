@@ -106,6 +106,7 @@ def build_problem_data_context(yaml_data, model_def, example):
     """Build resolved context for the problem_data page."""
     page_yaml = yaml_data["pages"]["problem_data"]
     sections_out = []
+    page_default_buttons = bool(page_yaml.get("default_buttons", False))
 
     for section_id, section in page_yaml["sections"].items():
         element = section.get("element", "form_group")
@@ -113,7 +114,12 @@ def build_problem_data_context(yaml_data, model_def, example):
         color = section.get("color", "gray")
         source = section.get("source", "Model_Parameters")
 
-        resolved = {"id": section_id, "element": element, "title": title}
+        resolved = {
+            "id": section_id,
+            "element": element,
+            "title": title,
+            "default_button": bool(section.get("default_button", page_default_buttons)),
+        }
 
         if element == "radio_group":
             source_key = section["source_key"]
@@ -164,6 +170,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                     has_computed_field = True
                 fields.append(field)
             resolved["fields"] = fields
+            resolved["default_keys"] = [field["key"] for field in fields]
             if has_computed_field and _width_value(resolved["width_class"]) < 64:
                 resolved["width_class"] = "w-64"
 
@@ -185,6 +192,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "upper_key": upper_key,
                 })
             resolved["rows"] = rows
+            resolved["default_keys"] = [key for row in rows for key in (row["lower_key"], row["upper_key"])]
 
         elif element == "computed_display":
             resolved["color"] = PD_COLORS.get("pink")
@@ -203,6 +211,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
     """
     page_yaml = yaml_data["pages"]["geometric_options"]
     sections_out = []
+    page_default_buttons = bool(page_yaml.get("default_buttons", False))
 
     # Get variable definitions from Model_Def
     list_of_vars = model_def["Model_Info"]["List_of_Variables"]
@@ -222,7 +231,12 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
         element = section.get("element", "checkbox_grid")
         title = section.get("title", "")
         color = section.get("color", "brown")
-        resolved = {"id": section_id, "element": element, "title": title}
+        resolved = {
+            "id": section_id,
+            "element": element,
+            "title": title,
+            "default_button": bool(section.get("default_button", page_default_buttons)),
+        }
 
         if element == "checkbox_grid":
             go_color = GO_COLORS.get(color, GO_COLORS["brown"])
@@ -291,6 +305,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
                     "default": default_val,
                 })
             resolved["fields"] = fields
+            resolved["default_keys"] = [field["key"] for field in fields]
 
         sections_out.append(resolved)
 

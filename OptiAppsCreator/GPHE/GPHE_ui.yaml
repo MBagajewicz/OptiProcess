@@ -13,6 +13,7 @@ pages:
   # ============================================================
   problem_data:
     title: "Problem Data"
+    default_buttons: true
     columns:
       - [optimization_target, other_options, heat_display]
       - [hot_stream, cold_stream]
@@ -110,6 +111,7 @@ pages:
   # ============================================================
   geometric_options:
     title: "Geometric Options"
+    default_buttons: false
     columns:
       - [num_plates]
       - [plate_size]

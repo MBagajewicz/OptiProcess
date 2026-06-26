@@ -20,8 +20,13 @@
     </div>
 
         {% elif section.element == 'form_group' %}
-    <div class="{{ section.color.bg }} p-4 rounded-2xl shadow-xl border {{ section.color.border }} {{ section.width_class }}">
-        <h2 class="{{ section.color.title }} font-bold text-center mb-4">{{ section.title }}</h2>
+    <div class="relative {{ section.color.bg }} p-4 rounded-2xl shadow-xl border {{ section.color.border }} {{ section.width_class }}">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-2 right-2 bg-white/80 text-gray-600 border border-gray-300 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors" title="Load default values for this block">
+            <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+        </button>
+        {% endif %}
+        <h2 class="{{ section.color.title }} font-bold text-center {{ 'mt-2' if section.default_button else '' }} mb-4">{{ section.title }}</h2>
         <div class="space-y-1">
             {% for field in section.fields %}
             <div class="input-container {{ section.color.bg }}">
@@ -43,8 +48,13 @@
     </div>
 
         {% elif section.element == 'limit_table' %}
-    <div class="bg-white/90 rounded-xl shadow-lg border border-red-100 overflow-hidden {{ section.width_class }}">
-        <h2 class="text-red-500 font-bold text-center py-2 text-sm">{{ section.title }}</h2>
+    <div class="relative bg-white/90 rounded-xl shadow-lg border border-red-100 overflow-hidden {{ section.width_class }}">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-1.5 right-2 bg-white/90 text-gray-600 border border-red-100 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors" title="Load default values for this block">
+            <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+        </button>
+        {% endif %}
+        <h2 class="text-red-500 font-bold text-center {{ 'pt-4' if section.default_button else 'py-2' }} {{ 'pb-2' if section.default_button else '' }} text-sm">{{ section.title }}</h2>
         <table class="w-full text-[10px] border-collapse">
             <thead>
                 <tr class="bg-red-50 text-red-600">
@@ -82,13 +92,6 @@
     {% endfor %}
 </div>
 {% endfor %}
-
-    <!-- Navigation Bar -->
-    <div class="flex justify-center gap-4 mt-4 mb-4">
-        <button id="btn-next" onclick="saveAndNext()" class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
-            Next: Geometric Options <i class="fas fa-arrow-right ml-1"></i>
-        </button>
-    </div>
 
 </div>
 
@@ -167,14 +170,10 @@ function restoreProblemData() {
     }
 }
 
-function saveAndNext() {
-    if (collectProblemData(false) === null) return;
-    window.location.href = 'geometric_options.html';
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     restoreProblemData();
     attachNumericFiltering('input[data-numeric="true"][data-key]');
+    attachEnterToAdvance('input[data-key]:not(:disabled), select[data-key]', 'collectProblemData');
     document.querySelectorAll('input[data-key], select[data-key], input[type="radio"]').forEach(function(input) {
         input.addEventListener('change', function() {
             collectProblemData(true);

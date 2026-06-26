@@ -33,7 +33,7 @@
     </div>
 
     <!-- Navigation -->
-    <div class="bg-white border-b border-gray-300 px-4 flex items-center justify-between gap-4 text-sm font-medium text-gray-600">
+    <div class="bg-white border-b border-gray-300 px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-sm font-medium text-gray-600">
         <div class="flex space-x-8">
             {% for nav_page in nav_pages %}
             <a href="{{ nav_page.file }}" onclick="return navigateModelPage(event, '{{ nav_page.file }}')" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
@@ -41,7 +41,18 @@
             </a>
             {% endfor %}
         </div>
-        <div class="flex items-center gap-3 py-1">
+        <div class="flex items-center justify-center gap-2 py-1">
+            <button id="nav-back-btn" type="button" onclick="goNavStep(-1)" class="bg-gray-500 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                Back
+            </button>
+            <button id="nav-next-btn" type="button" onclick="goNavStep(1)" class="bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+            <button id="nav-run-btn" type="button" onclick="runFromNavbar()" class="bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed" disabled>
+                RUN
+            </button>
+        </div>
+        <div class="flex items-center justify-end gap-3 py-1">
             <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
             <div class="relative">
                 <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
@@ -92,6 +103,7 @@
     const MODEL = '{{ model_name }}';
     const SYNC_SCALAR_KEYS = {{ sync_scalar_keys | default([]) | tojson }};
     const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
+    const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
     const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 
     function modelKey(name) { return 'optihex_' + MODEL + '_' + name; }
@@ -110,6 +122,10 @@
     function lastSavedUserProjectNameKey() { return modelKey('last_saved_user_project_name'); }
     function lastSavedOriginKey() { return modelKey('last_saved_origin'); }
     function lastSavedProblemClearedKey() { return modelKey('last_saved_problem_data_cleared'); }
+    function lastOptimizationSignatureKey() { return modelKey('last_optimization_signature'); }
+    function lastOptimizationResultKey() { return modelKey('last_optimization_result'); }
+    function lastOptimizationSessionDataKey() { return modelKey('last_optimization_session_data'); }
+    function optimizationDirtyKey() { return modelKey('optimization_dirty'); }
 
     function scalarGeometryParameterKeys() { return SYNC_SCALAR_KEYS || []; }
     function geometricScalarKeys() { return GEOMETRIC_SCALAR_KEYS || []; }
@@ -174,6 +190,26 @@
                 const clean = sanitizeNumericValue(this.value);
                 if (this.value !== clean) this.value = clean;
                 markNumericValidity(this, this.value ? isStrictNumber(this.value) : false);
+                setDirty(true);
+            });
+        });
+    }
+
+    function attachEnterToAdvance(selector, collectFnName) {
+        const fields = Array.from(document.querySelectorAll(selector)).filter(function(input) {
+            return !input.disabled && input.type !== 'hidden';
+        });
+        fields.forEach(function(input, index) {
+            input.addEventListener('keydown', function(event) {
+                if (event.key !== 'Enter') return;
+                event.preventDefault();
+                const collectFn = window[collectFnName];
+                if (typeof collectFn === 'function' && collectFn(true) === null) return;
+                const next = fields[index + 1];
+                if (next) {
+                    next.focus();
+                    if (typeof next.select === 'function') next.select();
+                }
             });
         });
     }
@@ -189,7 +225,9 @@
 
     function setDirty(value) {
         sessionStorage.setItem(dirtyKey(), value ? 'true' : 'false');
+        if (value) sessionStorage.setItem(optimizationDirtyKey(), 'true');
         updateProjectIndicator();
+        updateRunButtonState();
     }
 
     function isDirty() {
@@ -208,6 +246,84 @@
         if (typeof window.collectProblemData === 'function' && window.collectProblemData(false) === null) return false;
         if (typeof window.collectGeometricData === 'function' && window.collectGeometricData(false) === null) return false;
         return true;
+    }
+
+    function currentPageFile() {
+        return window.location.pathname.split('/').pop() || 'problem_data.html';
+    }
+
+    function currentNavIndex() {
+        const file = currentPageFile();
+        return NAV_ORDER.findIndex(function(page) { return page.file === file; });
+    }
+
+    function goNavStep(step) {
+        const idx = currentNavIndex();
+        if (idx < 0) return;
+        const target = NAV_ORDER[idx + step];
+        if (!target) return;
+        navigateModelPage(null, target.file);
+    }
+
+    function stableStringify(value) {
+        if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+        if (value && typeof value === 'object') {
+            return '{' + Object.keys(value).sort().map(function(key) {
+                return JSON.stringify(key) + ':' + stableStringify(value[key]);
+            }).join(',') + '}';
+        }
+        return JSON.stringify(value);
+    }
+
+    function currentOptimizationSignature() {
+        const problem = getJson(problemStorageKey(), null);
+        if (!problem) return '';
+        return stableStringify({problem: problem, geometric: getJson(geomStorageKey(), {})});
+    }
+
+    function hasOptimizationChanges() {
+        if (sessionStorage.getItem(optimizationDirtyKey()) === 'true') return true;
+        const signature = currentOptimizationSignature();
+        if (!signature) return false;
+        return signature !== sessionStorage.getItem(lastOptimizationSignatureKey());
+    }
+
+    function setOptimizationDirty(value) {
+        sessionStorage.setItem(optimizationDirtyKey(), value ? 'true' : 'false');
+        updateRunButtonState();
+    }
+
+    function clearOptimizationState() {
+        sessionStorage.removeItem(lastOptimizationSignatureKey());
+        sessionStorage.removeItem(lastOptimizationResultKey());
+        sessionStorage.removeItem(lastOptimizationSessionDataKey());
+        sessionStorage.removeItem(optimizationDirtyKey());
+        updateRunButtonState();
+    }
+
+    function updateRunButtonState() {
+        const runBtn = document.getElementById('nav-run-btn');
+        if (!runBtn) return;
+        const enabled = hasOptimizationChanges();
+        runBtn.disabled = !enabled;
+        runBtn.className = enabled
+            ? 'bg-green-600 text-white px-5 py-1 rounded-full text-xs font-bold hover:bg-green-700'
+            : 'bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed';
+    }
+
+    function updateNavButtons() {
+        const idx = currentNavIndex();
+        const backBtn = document.getElementById('nav-back-btn');
+        const nextBtn = document.getElementById('nav-next-btn');
+        if (backBtn) backBtn.disabled = idx <= 0;
+        if (nextBtn) nextBtn.disabled = idx < 0 || idx >= NAV_ORDER.length - 1;
+        updateRunButtonState();
+    }
+
+    function runFromNavbar() {
+        if (!hasOptimizationChanges()) return;
+        if (!syncCurrentPageState()) return;
+        window.location.href = 'results.html?run=1';
     }
 
     function navigateModelPage(event, target) {
@@ -243,6 +359,7 @@
         sessionStorage.setItem(currentUserProjectNameKey(), sessionStorage.getItem(lastSavedUserProjectNameKey()) || '');
         sessionStorage.setItem(originKey(), sessionStorage.getItem(lastSavedOriginKey()) || '');
         sessionStorage.setItem(problemClearedKey(), sessionStorage.getItem(lastSavedProblemClearedKey()) === 'true' ? 'true' : 'false');
+        sessionStorage.setItem(optimizationDirtyKey(), 'false');
         setDirty(false);
         window.location.reload();
     }
@@ -359,6 +476,7 @@
         });
         setJson(problemStorageKey(), params);
         setJson(geomStorageKey(), geom);
+        clearOptimizationState();
         setCurrentProject(project.name || 'LocalProject');
         if (project.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), project.user_project_id);
         else sessionStorage.removeItem(currentUserProjectIdKey());
@@ -370,6 +488,34 @@
         saveSnapshot();
     }
 
+    function setSectionDefaultInputValue(key, value) {
+        document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+            if (input.dataset.key !== key) return;
+            input.value = value;
+            if (input.dataset.numeric === 'true') markNumericValidity(input, isStrictNumber(input.value));
+        });
+    }
+
+    async function loadDefaultSectionValues(keys, target) {
+        try {
+            const response = await fetch(API_PROJECTS_URL + '/default-design');
+            if (!response.ok) throw new Error(await response.text());
+            const design = await response.json();
+            const params = design.parameters || {};
+            (keys || []).forEach(function(key) {
+                if (params[key] === undefined) return;
+                let value = params[key];
+                if (key === 'int_rate' && typeof value === 'number') value = value * 100;
+                setSectionDefaultInputValue(key, value);
+            });
+            if (target === 'geometric' && typeof window.collectGeometricData === 'function') window.collectGeometricData(true);
+            else if (typeof window.collectProblemData === 'function') window.collectProblemData(true);
+            else setDirty(true);
+        } catch(e) {
+            alert('Could not load default values: ' + e.message);
+        }
+    }
+
     function hideCloseSessionModal() {
         document.getElementById('close-session-modal').classList.add('hidden');
     }
@@ -379,7 +525,7 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey(), lastOptimizationSignatureKey(), lastOptimizationResultKey(), lastOptimizationSessionDataKey(), optimizationDirtyKey()].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
         [modelKey('project_temporal_local'), modelKey('project_saved_local'), modelKey('last_saved_temporal_local')].forEach(function(key) {
@@ -422,7 +568,10 @@
         });
     });
     requireAuth();
-    document.addEventListener('DOMContentLoaded', updateProjectIndicator);
+    document.addEventListener('DOMContentLoaded', function() {
+        updateProjectIndicator();
+        updateNavButtons();
+    });
     </script>
 </body>
 </html>
