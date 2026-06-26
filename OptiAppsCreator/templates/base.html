@@ -13,10 +13,11 @@
         .input-container { position: relative; margin-top: 12px; margin-bottom: 8px; }
         .input-label { position: absolute; top: -10px; left: 10px; padding: 0 4px; font-size: 0.7rem; z-index: 10; }
         .custom-input { width: 100%; border: 1px solid; border-radius: 4px; padding: 4px 8px; font-size: 0.9rem; background: transparent; }
-        .checkbox-item { width: 18px; height: 18px; background-color: white; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
-        .checkbox-item.checked { background-color: #3b82f6; color: white; }
+        .checkbox-item { width: 18px; height: 18px; background-color: white !important; color: black !important; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+        .checkbox-item.checked { background-color: white !important; color: black !important; }
         .checkbox-grid-input { background-color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; padding: 4px 8px; font-size: 12px; width: 100%; text-align: left; color: inherit; }
         .bg-industrial { background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('https://placehold.co/1920x1080/2c3e50/ffffff?text=Industrial+Heat+Exchanger+Background'); background-size: cover; background-position: center; }
+        .numeric-invalid { border-color: #dc2626 !important; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25); }
     </style>
     {% block extra_style %}{% endblock %}
 </head>
@@ -25,30 +26,551 @@
     <!-- Header -->
     <div class="p-2">
         <div class="bg-gradient-to-r from-yellow-400 via-yellow-300 to-orange-400 border-2 border-black rounded-lg p-4 text-center shadow-md">
-            <h1 class="header-font text-3xl italic font-bold">OptiHexx</h1>
-            <p class="text-xs font-semibold italic">Heat Exchanger Optimal Design Suite</p>
-            <p class="text-[10px] text-gray-600">Prototype P07</p>
+            <h1 class="header-font text-3xl italic font-bold">{{ header.title }}</h1>
+            <p class="text-xs font-semibold italic">{{ header.subtitle }}</p>
+            <p class="text-[10px] text-gray-600">{{ header.prototype }}</p>
         </div>
     </div>
 
     <!-- Navigation -->
-    <div class="bg-white border-b border-gray-300 px-4 flex space-x-8 text-sm font-medium text-gray-600">
-        {% for nav_page in nav_pages %}
-        <a href="{{ nav_page.file }}" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
-            {{ nav_page.label }}
-        </a>
-        {% endfor %}
+    <div class="bg-white border-b border-gray-300 px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-sm font-medium text-gray-600">
+        <div class="flex space-x-8">
+            {% for nav_page in nav_pages %}
+            <a href="{{ nav_page.file }}" onclick="return navigateModelPage(event, '{{ nav_page.file }}')" class="py-2 {{ 'border-b-2 border-blue-600 text-blue-600 font-medium' if nav_page.active else 'hover:text-blue-600 cursor-pointer' }}">
+                {{ nav_page.label }}
+            </a>
+            {% endfor %}
+        </div>
+        <div class="flex items-center justify-center gap-2 py-1">
+            <button id="nav-back-btn" type="button" onclick="goNavStep(-1)" class="bg-gray-500 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                Back
+            </button>
+            <button id="nav-next-btn" type="button" onclick="goNavStep(1)" class="bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+            <button id="nav-run-btn" type="button" onclick="runFromNavbar()" class="bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed" disabled>
+                RUN
+            </button>
+        </div>
+        <div class="flex items-center justify-end gap-3 py-1">
+            <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
+            <div class="relative">
+                <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
+                    Load <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
+                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open Tutorial Library</button>
+                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open User Projects</button>
+                </div>
+            </div>
+            <div class="relative">
+                <button type="button" onclick="toggleSaveMenu()" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-blue-700">
+                    Save <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="save-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] text-xs">
+                    <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design</button>
+                    <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design As...</button>
+                </div>
+            </div>
+            <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
+                Reset
+            </button>
+            <button type="button" onclick="window.location.href='/ui/main_menu.html'" class="bg-slate-500 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-600">
+                Main Menu
+            </button>
+            <button type="button" onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
+                LOGOUT
+            </button>
+        </div>
+    </div>
+
+    <div id="close-session-modal" class="hidden fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md p-5">
+            <h2 class="text-lg font-bold text-gray-800 mb-2">Unsaved changes</h2>
+            <p class="text-sm text-gray-600 mb-4">The current project has unsaved changes. Choose how to continue.</p>
+            <div class="space-y-2">
+                <button type="button" onclick="closeAfterSaveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700">Save Design</button>
+                <button type="button" onclick="closeAfterSaveAsCloud()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600">Save Design As...</button>
+                <button type="button" onclick="hideCloseSessionModal()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Cancel LOGOUT</button>
+                <button type="button" onclick="logoutWithoutSave()" class="w-full bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">LOGOUT without Save</button>
+            </div>
+        </div>
     </div>
 
     {% block content %}{% endblock %}
 
     <script>
+    const MODEL = '{{ model_name }}';
+    const SYNC_SCALAR_KEYS = {{ sync_scalar_keys | default([]) | tojson }};
+    const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
+    const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
+    const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
+
+    function modelKey(name) { return 'optihex_' + MODEL + '_' + name; }
+    function problemStorageKey() { return modelKey('problem_data'); }
+    function geomStorageKey() { return modelKey('geometric_data'); }
+    function currentProjectKey() { return modelKey('current_project'); }
+    function currentUserProjectIdKey() { return modelKey('current_user_project_id'); }
+    function currentUserProjectNameKey() { return modelKey('current_user_project_name'); }
+    function dirtyKey() { return modelKey('project_dirty'); }
+    function originKey() { return modelKey('project_origin'); }
+    function problemClearedKey() { return modelKey('problem_data_cleared'); }
+    function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
+    function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
+    function lastSavedProjectKey() { return modelKey('last_saved_project_name'); }
+    function lastSavedUserProjectIdKey() { return modelKey('last_saved_user_project_id'); }
+    function lastSavedUserProjectNameKey() { return modelKey('last_saved_user_project_name'); }
+    function lastSavedOriginKey() { return modelKey('last_saved_origin'); }
+    function lastSavedProblemClearedKey() { return modelKey('last_saved_problem_data_cleared'); }
+    function lastOptimizationSignatureKey() { return modelKey('last_optimization_signature'); }
+    function lastOptimizationResultKey() { return modelKey('last_optimization_result'); }
+    function lastOptimizationSessionDataKey() { return modelKey('last_optimization_session_data'); }
+    function optimizationDirtyKey() { return modelKey('optimization_dirty'); }
+
+    function scalarGeometryParameterKeys() { return SYNC_SCALAR_KEYS || []; }
+    function geometricScalarKeys() { return GEOMETRIC_SCALAR_KEYS || []; }
+
+    function getJson(key, fallback) {
+        try {
+            const raw = sessionStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch(e) { return fallback; }
+    }
+
+    async function requireAuth() {
+        const response = await fetch('/api/auth/me', {credentials: 'include'});
+        if (!response.ok) window.location.href = '/ui/login.html';
+    }
+
+    function setJson(key, value) {
+        sessionStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function sanitizeNumericValue(value) {
+        let clean = String(value).replace(/[^0-9.\-]/g, '');
+        clean = clean.replace(/(?!^)-/g, '');
+        const dot = clean.indexOf('.');
+        if (dot !== -1) clean = clean.slice(0, dot + 1) + clean.slice(dot + 1).replace(/\./g, '');
+        return clean;
+    }
+
+    function isStrictNumber(value) {
+        return /^-?(?:\d+|\d*\.\d+)$/.test(String(value).trim());
+    }
+
+    function parseStrictNumber(value) {
+        return parseFloat(String(value).trim());
+    }
+
+    function markNumericValidity(input, valid) {
+        input.classList.toggle('numeric-invalid', !valid);
+        if (!valid) input.title = 'Only numeric values are accepted.';
+        else input.removeAttribute('title');
+    }
+
+    function validateNumericInputs(selector) {
+        const invalid = [];
+        document.querySelectorAll(selector).forEach(function(input) {
+            if (input.disabled || input.type === 'hidden') return;
+            const valid = isStrictNumber(input.value);
+            markNumericValidity(input, valid);
+            if (!valid) invalid.push(input);
+        });
+        if (invalid.length) {
+            invalid[0].focus();
+            alert('Only numeric values are accepted. Please correct the highlighted fields.');
+            return false;
+        }
+        return true;
+    }
+
+    function attachNumericFiltering(selector) {
+        document.querySelectorAll(selector).forEach(function(input) {
+            input.addEventListener('input', function() {
+                const clean = sanitizeNumericValue(this.value);
+                if (this.value !== clean) this.value = clean;
+                markNumericValidity(this, this.value ? isStrictNumber(this.value) : false);
+                setDirty(true);
+            });
+        });
+    }
+
+    function attachEnterToAdvance(selector, collectFnName) {
+        const fields = Array.from(document.querySelectorAll(selector)).filter(function(input) {
+            return !input.disabled && input.type !== 'hidden';
+        });
+        fields.forEach(function(input, index) {
+            input.addEventListener('keydown', function(event) {
+                if (event.key !== 'Enter') return;
+                event.preventDefault();
+                const collectFn = window[collectFnName];
+                if (typeof collectFn === 'function' && collectFn(true) === null) return;
+                const next = fields[index + 1];
+                if (next) {
+                    next.focus();
+                    if (typeof next.select === 'function') next.select();
+                }
+            });
+        });
+    }
+
+    function getCurrentProject() {
+        return sessionStorage.getItem(currentProjectKey()) || '';
+    }
+
+    function setCurrentProject(name) {
+        sessionStorage.setItem(currentProjectKey(), name || '');
+        updateProjectIndicator();
+    }
+
+    function setDirty(value) {
+        sessionStorage.setItem(dirtyKey(), value ? 'true' : 'false');
+        if (value) sessionStorage.setItem(optimizationDirtyKey(), 'true');
+        updateProjectIndicator();
+        updateRunButtonState();
+    }
+
+    function isDirty() {
+        return sessionStorage.getItem(dirtyKey()) === 'true';
+    }
+
+    function updateProjectIndicator() {
+        const el = document.getElementById('project-indicator');
+        if (!el) return;
+        const userProjectName = sessionStorage.getItem(currentUserProjectNameKey()) || 'No User Project';
+        const name = getCurrentProject() || 'Unsaved Design';
+        el.innerHTML = 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
+    }
+
+    function syncCurrentPageState() {
+        if (typeof window.collectProblemData === 'function' && window.collectProblemData(false) === null) return false;
+        if (typeof window.collectGeometricData === 'function' && window.collectGeometricData(false) === null) return false;
+        return true;
+    }
+
+    function currentPageFile() {
+        return window.location.pathname.split('/').pop() || 'problem_data.html';
+    }
+
+    function currentNavIndex() {
+        const file = currentPageFile();
+        return NAV_ORDER.findIndex(function(page) { return page.file === file; });
+    }
+
+    function goNavStep(step) {
+        const idx = currentNavIndex();
+        if (idx < 0) return;
+        const target = NAV_ORDER[idx + step];
+        if (!target) return;
+        navigateModelPage(null, target.file);
+    }
+
+    function stableStringify(value) {
+        if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+        if (value && typeof value === 'object') {
+            return '{' + Object.keys(value).sort().map(function(key) {
+                return JSON.stringify(key) + ':' + stableStringify(value[key]);
+            }).join(',') + '}';
+        }
+        return JSON.stringify(value);
+    }
+
+    function currentOptimizationSignature() {
+        const problem = getJson(problemStorageKey(), null);
+        if (!problem) return '';
+        return stableStringify({problem: problem, geometric: getJson(geomStorageKey(), {})});
+    }
+
+    function hasOptimizationChanges() {
+        if (sessionStorage.getItem(optimizationDirtyKey()) === 'true') return true;
+        const signature = currentOptimizationSignature();
+        if (!signature) return false;
+        return signature !== sessionStorage.getItem(lastOptimizationSignatureKey());
+    }
+
+    function setOptimizationDirty(value) {
+        sessionStorage.setItem(optimizationDirtyKey(), value ? 'true' : 'false');
+        updateRunButtonState();
+    }
+
+    function clearOptimizationState() {
+        sessionStorage.removeItem(lastOptimizationSignatureKey());
+        sessionStorage.removeItem(lastOptimizationResultKey());
+        sessionStorage.removeItem(lastOptimizationSessionDataKey());
+        sessionStorage.removeItem(optimizationDirtyKey());
+        updateRunButtonState();
+    }
+
+    function updateRunButtonState() {
+        const runBtn = document.getElementById('nav-run-btn');
+        if (!runBtn) return;
+        const enabled = hasOptimizationChanges();
+        runBtn.disabled = !enabled;
+        runBtn.className = enabled
+            ? 'bg-green-600 text-white px-5 py-1 rounded-full text-xs font-bold hover:bg-green-700'
+            : 'bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed';
+    }
+
+    function updateNavButtons() {
+        const idx = currentNavIndex();
+        const backBtn = document.getElementById('nav-back-btn');
+        const nextBtn = document.getElementById('nav-next-btn');
+        if (backBtn) backBtn.disabled = idx <= 0;
+        if (nextBtn) nextBtn.disabled = idx < 0 || idx >= NAV_ORDER.length - 1;
+        updateRunButtonState();
+    }
+
+    function runFromNavbar() {
+        if (!hasOptimizationChanges()) return;
+        if (!syncCurrentPageState()) return;
+        window.location.href = 'results.html?run=1';
+    }
+
+    function navigateModelPage(event, target) {
+        if (event) event.preventDefault();
+        if (!syncCurrentPageState()) return false;
+        window.location.href = target;
+        return false;
+    }
+
+    function saveSnapshot() {
+        sessionStorage.setItem(lastSavedProblemKey(), sessionStorage.getItem(problemStorageKey()) || '{}');
+        sessionStorage.setItem(lastSavedGeomKey(), sessionStorage.getItem(geomStorageKey()) || '{}');
+        sessionStorage.setItem(lastSavedProjectKey(), getCurrentProject());
+        sessionStorage.setItem(lastSavedUserProjectIdKey(), sessionStorage.getItem(currentUserProjectIdKey()) || '');
+        sessionStorage.setItem(lastSavedUserProjectNameKey(), sessionStorage.getItem(currentUserProjectNameKey()) || '');
+        sessionStorage.setItem(lastSavedOriginKey(), sessionStorage.getItem(originKey()) || '');
+        sessionStorage.setItem(lastSavedProblemClearedKey(), sessionStorage.getItem(problemClearedKey()) === 'true' ? 'true' : 'false');
+    }
+
+    function hasSnapshot() {
+        return sessionStorage.getItem(lastSavedProblemKey()) !== null || sessionStorage.getItem(lastSavedGeomKey()) !== null;
+    }
+
+    function resetProjectState() {
+        if (!hasSnapshot()) {
+            alert('No saved or loaded project state is available to reset.');
+            return;
+        }
+        sessionStorage.setItem(problemStorageKey(), sessionStorage.getItem(lastSavedProblemKey()) || '{}');
+        sessionStorage.setItem(geomStorageKey(), sessionStorage.getItem(lastSavedGeomKey()) || '{}');
+        sessionStorage.setItem(currentProjectKey(), sessionStorage.getItem(lastSavedProjectKey()) || '');
+        sessionStorage.setItem(currentUserProjectIdKey(), sessionStorage.getItem(lastSavedUserProjectIdKey()) || '');
+        sessionStorage.setItem(currentUserProjectNameKey(), sessionStorage.getItem(lastSavedUserProjectNameKey()) || '');
+        sessionStorage.setItem(originKey(), sessionStorage.getItem(lastSavedOriginKey()) || '');
+        sessionStorage.setItem(problemClearedKey(), sessionStorage.getItem(lastSavedProblemClearedKey()) === 'true' ? 'true' : 'false');
+        sessionStorage.setItem(optimizationDirtyKey(), 'false');
+        setDirty(false);
+        window.location.reload();
+    }
+
+    function clearProblemData() {
+        sessionStorage.setItem(problemStorageKey(), '{}');
+        sessionStorage.setItem(problemClearedKey(), 'true');
+        if (typeof window.clearProblemDataForm === 'function') window.clearProblemDataForm();
+        setDirty(true);
+    }
+
+    function buildProjectPayload(name) {
+        if (!syncCurrentPageState()) return null;
+        const params = getJson(problemStorageKey(), {});
+        const geom = getJson(geomStorageKey(), {});
+        const selectedOf = params._selected_of || 'TAC_OF';
+        const cleanParams = Object.assign({}, params);
+        delete cleanParams._selected_of;
+        if (typeof cleanParams.int_rate === 'number') cleanParams.int_rate = cleanParams.int_rate * 0.01;
+        const discrete = {};
+        Object.keys(geom).forEach(function(k) {
+            if (Array.isArray(geom[k])) discrete[k] = geom[k];
+            else cleanParams[k] = geom[k];
+        });
+        return {
+            name: name || getCurrentProject(),
+            user_project_id: sessionStorage.getItem(currentUserProjectIdKey()) ? parseInt(sessionStorage.getItem(currentUserProjectIdKey()), 10) : null,
+            user_project_name: sessionStorage.getItem(currentUserProjectNameKey()) || null,
+            parameters: cleanParams,
+            discrete_variables: discrete,
+            selected_of: selectedOf,
+            number_of_equipment: 1
+        };
+    }
+
+    function toggleSaveMenu() {
+        document.getElementById('save-menu').classList.toggle('hidden');
+    }
+
+    function toggleLoadMenu() {
+        document.getElementById('load-menu').classList.toggle('hidden');
+    }
+
+    function loadExamples() {
+        document.getElementById('load-menu').classList.add('hidden');
+        window.location.href = 'projects.html?scope=examples';
+    }
+
+    function loadUserProjects() {
+        document.getElementById('load-menu').classList.add('hidden');
+        window.location.href = 'projects.html?scope=users';
+    }
+
+    async function saveCloud() {
+        document.getElementById('save-menu').classList.add('hidden');
+        const name = getCurrentProject();
+        if (!name || sessionStorage.getItem(originKey()) === 'example' || sessionStorage.getItem(originKey()) === 'default') {
+            return await saveAsCloud();
+        }
+        const payload = buildProjectPayload(name);
+        if (!payload) return false;
+        const response = await fetch(API_PROJECTS_URL + '/' + encodeURIComponent(name), {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            alert('Could not save project: ' + await response.text());
+            return false;
+        }
+        setDirty(false);
+        sessionStorage.setItem(originKey(), 'cloud');
+        saveSnapshot();
+        return true;
+    }
+
+    async function saveAsCloud() {
+        document.getElementById('save-menu').classList.add('hidden');
+        const previousUserProjectName = sessionStorage.getItem(currentUserProjectNameKey()) || '';
+        const userProjectName = prompt('User project name:', previousUserProjectName || 'My_Designs');
+        if (!userProjectName) return false;
+        if (previousUserProjectName && userProjectName !== previousUserProjectName) sessionStorage.removeItem(currentUserProjectIdKey());
+        sessionStorage.setItem(currentUserProjectNameKey(), userProjectName);
+        const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
+        if (!name) return false;
+        const payload = buildProjectPayload(name);
+        if (!payload) return false;
+        const response = await fetch(API_PROJECTS_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            alert('Could not save project: ' + await response.text());
+            return false;
+        }
+        const data = await response.json();
+        setCurrentProject(data.name || name);
+        if (data.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), data.user_project_id);
+        if (data.user_project_name) sessionStorage.setItem(currentUserProjectNameKey(), data.user_project_name);
+        sessionStorage.setItem(originKey(), 'cloud');
+        setDirty(false);
+        saveSnapshot();
+        return true;
+    }
+
+    function applyProjectPayload(project, source) {
+        const params = Object.assign({}, project.parameters || {});
+        if (typeof params.int_rate === 'number') params.int_rate = params.int_rate * 100;
+        params._selected_of = project.selected_of || 'TAC_OF';
+        const geom = Object.assign({}, project.discrete_variables || {});
+        geometricScalarKeys().forEach(function(key) {
+            if (params[key] !== undefined) geom[key] = params[key];
+        });
+        setJson(problemStorageKey(), params);
+        setJson(geomStorageKey(), geom);
+        clearOptimizationState();
+        setCurrentProject(project.name || 'LocalProject');
+        if (project.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), project.user_project_id);
+        else sessionStorage.removeItem(currentUserProjectIdKey());
+        if (project.user_project_name) sessionStorage.setItem(currentUserProjectNameKey(), project.user_project_name);
+        else sessionStorage.removeItem(currentUserProjectNameKey());
+        sessionStorage.setItem(originKey(), source || 'cloud');
+        sessionStorage.setItem(problemClearedKey(), 'false');
+        setDirty(false);
+        saveSnapshot();
+    }
+
+    function setSectionDefaultInputValue(key, value) {
+        document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+            if (input.dataset.key !== key) return;
+            input.value = value;
+            if (input.dataset.numeric === 'true') markNumericValidity(input, isStrictNumber(input.value));
+        });
+    }
+
+    async function loadDefaultSectionValues(keys, target) {
+        try {
+            const response = await fetch(API_PROJECTS_URL + '/default-design');
+            if (!response.ok) throw new Error(await response.text());
+            const design = await response.json();
+            const params = design.parameters || {};
+            (keys || []).forEach(function(key) {
+                if (params[key] === undefined) return;
+                let value = params[key];
+                if (key === 'int_rate' && typeof value === 'number') value = value * 100;
+                setSectionDefaultInputValue(key, value);
+            });
+            if (target === 'geometric' && typeof window.collectGeometricData === 'function') window.collectGeometricData(true);
+            else if (typeof window.collectProblemData === 'function') window.collectProblemData(true);
+            else setDirty(true);
+        } catch(e) {
+            alert('Could not load default values: ' + e.message);
+        }
+    }
+
+    function hideCloseSessionModal() {
+        document.getElementById('close-session-modal').classList.add('hidden');
+    }
+
+    function showCloseSessionModal() {
+        document.getElementById('close-session-modal').classList.remove('hidden');
+    }
+
+    function clearModelSession() {
+        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey(), lastOptimizationSignatureKey(), lastOptimizationResultKey(), lastOptimizationSessionDataKey(), optimizationDirtyKey()].forEach(function(key) {
+            sessionStorage.removeItem(key);
+        });
+        [modelKey('project_temporal_local'), modelKey('project_saved_local'), modelKey('last_saved_temporal_local')].forEach(function(key) {
+            sessionStorage.removeItem(key);
+        });
+    }
+
+    async function finishCloseSession() {
+        clearModelSession();
+        await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+        window.location.href = '/ui/login.html';
+    }
+
+    function logout() {
+        if (!syncCurrentPageState()) return;
+        if (isDirty()) showCloseSessionModal();
+        else finishCloseSession();
+    }
+
+    function logoutWithoutSave() {
+        hideCloseSessionModal();
+        finishCloseSession();
+    }
+
+    async function closeAfterSaveCloud() {
+        if (await saveCloud()) finishCloseSession();
+    }
+
+    async function closeAfterSaveAsCloud() {
+        if (await saveAsCloud()) finishCloseSession();
+    }
+
     document.querySelectorAll('.checkbox-item').forEach(function(el) {
         el.addEventListener('click', function() {
+            if (this.dataset.static === 'true') return;
             this.classList.toggle('checked');
             var icon = this.querySelector('i');
             if (icon) icon.classList.toggle('fa-check');
+            setDirty(true);
         });
+    });
+    requireAuth();
+    document.addEventListener('DOMContentLoaded', function() {
+        updateProjectIndicator();
+        updateNavButtons();
     });
     </script>
 </body>

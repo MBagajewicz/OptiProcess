@@ -40,12 +40,63 @@ import json
 import time
 import argparse
 import importlib
+import re
 import numpy as np
+
+from project_store import load_default_design
 
 # Ensure OptiAppsCreator is on sys.path for imports
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRIPT_DIR not in sys.path:
     sys.path.insert(0, SCRIPT_DIR)
+
+
+class ConsistencyError(RuntimeError):
+    def __init__(self, report):
+        super().__init__("Mandatory consistency checks failed. Solver was not executed.")
+        self.report = report
+
+
+CONSTRAINT_LABELS = {
+    "LD_lb": "Minimum L/D ratio",
+    "LD_ub": "Maximum L/D ratio",
+    "lbc_lb": "Minimum baffle spacing",
+    "lbc_ub": "Maximum baffle spacing",
+    "vs_lb": "Minimum shell-side velocity",
+    "vs_ub": "Maximum shell-side velocity",
+    "vt_lb": "Minimum tube-side velocity",
+    "vt_ub": "Maximum tube-side velocity",
+    "Ret_lb": "Minimum tube-side Reynolds number",
+    "Ret_ub": "Maximum tube-side Reynolds number",
+    "Res_lb": "Minimum shell-side Reynolds number",
+    "Res_ub": "Maximum shell-side Reynolds number",
+    "DPs_ub": "Maximum shell-side pressure drop",
+    "DPt_ub": "Maximum tube-side pressure drop",
+    "F_min": "Minimum LMTD correction factor",
+    "Areq": "Required heat transfer area",
+}
+
+
+def build_solver_diagnostics(messages):
+    """Extract user-facing infeasibility diagnostics from internal solver traces."""
+    diagnostics = {"messages": messages[-80:]}
+    joined = "\n".join(str(message) for message in messages)
+    match = re.search(r"empty set using constraint:\s*([A-Za-z0-9_]+)", joined)
+    if match:
+        constraint = match.group(1)
+        diagnostics["infeasible_constraint"] = constraint
+        diagnostics["infeasible_constraint_label"] = CONSTRAINT_LABELS.get(constraint, constraint)
+
+    cardinalities = []
+    for message in messages:
+        if "Space Size" not in str(message):
+            continue
+        number_match = re.search(r":\s*([0-9]+)\s*$", str(message))
+        if number_match:
+            cardinalities.append(int(number_match.group(1)))
+    if cardinalities:
+        diagnostics["candidate_cardinalities"] = cardinalities
+    return diagnostics
 
 
 def json_safe(obj):
@@ -71,11 +122,9 @@ def load_model_def(model_name):
     return getattr(module, var_name)
 
 
-def load_examples(model_name, example_name):
-    """Import Examples_{Model} and return the Example dict."""
-    module_path = f"{model_name}.Examples_{model_name}"
-    module = importlib.import_module(module_path)
-    return getattr(module, example_name)
+def load_project_defaults(model_name, project_name):
+    """Load internal parameter defaults from Projects/Default_Design.py."""
+    return load_default_design(model_name)
 
 
 def compute_output_info(optimal_vars, params, model_name, objective=None):
@@ -90,7 +139,7 @@ def compute_output_info(optimal_vars, params, model_name, objective=None):
 
 
 def build_example_dict(input_data):
-    """Convert user-submitted JSON into an Example dict matching Examples_{Model}.py structure."""
+    """Convert user-submitted JSON into a project/example dict matching solver expectations."""
     params = input_data["parameters"]
     discrete = input_data["discrete_variables"]
     selected_of = input_data.get("selected_of", "TAC_OF")
@@ -112,9 +161,9 @@ def build_example_dict(input_data):
             )
         discrete_values.append(vals)
 
-    # Merge user-submitted params with Example1 defaults (fills missing internal params)
+    # Merge user-submitted params with Default_Design defaults (fills missing internal params)
     try:
-        example_ref = load_examples(model_name, "Example1")
+        example_ref = load_project_defaults(model_name, "Default_Design")
         ref_params = dict(example_ref["Equipment1"]["Model_Parameters"])
         # Convert numpy arrays to lists for JSON compatibility, then merge
         for k in list(ref_params.keys()):
@@ -145,30 +194,17 @@ def build_example_dict(input_data):
     return example
 
 
-def inject_example(example_dict, model_name, example_name):
-    """Inject an example dict into the Examples module at runtime via monkey-patching."""
-    module = importlib.import_module(f"{model_name}.Examples_{model_name}")
-    setattr(module, example_name, example_dict)
-    return module
-
-
 def run_solver(model_name, example_name, example_dict):
     """Run the full OptiProcess pipeline for the given model and example. Returns (Sol_Dict, active_example, active_models)."""
     from OptiCode import (
         Calculations_Prep_Organizer,
         Calculations_Solver_Selection,
         Calculations_Consistency_Check,
-        Import_Example,
         Import_Functions,
         Import_Models,
     )
 
-    # Inject the user-submitted example into the Examples module
-    inject_example(example_dict, model_name, example_name)
-
-    # Import example data using the existing infrastructure
-    active_repo = Import_Example.Import_Example(model_name, "Examples_")
-    active_example = getattr(active_repo, example_name)
+    active_example = example_dict
 
     # Collect model list
     active_models_list = [model_name]
@@ -184,18 +220,22 @@ def run_solver(model_name, example_name, example_dict):
     active_models["Parameters_Update"] = Import_Functions.Import_Functions(active_models_list, "Parameters_Update_")
 
     # Dummy save_result to suppress console output
+    solver_messages = []
+
     def save_result(*texts):
-        pass
+        solver_messages.append(" ".join(str(text) for text in texts))
 
     # Consistency check + initial set up
-    Calculations_Consistency_Check.Consistency_Check(active_example, active_models, save_result)
+    consistency_report = Calculations_Consistency_Check.Consistency_Check(active_example, active_models, save_result)
+    if not consistency_report.get("passed", True):
+        raise ConsistencyError(consistency_report)
     Calculations_Prep_Organizer.Prep_Organizer(active_example, active_models, model_name, example_name, save_result)
 
     # Run solver
     solution = Calculations_Solver_Selection.Solver_Selection(
         active_example, active_models, model_name, example_name, save_result
     )
-    return solution, active_example, active_models
+    return solution, active_example, active_models, consistency_report, build_solver_diagnostics(solver_messages)
 
 
 def extract_results(sol_dict, active_models, model_name):
@@ -282,8 +322,17 @@ def main():
     try:
         # Build example dict (validation errors are caught and returned gracefully)
         example_dict = build_example_dict(input_data)
-        sol_dict, active_example, active_models = run_solver(model_name, example_name, example_dict)
+        sol_dict, active_example, active_models, consistency_report, solver_diagnostics = run_solver(model_name, example_name, example_dict)
         results = extract_results(sol_dict, active_models, model_name)
+        if not results.get("optimal_variables") or not results.get("number_of_solutions"):
+            label = solver_diagnostics.get("infeasible_constraint_label")
+            constraint = solver_diagnostics.get("infeasible_constraint")
+            detail = f" The candidate set became empty at: {label} ({constraint})." if constraint else ""
+            raise ValueError(
+                "No feasible design found after passing mandatory consistency checks. "
+                "Review the limiting constraint, consistency warnings, and selected geometric options."
+                + detail
+            )
         # Compute model-specific output info (thermo/hydraulic/economics)
         params = example_dict.get("Equipment1", {}).get("Model_Parameters", input_data.get("parameters", {}))
         optimal = results.get("optimal_variables", {})
@@ -294,7 +343,17 @@ def main():
             results["objective"] = output_info.get("objective", objective)
         results["status"] = "ok"
         results["model"] = model_name
+        results["consistency"] = consistency_report
+        results["solver_diagnostics"] = solver_diagnostics
         results["elapsed_seconds"] = round(time.time() - start, 4)
+    except ConsistencyError as e:
+        results = {
+            "status": "error",
+            "error": str(e),
+            "consistency": e.report,
+            "model": model_name,
+            "elapsed_seconds": round(time.time() - start, 4),
+        }
     except Exception as e:
         error_msg = str(e)
         # Translate cryptic solver errors into user-friendly messages
@@ -311,6 +370,8 @@ def main():
         results = {
             "status": "error",
             "error": error_msg,
+            "consistency": locals().get("consistency_report"),
+            "solver_diagnostics": locals().get("solver_diagnostics"),
             "model": model_name,
             "elapsed_seconds": round(time.time() - start, 4),
         }

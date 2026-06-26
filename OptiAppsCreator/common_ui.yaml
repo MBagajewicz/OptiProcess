@@ -14,7 +14,7 @@ header:
 # LOGIN PAGE
 # ============================================================
 login:
-  default_user: "|"
+  default_user: ""
 
 # ============================================================
 # MAIN MENU — list of all known model types

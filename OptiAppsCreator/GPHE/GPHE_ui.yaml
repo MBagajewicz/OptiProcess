@@ -5,6 +5,7 @@
 model:
   display_name: "Plate Exchanger"
   icon: "fa-industry"
+  sync_scalar_keys: []
 
 pages:
   # ============================================================
@@ -12,10 +13,11 @@ pages:
   # ============================================================
   problem_data:
     title: "Problem Data"
+    default_buttons: true
     columns:
-      - [optimization_target]
-      - [hot_stream, cold_stream, heat_display]
-      - [flow_limits, other_options]
+      - [optimization_target, other_options, heat_display]
+      - [hot_stream, cold_stream]
+      - [flow_limits]
       - [economic]
 
     sections:
@@ -109,6 +111,7 @@ pages:
   # ============================================================
   geometric_options:
     title: "Geometric Options"
+    default_buttons: false
     columns:
       - [num_plates]
       - [plate_size]
@@ -138,13 +141,6 @@ pages:
           7: "7 (Lp=0.40, Lw=0.13, Dp=0.03)"
           8: "8 (Lp=1.85, Lw=0.45, Dp=0.16)"
           9: "9 (Lp=1.54, Lw=0.81, Dp=0.28)"
-
-      plate_dims:
-        title: "Plate Dimensions"
-        element: computed_display
-        color: brown_dark
-        rows:
-          - {label: "Lp, Lw, Dp vectors loaded from example", computed: true}
 
       chevron_angle:
         title: "Chevron Angle"

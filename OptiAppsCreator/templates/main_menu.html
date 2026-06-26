@@ -35,10 +35,24 @@
             </a>
             {% endfor %}
         </div>
-        <button class="bg-[#3b5998] text-white px-6 py-1 rounded-full text-xs font-bold border border-black shadow-md">
+        <button onclick="logout()" class="bg-[#3b5998] text-white px-6 py-1 rounded-full text-xs font-bold border border-black shadow-md">
             Logout
         </button>
     </div>
+
+    <script>
+    async function requireAuth() {
+        const response = await fetch('/api/auth/me', {credentials: 'include'});
+        if (!response.ok) window.location.href = '/ui/login.html';
+    }
+
+    async function logout() {
+        await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+        window.location.href = '/ui/login.html';
+    }
+
+    requireAuth();
+    </script>
 
 </body>
 </html>

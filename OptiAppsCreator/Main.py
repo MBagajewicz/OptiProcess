@@ -11,9 +11,7 @@
 #   0.4          03-Fev-2025     Alice Peccini             Changes for different enumeration type selection
 #   0.5          25-Fev-2025     Diego Oliva               Ubication of examples changed. Examples are in
 #   0.5          25-Fev-2025     Diego Oliva               subfolders related with the unit type.
-#   0.5          25-Fev-2025     Diego Oliva               Calling structure: Examples_unit.Example_name
-#   0.5          25-Fev-2025     Diego Oliva               e.g. for STHE you should write:
-#   0.5          25-Fev-2025     Diego Oliva               Active_Example = Examples_STHE.Example1
+#   0.5          25-Fev-2025     Diego Oliva               Calling structure: Projects/ProjectName.py
 #   0.6          26-Fev-2025     Alice Peccini             Repository dynamic importation
 #   0.7          27-Fev-2025     Alice Peccini             OptiProcess Code Structure Update
 #   0.8          26-Apr-2025     Mariana Mello             Add .txt file with Results of Examples
@@ -29,7 +27,7 @@
 ##################################################################################################################
 
 Selected_Model = 'STHE'             # The same as defined in Models_List (CASE SENSITIVE)
-Selected_Example = 'Example1'      # The same as defined in Examples_{Model} in Model folder (CASE SENSITIVE)
+Selected_Project = 'Example1'      # The same as defined in {Model}/Projects/{Project}.py (CASE SENSITIVE)
 Create_Results_txt = True          # True or False
 
 ##################################################################################################################
@@ -42,12 +40,12 @@ from OptiCode import (
     Calculations_Prep_Organizer,
     Calculations_Solver_Selection,
     Calculations_Consistency_Check,
-    Import_Example,
     Import_Functions,
     Import_Models)
 import sys
 import os
 import time
+from project_store import ProjectError, load_project
 ##################################################################################################################
 #endregion
 ##################################################################################################################
@@ -60,28 +58,26 @@ root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if root_path not in sys.path:
     sys.path.append(root_path)
 
-# ========================================= IMPORT SELECTED EXAMPLE DATA =========================================
+# ========================================= IMPORT SELECTED PROJECT DATA =========================================
 
-# Dynamically select the active example based on user input
+# Dynamically select the active project based on user input
 try:
-    Active_Repository = Import_Example.Import_Example(Selected_Model,'Examples_')
-except:
-    print(f'**There is no Example Repository named Examples_{Selected_Model} in {Selected_Model} folder. Check and try again**')
+    Active_Example = load_project(Selected_Model, Selected_Project, scope="examples")
+except ProjectError as exc:
+    print(f'**Could not load project {Selected_Project} for model {Selected_Model}: {exc}**')
     sys.exit()
-
-Active_Example = getattr(Active_Repository, Selected_Example)
 
 # ================================================================================================================
 
 f_path = f"{Selected_Model}"
-file_name = f"Results_{Selected_Model}_{Selected_Example}.txt"
+file_name = f"Results_{Selected_Model}_{Selected_Project}.txt"
 file_path = os.path.join(f_path, file_name)
 
 try:
     if Create_Results_txt:
         with open(file_path, "w", encoding="utf-8") as f:
             pass
-except NameError or KeyError:
+except (NameError, KeyError):
     print('\n@@@@@@@@ A .txt file with the results was automatically created @@@@@@@@')
     with open(file_path, "w", encoding="utf-8") as f:
         pass
@@ -95,7 +91,7 @@ def save_result(*texts):
                 f.write(text_c + "\n")
         else:
             print(text_c)
-    except NameError or KeyError:
+    except (NameError, KeyError):
         print(text_c)
         with open(file_path, "a", encoding="utf-8") as f:
             f.write(text_c + "\n")
@@ -141,7 +137,12 @@ Active_Models['Parameters_Update'] = Import_Functions.Import_Functions(Active_Mo
 start_time = time.time()
 
 # Calls for Example Data Consistency Check 
-Calculations_Consistency_Check.Consistency_Check(Active_Example, Active_Models, save_result)
+consistency_report = Calculations_Consistency_Check.Consistency_Check(Active_Example, Active_Models, save_result)
+if not consistency_report.get('passed', True):
+    save_result('\nMandatory consistency checks failed. Solver was not executed.\n')
+    for failure in consistency_report.get('mandatory_failures', []):
+        save_result(f" - {failure.get('label', failure.get('id', 'unknown'))}: {failure.get('message', '')}\n")
+    sys.exit()
 
 # Active Example Initial Set Up (Parameters, Primordial and Initial Set Generation)
 Calculations_Prep_Organizer.Prep_Organizer(Active_Example, Active_Models, Selected_Model, Selected_Example, save_result)

@@ -20,6 +20,7 @@
         .spinner { border: 3px solid #e5e7eb; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error-box { background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; text-align: center; color: #dc2626; }
+        .consistency-box { border-radius: 8px; padding: 12px; font-size: 12px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -34,10 +35,66 @@
     </div>
 
     <!-- Navigation -->
-    <div class="px-6 border-b border-gray-300 flex gap-8 text-sm text-gray-600">
-        {% for nav in nav_pages %}
-        <a href="{{ nav.file }}" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
-        {% endfor %}
+    <div class="px-6 border-b border-gray-300 grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-sm text-gray-600">
+        <div class="flex gap-8">
+            {% for nav in nav_pages %}
+            <a href="{{ nav.file }}" onclick="return navigateModelPage(event, '{{ nav.file }}')" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
+            {% endfor %}
+        </div>
+        <div class="flex items-center justify-center gap-2 py-1">
+            <button id="nav-back-btn" type="button" onclick="goNavStep(-1)" class="bg-gray-500 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                Back
+            </button>
+            <button id="nav-next-btn" type="button" onclick="goNavStep(1)" class="bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+            <button id="nav-run-btn" type="button" onclick="runFromNavbar()" class="bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed" disabled>
+                RUN
+            </button>
+        </div>
+        <div class="flex items-center justify-end gap-3 py-1">
+            <span id="project-indicator" class="text-xs text-gray-700">Current project: —</span>
+            <div class="relative">
+                <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
+                    Load <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="load-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[170px] text-xs">
+                    <button type="button" onclick="loadExamples()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open Tutorial Library</button>
+                    <button type="button" onclick="loadUserProjects()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Open User Projects</button>
+                </div>
+            </div>
+            <div class="relative">
+                <button type="button" onclick="toggleSaveMenu()" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-blue-700">
+                    Save <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="save-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] text-xs">
+                    <button type="button" onclick="saveCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design</button>
+                    <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design As...</button>
+                </div>
+            </div>
+            <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
+                Reset
+            </button>
+            <button type="button" onclick="window.location.href='/ui/main_menu.html'" class="bg-slate-500 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-600">
+                Main Menu
+            </button>
+            <button type="button" onclick="logout()" class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-red-700">
+                LOGOUT
+            </button>
+        </div>
+    </div>
+
+    <div id="close-session-modal" class="hidden fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md p-5">
+            <h2 class="text-lg font-bold text-gray-800 mb-2">Unsaved changes</h2>
+            <p class="text-sm text-gray-600 mb-4">The current project has unsaved changes. Choose how to continue.</p>
+            <div class="space-y-2">
+                <button type="button" onclick="closeAfterSaveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700">Save Design</button>
+                <button type="button" onclick="closeAfterSaveAsCloud()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600">Save Design As...</button>
+                <button type="button" onclick="hideCloseSessionModal()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Cancel LOGOUT</button>
+                <button type="button" onclick="logoutWithoutSave()" class="w-full bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">LOGOUT without Save</button>
+            </div>
+        </div>
     </div>
 
     <!-- Loading overlay -->
@@ -50,12 +107,13 @@
 
     <!-- Error message -->
     <div id="error-box" class="hidden mx-4 mt-4 error-box"></div>
+    <div id="consistency-box" class="hidden mx-4 mt-4 consistency-box"></div>
 
     <!-- Main Content -->
     <div id="results-content" class="flex flex-row items-start gap-3 p-4 overflow-x-auto">
 
         {% for column in columns %}
-        <div class="flex flex-col gap-3 shrink-0 w-[260px]">
+        <div class="flex flex-col gap-3 shrink-0 w-[300px]">
             {% for section in column %}
             <div class="{{ section.color.border }} {{ section.color.bg }} rounded-lg p-1 {{ 'h-full' if section.full_height }}">
                 {% if section.title %}
@@ -76,7 +134,7 @@
                             <tbody>
                                 {% for row in sub.rows %}
                                 <tr>
-                                    <td>{{ row.label }}</td>
+                                    <td><span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span></td>
                                     <td id="result-{{ row.key }}" class="{{ 'font-bold text-black' if row.highlight }}">—</td>
                                 </tr>
                                 {% endfor %}
@@ -92,7 +150,7 @@
                         <tbody>
                             {% for row in section.rows %}
                             <tr>
-                                <td>{{ row.label }}</td>
+                                <td><span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span></td>
                                 <td id="result-{{ row.key }}" class="{{ 'font-bold text-black' if row.highlight }}">—</td>
                             </tr>
                             {% endfor %}
@@ -107,7 +165,7 @@
                         <tbody>
                             {% for row in section.footer_rows %}
                             <tr>
-                                <td>{{ row.label }}</td>
+                                <td><span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span></td>
                                 <td id="result-{{ row.key }}">—</td>
                             </tr>
                             {% endfor %}
@@ -132,20 +190,188 @@
 <script>
 // --- Configuration ---
 const API_URL = window.location.origin + '/api/optimize';
-const STORAGE_KEY_PROBLEM = 'optihex_problem_data';
-const STORAGE_KEY_GEOM = 'optihex_geometric_data';
 const MODEL = '{{ model_name }}';
+const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
+const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
+const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
+const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
+const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
+const STORAGE_KEY_PROJECT = 'optihex_' + MODEL + '_current_project';
+const STORAGE_KEY_USER_PROJECT_ID = 'optihex_' + MODEL + '_current_user_project_id';
+const STORAGE_KEY_USER_PROJECT_NAME = 'optihex_' + MODEL + '_current_user_project_name';
+const STORAGE_KEY_DIRTY = 'optihex_' + MODEL + '_project_dirty';
+const STORAGE_KEY_ORIGIN = 'optihex_' + MODEL + '_project_origin';
+const STORAGE_KEY_PROBLEM_CLEARED = 'optihex_' + MODEL + '_problem_data_cleared';
+const STORAGE_KEY_LAST_SAVED_PROBLEM = 'optihex_' + MODEL + '_last_saved_problem_data';
+const STORAGE_KEY_LAST_SAVED_GEOM = 'optihex_' + MODEL + '_last_saved_geometric_data';
+const STORAGE_KEY_LAST_SAVED_PROJECT = 'optihex_' + MODEL + '_last_saved_project_name';
+const STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID = 'optihex_' + MODEL + '_last_saved_user_project_id';
+const STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME = 'optihex_' + MODEL + '_last_saved_user_project_name';
+const STORAGE_KEY_LAST_SAVED_ORIGIN = 'optihex_' + MODEL + '_last_saved_origin';
+const STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED = 'optihex_' + MODEL + '_last_saved_problem_data_cleared';
+const STORAGE_KEY_LAST_OPT_SIGNATURE = 'optihex_' + MODEL + '_last_optimization_signature';
+const STORAGE_KEY_LAST_OPT_RESULT = 'optihex_' + MODEL + '_last_optimization_result';
+const STORAGE_KEY_LAST_OPT_SESSION_DATA = 'optihex_' + MODEL + '_last_optimization_session_data';
+const STORAGE_KEY_OPT_DIRTY = 'optihex_' + MODEL + '_optimization_dirty';
+
+function getCurrentProject() { return sessionStorage.getItem(STORAGE_KEY_PROJECT) || ''; }
+function setCurrentProject(name) { sessionStorage.setItem(STORAGE_KEY_PROJECT, name || ''); updateProjectIndicator(); }
+function isDirty() { return sessionStorage.getItem(STORAGE_KEY_DIRTY) === 'true'; }
+function setDirty(value) {
+    sessionStorage.setItem(STORAGE_KEY_DIRTY, value ? 'true' : 'false');
+    if (value) sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'true');
+    updateProjectIndicator();
+    updateRunButtonState();
+}
+async function requireAuth() {
+    const response = await fetch('/api/auth/me', {credentials: 'include'});
+    if (!response.ok) window.location.href = '/ui/login.html';
+}
+function updateProjectIndicator() {
+    const el = document.getElementById('project-indicator');
+    if (!el) return;
+    const userProjectName = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || 'No User Project';
+    const name = getCurrentProject() || 'Unsaved Design';
+    el.innerHTML = 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
+}
+function navigateModelPage(event, target) {
+    if (event) event.preventDefault();
+    window.location.href = target;
+    return false;
+}
+
+function currentPageFile() { return window.location.pathname.split('/').pop() || 'problem_data.html'; }
+function currentNavIndex() {
+    const file = currentPageFile();
+    return NAV_ORDER.findIndex(function(page) { return page.file === file; });
+}
+function goNavStep(step) {
+    const idx = currentNavIndex();
+    if (idx < 0) return;
+    const target = NAV_ORDER[idx + step];
+    if (!target) return;
+    window.location.href = target.file;
+}
+function stableStringify(value) {
+    if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+    if (value && typeof value === 'object') {
+        return '{' + Object.keys(value).sort().map(function(key) {
+            return JSON.stringify(key) + ':' + stableStringify(value[key]);
+        }).join(',') + '}';
+    }
+    return JSON.stringify(value);
+}
+function currentOptimizationSignature() {
+    const data = getSessionData();
+    if (!data) return '';
+    return stableStringify({problem: data.parameters, geometric: data.discrete_variables || {}});
+}
+function hasOptimizationChanges() {
+    if (sessionStorage.getItem(STORAGE_KEY_OPT_DIRTY) === 'true') return true;
+    const signature = currentOptimizationSignature();
+    if (!signature) return false;
+    return signature !== sessionStorage.getItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
+}
+function updateRunButtonState() {
+    const runBtn = document.getElementById('nav-run-btn');
+    if (!runBtn) return;
+    const enabled = hasOptimizationChanges();
+    runBtn.disabled = !enabled;
+    runBtn.className = enabled
+        ? 'bg-green-600 text-white px-5 py-1 rounded-full text-xs font-bold hover:bg-green-700'
+        : 'bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed';
+}
+function updateNavButtons() {
+    const idx = currentNavIndex();
+    const backBtn = document.getElementById('nav-back-btn');
+    const nextBtn = document.getElementById('nav-next-btn');
+    if (backBtn) backBtn.disabled = idx <= 0;
+    if (nextBtn) nextBtn.disabled = idx < 0 || idx >= NAV_ORDER.length - 1;
+    updateRunButtonState();
+}
+function runFromNavbar() {
+    if (!hasOptimizationChanges()) return;
+    runOptimization().then(function(data) {
+        if (data) populateResults(data.result, data.sessionData);
+    });
+}
+function toggleSaveMenu() { document.getElementById('save-menu').classList.toggle('hidden'); }
+function toggleLoadMenu() { document.getElementById('load-menu').classList.toggle('hidden'); }
+function loadExamples() {
+    document.getElementById('load-menu').classList.add('hidden');
+    window.location.href = 'projects.html?scope=examples';
+}
+function loadUserProjects() {
+    document.getElementById('load-menu').classList.add('hidden');
+    window.location.href = 'projects.html?scope=users';
+}
+function saveSnapshot() {
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROBLEM, sessionStorage.getItem(STORAGE_KEY_PROBLEM) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_GEOM, sessionStorage.getItem(STORAGE_KEY_GEOM) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROJECT, getCurrentProject());
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) || '');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || '');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_ORIGIN, sessionStorage.getItem(STORAGE_KEY_ORIGIN) || '');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, sessionStorage.getItem(STORAGE_KEY_PROBLEM_CLEARED) === 'true' ? 'true' : 'false');
+}
+
+function hasSnapshot() {
+    return sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM) !== null || sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOM) !== null;
+}
+
+function resetProjectState() {
+    if (!hasSnapshot()) {
+        alert('No saved or loaded project state is available to reset.');
+        return;
+    }
+    sessionStorage.setItem(STORAGE_KEY_PROBLEM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_GEOM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOM) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_PROJECT, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROJECT) || '');
+    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID) || '');
+    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME) || '');
+    sessionStorage.setItem(STORAGE_KEY_ORIGIN, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_ORIGIN) || '');
+    sessionStorage.setItem(STORAGE_KEY_PROBLEM_CLEARED, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED) === 'true' ? 'true' : 'false');
+    sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'false');
+    setDirty(false);
+    window.location.reload();
+}
+
+function clearProblemData() {
+    sessionStorage.setItem(STORAGE_KEY_PROBLEM, '{}');
+    sessionStorage.setItem(STORAGE_KEY_PROBLEM_CLEARED, 'true');
+    setDirty(true);
+}
 
 // --- Column display helpers ---
 const DISPLAY_FACTORS = {
-    {% for section in all_sections %}{% for row in section.all_rows %}
+    {% for section in all_sections %}
+    {% for row in section.rows|default([]) %}
     "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
-    {% endfor %}{% endfor %}
+    {% endfor %}
+    {% for sub in section.subsections|default([]) %}
+    {% for row in sub.rows %}
+    "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
+    {% endfor %}
+    {% endfor %}
+    {% for row in section.footer_rows|default([]) %}
+    "{{ row.key }}": {{ row.display_factor|default(1)|safe }},
+    {% endfor %}
+    {% endfor %}
 };
 const ROW_UNITS = {
-    {% for section in all_sections %}{% for row in section.all_rows %}
+    {% for section in all_sections %}
+    {% for row in section.rows|default([]) %}
     "{{ row.key }}": "{{ row.unit or '' }}",
-    {% endfor %}{% endfor %}
+    {% endfor %}
+    {% for sub in section.subsections|default([]) %}
+    {% for row in sub.rows %}
+    "{{ row.key }}": "{{ row.unit or '' }}",
+    {% endfor %}
+    {% endfor %}
+    {% for row in section.footer_rows|default([]) %}
+    "{{ row.key }}": "{{ row.unit or '' }}",
+    {% endfor %}
+    {% endfor %}
 };
 
 // --- Load data from sessionStorage ---
@@ -178,11 +404,10 @@ function buildPayload(data) {
 
     // Separate tube option params (scalar values) from discrete variable arrays
     var discreteVars = {};
-    var tubeOptKeys = ['LBLD', 'UBLD', 'ktube', 'thk', 'Nss', 'plbmax1', 'plbmax2'];
     var allKeys = Object.keys(geomData);
     for (var i = 0; i < allKeys.length; i++) {
         var k = allKeys[i];
-        if (tubeOptKeys.indexOf(k) >= 0) {
+        if (!Array.isArray(geomData[k])) {
             params[k] = geomData[k];        // scalar → parameters
         } else {
             discreteVars[k] = geomData[k];  // array → discrete_variables
@@ -201,11 +426,131 @@ function buildPayload(data) {
     };
 }
 
+function buildProjectPayload(name) {
+    const sessionData = getSessionData();
+    if (!sessionData) return null;
+    const solverPayload = buildPayload(sessionData);
+    return {
+        name: name || getCurrentProject(),
+        user_project_id: sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) ? parseInt(sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID), 10) : null,
+        user_project_name: sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || null,
+        parameters: solverPayload.parameters,
+        discrete_variables: solverPayload.discrete_variables,
+        selected_of: solverPayload.selected_of,
+        number_of_equipment: solverPayload.number_of_equipment
+    };
+}
+
+async function saveCloud() {
+    document.getElementById('save-menu').classList.add('hidden');
+    const name = getCurrentProject();
+    if (!name || sessionStorage.getItem(STORAGE_KEY_ORIGIN) === 'example' || sessionStorage.getItem(STORAGE_KEY_ORIGIN) === 'default') {
+        return await saveAsCloud();
+    }
+    const payload = buildProjectPayload(name);
+    if (!payload) return alert('No project data available to save.');
+    const response = await fetch(API_PROJECTS_URL + '/' + encodeURIComponent(name), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+        alert('Could not save project: ' + await response.text());
+        return false;
+    }
+    sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
+    setDirty(false);
+    saveSnapshot();
+    return true;
+}
+
+async function saveAsCloud() {
+    document.getElementById('save-menu').classList.add('hidden');
+    const previousUserProjectName = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || '';
+    const userProjectName = prompt('User project name:', previousUserProjectName || 'My_Designs');
+    if (!userProjectName) return false;
+    if (previousUserProjectName && userProjectName !== previousUserProjectName) sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_ID);
+    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, userProjectName);
+    const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
+    if (!name) return false;
+    const payload = buildProjectPayload(name);
+    if (!payload) return alert('No project data available to save.');
+    const response = await fetch(API_PROJECTS_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+        alert('Could not save project: ' + await response.text());
+        return false;
+    }
+    const data = await response.json();
+    setCurrentProject(data.name || name);
+    if (data.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, data.user_project_id);
+    if (data.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, data.user_project_name);
+    sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
+    setDirty(false);
+    saveSnapshot();
+    return true;
+}
+
+function applyProjectPayload(project, source) {
+    const params = Object.assign({}, project.parameters || {});
+    if (typeof params.int_rate === 'number') params.int_rate = params.int_rate * 100;
+    params._selected_of = project.selected_of || 'TAC_OF';
+    const geom = Object.assign({}, project.discrete_variables || {});
+    GEOMETRIC_SCALAR_KEYS.forEach(function(key) {
+        if (params[key] !== undefined) geom[key] = params[key];
+    });
+    sessionStorage.setItem(STORAGE_KEY_PROBLEM, JSON.stringify(params));
+    sessionStorage.setItem(STORAGE_KEY_GEOM, JSON.stringify(geom));
+    sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
+    sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_RESULT);
+    sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SESSION_DATA);
+    sessionStorage.removeItem(STORAGE_KEY_OPT_DIRTY);
+    setCurrentProject(project.name || 'LocalProject');
+    if (project.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, project.user_project_id);
+    else sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_ID);
+    if (project.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, project.user_project_name);
+    else sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_NAME);
+    sessionStorage.setItem(STORAGE_KEY_ORIGIN, source || 'cloud');
+    sessionStorage.setItem(STORAGE_KEY_PROBLEM_CLEARED, 'false');
+    setDirty(false);
+    saveSnapshot();
+}
+
+function hideCloseSessionModal() { document.getElementById('close-session-modal').classList.add('hidden'); }
+function showCloseSessionModal() { document.getElementById('close-session-modal').classList.remove('hidden'); }
+function clearModelSession() {
+    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, STORAGE_KEY_LAST_OPT_SIGNATURE, STORAGE_KEY_LAST_OPT_RESULT, STORAGE_KEY_LAST_OPT_SESSION_DATA, STORAGE_KEY_OPT_DIRTY].forEach(function(key) {
+        sessionStorage.removeItem(key);
+    });
+    ['optihex_' + MODEL + '_project_temporal_local', 'optihex_' + MODEL + '_project_saved_local', 'optihex_' + MODEL + '_last_saved_temporal_local'].forEach(function(key) {
+        sessionStorage.removeItem(key);
+    });
+}
+async function finishCloseSession() {
+    clearModelSession();
+    await fetch('/api/auth/logout', {method: 'POST', credentials: 'include'});
+    window.location.href = '/ui/login.html';
+}
+function logout() {
+    if (isDirty()) showCloseSessionModal();
+    else finishCloseSession();
+}
+function logoutWithoutSave() {
+    hideCloseSessionModal();
+    finishCloseSession();
+}
+async function closeAfterSaveCloud() { if (await saveCloud()) finishCloseSession(); }
+async function closeAfterSaveAsCloud() { if (await saveAsCloud()) finishCloseSession(); }
+
 // --- API call ---
 async function runOptimization() {
     const sessionData = getSessionData();
     const overlay = document.getElementById('loading-overlay');
     const errorBox = document.getElementById('error-box');
+    const consistencyBox = document.getElementById('consistency-box');
 
     if (!sessionData) {
         errorBox.classList.remove('hidden');
@@ -215,6 +560,7 @@ async function runOptimization() {
 
     overlay.classList.remove('hidden');
     errorBox.classList.add('hidden');
+    consistencyBox.classList.add('hidden');
 
     try {
         const payload = buildPayload(sessionData);
@@ -234,21 +580,31 @@ async function runOptimization() {
         console.log('OptiHexx response:', result);
 
         if (result.status !== 'ok') {
+            renderConsistencyMessages(result.consistency || null, true);
+            renderSolverDiagnostics(result.solver_diagnostics || null);
             errorBox.classList.remove('hidden');
-            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + (result.error || 'unknown error') + '</p><p class="text-xs mt-1">Check browser console (F12) for details.</p>';
+            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p>';
             overlay.classList.add('hidden');
             return null;
         }
+
+        renderConsistencyMessages(result.consistency || null, false);
 
         // Debug: check what we got
         if (!result.optimal_variables || !result.calculations) {
             console.warn('API response missing optimal_variables or calculations', result);
             errorBox.classList.remove('hidden');
-            errorBox.innerHTML = '<p><b>API response incomplete.</b> Missing optimal_variables or calculations. Check console (F12).</p>';
+            errorBox.innerHTML = '<p><b>No complete optimization result was returned.</b></p><p class="text-xs mt-1">The solver did not return optimal variables or derived calculations. Review the consistency warnings and selected geometric options.</p>';
             overlay.classList.add('hidden');
         }
 
-        return { result, sessionData };
+        const data = { result, sessionData };
+        sessionStorage.setItem(STORAGE_KEY_LAST_OPT_SIGNATURE, currentOptimizationSignature());
+        sessionStorage.setItem(STORAGE_KEY_LAST_OPT_RESULT, JSON.stringify(result));
+        sessionStorage.setItem(STORAGE_KEY_LAST_OPT_SESSION_DATA, JSON.stringify(sessionData));
+        sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'false');
+        updateRunButtonState();
+        return data;
 
     } catch(err) {
         errorBox.classList.remove('hidden');
@@ -257,6 +613,57 @@ async function runOptimization() {
     } finally {
         overlay.classList.add('hidden');
     }
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"]/g, function(ch) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[ch];
+    });
+}
+
+function renderConsistencyMessages(consistency, hasError) {
+    const box = document.getElementById('consistency-box');
+    if (!box || !consistency) return;
+    const warnings = consistency.warnings || [];
+    const failures = consistency.mandatory_failures || [];
+    if (!warnings.length && !failures.length) {
+        box.classList.add('hidden');
+        return;
+    }
+    const parts = [];
+    if (warnings.length) {
+        parts.push('<div class="font-bold text-amber-800 mb-1">Consistency warnings</div>');
+        parts.push('<ul class="list-disc pl-5 space-y-1">' + warnings.map(function(item) {
+            return '<li><b>' + escapeHtml(item.label || item.id) + ':</b> ' + escapeHtml(item.message || '') + '</li>';
+        }).join('') + '</ul>');
+    }
+    if (failures.length) {
+        parts.push('<div class="font-bold text-red-800 mt-2 mb-1">Mandatory consistency errors</div>');
+        parts.push('<ul class="list-disc pl-5 space-y-1">' + failures.map(function(item) {
+            return '<li><b>' + escapeHtml(item.label || item.id) + ':</b> ' + escapeHtml(item.message || '') + '</li>';
+        }).join('') + '</ul>');
+    }
+    box.className = 'mx-4 mt-4 consistency-box ' + (hasError || failures.length ? 'bg-red-50 border border-red-200 text-red-800' : 'bg-amber-50 border border-amber-200 text-amber-900');
+    box.innerHTML = parts.join('');
+    box.classList.remove('hidden');
+}
+
+function renderSolverDiagnostics(diagnostics) {
+    const box = document.getElementById('consistency-box');
+    if (!box || !diagnostics || !diagnostics.infeasible_constraint) return;
+    const label = diagnostics.infeasible_constraint_label || diagnostics.infeasible_constraint;
+    const constraint = diagnostics.infeasible_constraint;
+    const cardinalities = diagnostics.candidate_cardinalities || [];
+    const parts = [];
+    parts.push('<div class="font-bold text-red-800 mb-1">Limiting optimization constraint</div>');
+    parts.push('<p>The candidate set became empty at <b>' + escapeHtml(label) + '</b> (<code>' + escapeHtml(constraint) + '</code>).</p>');
+    if (cardinalities.length) {
+        parts.push('<p class="mt-1 text-xs">Candidate counts during trimming: ' + escapeHtml(cardinalities.join(' -> ')) + '</p>');
+    }
+    parts.push('<p class="mt-1 text-xs">This is not a mandatory consistency-test failure; it means no geometry in the selected options satisfies this optimization constraint.</p>');
+    box.className = 'mx-4 mt-4 consistency-box bg-red-50 border border-red-200 text-red-800';
+    box.innerHTML = parts.join('');
+    box.classList.remove('hidden');
 }
 
 // --- Populate results ---
@@ -340,6 +747,16 @@ function populateResults(data, sessionData) {
     setVal('OPEX_t', calc.OPEX_t, '$/y');
     setVal('OPEX_s', calc.OPEX_s, '$/y');
     setVal('OPEX_total', calc.OPEX_total, '$/y');
+
+    // Generic fallback: fill any remaining computed values from calculations
+    for (var ck in calc) {
+        if (calc.hasOwnProperty(ck) && calc[ck] != null) {
+            var cell = document.getElementById('result-' + ck);
+            if (cell && cell.textContent === '\u2014') {
+                setVal(ck, calc[ck]);
+            }
+        }
+    }
 }
 
 // --- Helper: set a result cell value ---
@@ -373,9 +790,29 @@ function downloadResults() {
 }
 
 // --- Init ---
-runOptimization().then(data => {
-    if (data) populateResults(data.result, data.sessionData);
-});
+requireAuth();
+updateProjectIndicator();
+updateNavButtons();
+const shouldRun = new URLSearchParams(window.location.search).get('run') === '1';
+if (shouldRun && hasOptimizationChanges()) {
+    runOptimization().then(function(data) {
+        if (data) populateResults(data.result, data.sessionData);
+    });
+} else {
+    const resultRaw = sessionStorage.getItem(STORAGE_KEY_LAST_OPT_RESULT);
+    const sessionRaw = sessionStorage.getItem(STORAGE_KEY_LAST_OPT_SESSION_DATA);
+    if (resultRaw && sessionRaw) {
+        populateResults(JSON.parse(resultRaw), JSON.parse(sessionRaw));
+    } else {
+        const errorBox = document.getElementById('error-box');
+        errorBox.classList.remove('hidden');
+        errorBox.innerHTML = '<p>No optimization results available. Press RUN to calculate.</p>';
+    }
+    updateRunButtonState();
+}
+if (shouldRun && window.history.replaceState) {
+    window.history.replaceState({}, document.title, 'results.html');
+}
 </script>
 
 </body>

@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="min-h-[calc(100vh-140px)] bg-slate-100 p-6">
+    <div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+            <div>
+                <h2 id="project-directory-title" class="text-xl font-bold">Project Directory</h2>
+                <p id="project-directory-subtitle" class="text-xs text-slate-300">Model: {{ model_name }}</p>
+            </div>
+            <button onclick="loadProjectList()" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-xs font-bold">
+                <i class="fas fa-sync-alt mr-1"></i> Refresh
+            </button>
+        </div>
+
+        <div id="projects-error" class="hidden m-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm"></div>
+
+        <div class="p-6 grid grid-cols-1 md:grid-cols-[260px_1fr_260px] gap-6">
+            <div id="user-project-panel">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-slate-700">User Projects</h3>
+                </div>
+                <div id="user-project-list" class="border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden bg-slate-50">
+                    <div class="p-4 text-sm text-slate-500">Loading user projects...</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 id="project-list-title" class="font-bold text-slate-700 mb-3">Designs</h3>
+                <div id="exploring-project-label" class="hidden mb-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800"></div>
+                <div id="project-list" class="border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden bg-slate-50">
+                    <div class="p-4 text-sm text-slate-500">Loading designs...</div>
+                </div>
+            </div>
+
+            <aside class="bg-slate-50 border border-slate-200 rounded-xl p-4 h-fit">
+                <h3 class="font-bold text-slate-700 mb-3">Actions</h3>
+                <p id="project-scope-help" class="text-xs text-slate-500 mb-4">User Projects can contain designs from multiple models.</p>
+                <div id="user-actions">
+                    <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Project</div>
+                    <button onclick="createUserProject()" class="w-full bg-slate-700 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-800 mb-3">
+                        New Project
+                    </button>
+                    <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Design</div>
+                    <button onclick="createNewDesign()" class="w-full bg-emerald-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-emerald-700 mb-2">
+                        New Design
+                    </button>
+                    <button onclick="saveCloud()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-blue-700 mb-2">
+                        Save Design
+                    </button>
+                    <button onclick="saveAsCloud()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-blue-50 mb-3">
+                        Save Design As...
+                    </button>
+                </div>
+                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Backup</div>
+                <input id="backup-restore-input" type="file" accept=".json,application/json" class="hidden" onchange="restoreBackupFile(this.files)">
+                <button onclick="backupMyProjects()" class="w-full bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-100 mb-2">
+                    Backup My Projects
+                </button>
+                <button onclick="selectBackupFile()" class="w-full bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-full text-xs font-bold hover:bg-blue-50 mb-3">
+                    Restore Backup
+                </button>
+                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2">Navigation</div>
+                <button onclick="window.location.href='problem_data.html'" class="w-full bg-slate-700 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-slate-800">
+                    Back To Problem Data
+                </button>
+            </aside>
+        </div>
+    </div>
+</main>
+
+<script>
+let selectedUserProjectId = null;
+let selectedUserProjectName = null;
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"]/g, function(ch) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[ch];
+    });
+}
+
+function jsString(value) {
+    return JSON.stringify(String(value));
+}
+
+function backupFilename() {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
+    return 'optiapps-backup-' + stamp + '.json';
+}
+
+function showProjectError(message) {
+    const box = document.getElementById('projects-error');
+    box.textContent = message;
+    box.classList.remove('hidden');
+}
+
+function clearProjectError() {
+    document.getElementById('projects-error').classList.add('hidden');
+}
+
+function getProjectScope() {
+    var scope = new URLSearchParams(window.location.search).get('scope') || 'users';
+    return scope === 'examples' ? 'examples' : 'users';
+}
+
+function configureScopeLabels() {
+    var scope = getProjectScope();
+    var isExamples = scope === 'examples';
+    document.getElementById('project-directory-title').textContent = isExamples ? 'Design Tutorial Library' : 'User Projects';
+    document.getElementById('project-directory-subtitle').textContent = 'Model: {{ model_name }} | ' + (isExamples ? 'Tutorial designs' : 'User project designs');
+    document.getElementById('project-list-title').textContent = isExamples ? 'Available tutorials' : 'Designs in selected User Project';
+    document.getElementById('project-scope-help').innerHTML = isExamples ? 'Tutorials are read-only reference designs.' : 'Select a User Project, then load or save a design.';
+    document.getElementById('user-project-panel').classList.toggle('hidden', isExamples);
+    document.getElementById('user-actions').classList.toggle('hidden', isExamples);
+    updateExploringProjectLabel();
+}
+
+function updateExploringProjectLabel() {
+    const label = document.getElementById('exploring-project-label');
+    if (!label) return;
+    if (getProjectScope() !== 'users' || !selectedUserProjectName) {
+        label.classList.add('hidden');
+        label.textContent = '';
+        return;
+    }
+    label.innerHTML = '<span class="font-bold">Exploring Project:</span> ' + escapeHtml(selectedUserProjectName)
+        + '<span class="ml-2 text-blue-500">Showing {{ model_name }} designs</span>';
+    label.classList.remove('hidden');
+}
+
+async function loadProjectList() {
+    clearProjectError();
+    const list = document.getElementById('project-list');
+    list.innerHTML = '<div class="p-4 text-sm text-slate-500">Loading projects...</div>';
+    try {
+        const scope = getProjectScope();
+        if (scope === 'users') {
+            await loadUserProjectList();
+            return;
+        }
+        const response = await fetch(API_PROJECTS_URL + '?scope=' + encodeURIComponent(scope));
+        if (!response.ok) throw new Error(await response.text());
+        const data = await response.json();
+        const projects = data.projects || [];
+        if (!projects.length) {
+            list.innerHTML = '<div class="p-4 text-sm text-slate-500">No tutorials found.</div>';
+            return;
+        }
+        list.innerHTML = projects.map(function(project) {
+            return '<div class="p-4 flex items-center justify-between bg-white">'
+                + '<div><div class="font-bold text-slate-700">Tutorial ' + escapeHtml(project.name.replace(/^Example/i, '')) + '</div>'
+                + '<div class="text-xs text-slate-400">' + escapeHtml(project.file) + '</div></div>'
+                + '<button onclick=\'loadProject(' + jsString(project.name) + ')\' class="bg-green-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-green-700">Load Tutorial</button>'
+                + '</div>';
+        }).join('');
+    } catch(e) {
+        list.innerHTML = '<div class="p-4 text-sm text-red-500">Could not load projects.</div>';
+        showProjectError(e.message);
+    }
+}
+
+async function loadUserProjectList() {
+    const projectBox = document.getElementById('user-project-list');
+    const designBox = document.getElementById('project-list');
+    projectBox.innerHTML = '<div class="p-4 text-sm text-slate-500">Loading user projects...</div>';
+    designBox.innerHTML = '<div class="p-4 text-sm text-slate-500">Select a User Project.</div>';
+    const response = await fetch('/api/user-projects');
+    if (!response.ok) throw new Error(await response.text());
+    const data = await response.json();
+    const projects = data.projects || [];
+    if (!projects.length) {
+        projectBox.innerHTML = '<div class="p-4 text-sm text-slate-500">No User Projects yet. Create one to save designs.</div>';
+        return;
+    }
+    if (!selectedUserProjectId) {
+        selectedUserProjectId = projects[0].id;
+        selectedUserProjectName = projects[0].name;
+    }
+    updateExploringProjectLabel();
+    projectBox.innerHTML = projects.map(function(project) {
+        const active = project.id === selectedUserProjectId;
+        return '<button onclick=\'selectUserProject(' + project.id + ', ' + jsString(project.name) + ')\' class="block w-full text-left p-4 border-l-4 transition-colors ' + (active ? 'bg-blue-50 border-blue-600 ring-1 ring-blue-200' : 'bg-white hover:bg-slate-50 border-transparent') + '">'
+            + '<div class="flex items-center justify-between gap-2"><div class="font-bold ' + (active ? 'text-blue-800' : 'text-slate-700') + '">' + escapeHtml(project.name) + '</div>'
+            + (active ? '<span class="rounded-full bg-blue-600 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">Exploring</span>' : '') + '</div>'
+            + '<div class="text-xs ' + (active ? 'text-blue-500' : 'text-slate-400') + '">' + (project.design_count || 0) + ' designs</div>'
+            + '</button>';
+    }).join('');
+    await loadDesignList();
+}
+
+async function createNewDesign() {
+    clearProjectError();
+    if (getProjectScope() !== 'users') return;
+    if (!selectedUserProjectId) {
+        showProjectError('Select or create a User Project before creating a design.');
+        return;
+    }
+    try {
+        const response = await fetch(API_PROJECTS_URL + '/default-design');
+        if (!response.ok) throw new Error(await response.text());
+        const design = await response.json();
+        design.user_project_id = selectedUserProjectId;
+        design.user_project_name = selectedUserProjectName;
+        design.name = '';
+        applyProjectPayload(design, 'default');
+        sessionStorage.setItem(modelKey('current_user_project_id'), selectedUserProjectId);
+        sessionStorage.setItem(modelKey('current_user_project_name'), selectedUserProjectName || '');
+        setCurrentProject('');
+        setDirty(true);
+        window.location.href = 'problem_data.html';
+    } catch(e) {
+        showProjectError(e.message);
+    }
+}
+
+async function backupMyProjects() {
+    clearProjectError();
+    try {
+        const response = await fetch('/api/user-backup');
+        if (!response.ok) throw new Error(await response.text());
+        const backup = await response.json();
+        const blob = new Blob([JSON.stringify(backup, null, 2) + '\n'], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = backupFilename();
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch(e) {
+        showProjectError(e.message);
+    }
+}
+
+function selectBackupFile() {
+    document.getElementById('backup-restore-input').click();
+}
+
+async function restoreBackupFile(files) {
+    clearProjectError();
+    const input = document.getElementById('backup-restore-input');
+    const file = files && files[0];
+    if (!file) return;
+    try {
+        if (!confirm('This will restore projects and designs from the backup. Existing Projects and Designs with matching names will be overwritten. Continue?')) return;
+        const backup = JSON.parse(await file.text());
+        const response = await fetch('/api/user-backup/restore', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({backup: backup, overwrite: true})
+        });
+        if (!response.ok) throw new Error(await response.text());
+        const summary = await response.json();
+        alert('Backup restored. Projects created: ' + summary.projects_created
+            + ', projects updated: ' + summary.projects_updated
+            + ', designs created: ' + summary.designs_created
+            + ', designs overwritten: ' + summary.designs_overwritten + '.');
+        await loadProjectList();
+    } catch(e) {
+        showProjectError(e.message);
+    } finally {
+        input.value = '';
+    }
+}
+
+async function createUserProject() {
+    const name = prompt('User Project name:', 'New_User_Project');
+    if (!name) return;
+    const response = await fetch('/api/user-projects', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: name})
+    });
+    if (!response.ok) return showProjectError(await response.text());
+    const project = await response.json();
+    selectedUserProjectId = project.id;
+    selectedUserProjectName = project.name;
+    sessionStorage.setItem(modelKey('current_user_project_id'), project.id);
+    sessionStorage.setItem(modelKey('current_user_project_name'), project.name);
+    updateProjectIndicator();
+    updateExploringProjectLabel();
+    loadProjectList();
+}
+
+function selectUserProject(id, name) {
+    selectedUserProjectId = id;
+    selectedUserProjectName = name;
+    sessionStorage.setItem(modelKey('current_user_project_id'), id);
+    sessionStorage.setItem(modelKey('current_user_project_name'), name);
+    updateProjectIndicator();
+    updateExploringProjectLabel();
+    loadProjectList();
+}
+
+async function loadDesignList() {
+    const list = document.getElementById('project-list');
+    if (!selectedUserProjectId) return;
+    list.innerHTML = '<div class="p-4 text-sm text-slate-500">Loading designs...</div>';
+    const response = await fetch('/api/user-projects/' + selectedUserProjectId + '/designs?model=' + encodeURIComponent(MODEL));
+    if (!response.ok) throw new Error(await response.text());
+    const data = await response.json();
+    const designs = data.designs || [];
+    if (!designs.length) {
+        list.innerHTML = '<div class="p-4 text-sm text-slate-500">No designs for {{ model_name }} in this User Project.</div>';
+        return;
+    }
+    list.innerHTML = designs.map(function(design) {
+        return '<div class="p-4 flex items-center justify-between bg-white">'
+            + '<div><div class="font-bold text-slate-700">' + escapeHtml(design.name) + '</div>'
+            + '<div class="text-xs text-slate-400">' + escapeHtml(design.user_project_name) + ' / ' + escapeHtml(design.model) + '</div></div>'
+            + '<button onclick=\'loadProject(' + jsString(design.name) + ')\' class="bg-green-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-green-700">Load Design</button>'
+            + '</div>';
+    }).join('');
+}
+
+async function loadProject(name) {
+    clearProjectError();
+    try {
+        const scope = getProjectScope();
+        let url = API_PROJECTS_URL + '/' + encodeURIComponent(name) + '?scope=' + encodeURIComponent(scope);
+        if (scope === 'users' && selectedUserProjectId) url += '&user_project_id=' + encodeURIComponent(selectedUserProjectId);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(await response.text());
+        const project = await response.json();
+        if (project.model !== MODEL) throw new Error('Project model mismatch.');
+
+        applyProjectPayload(project, scope === 'examples' ? 'example' : 'cloud');
+        window.location.href = 'problem_data.html';
+    } catch(e) {
+        showProjectError(e.message);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const storedProjectId = sessionStorage.getItem(modelKey('current_user_project_id'));
+    const storedProjectName = sessionStorage.getItem(modelKey('current_user_project_name'));
+    if (storedProjectId) selectedUserProjectId = parseInt(storedProjectId, 10);
+    if (storedProjectName) selectedUserProjectName = storedProjectName;
+    configureScopeLabels();
+    loadProjectList();
+});
+</script>
+{% endblock %}

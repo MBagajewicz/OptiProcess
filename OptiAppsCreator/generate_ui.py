@@ -2,7 +2,7 @@
 """generate_ui.py — Generates static HTML pages from model data + YAML UI metadata.
 
 Reads:  Model_Def_{Model}.py  → structural metadata (variables, constraints, standard values)
-        Examples_{Model}.py   → instance defaults (parameter values, discrete selections)
+        {Model}/Projects/*.py → project defaults (parameter values, discrete selections)
         {Model}_ui.yaml       → UI presentation metadata (labels, groupings, input types)
 
 Output: output/{page}.html — rendered HTML pages using Jinja2 templates.
@@ -16,6 +16,8 @@ from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from project_store import load_default_design, load_project
 
 
 # --- Color CSS class maps ---
@@ -54,6 +56,7 @@ GO_COLORS = {
     "brown_dark": {"panel": "bg-[#3d2b24]", "text": "text-white"},
     "red_dark": {"panel": "bg-[#b91c1c]", "text": "text-white"},
     "green": {"panel": "bg-[#4caf50]", "text": "text-white"},
+    "disabled": {"panel": "bg-gray-400", "text": "text-gray-100", "text_class": "!text-gray-600"},
 }
 
 RS_COLORS = {
@@ -79,11 +82,9 @@ def load_model_def(model_name):
     return getattr(module, var_name)
 
 
-def load_examples(model_name, example_name):
-    """Import Examples_{Model} and return the Example dict."""
-    module_path = f"{model_name}.Examples_{model_name}"
-    module = importlib.import_module(module_path)
-    return getattr(module, example_name)
+def load_project_defaults(model_name, project_name=None):
+    """Load model defaults from Projects/Default_Design.py."""
+    return load_default_design(model_name)
 
 
 def get_example_default(example, key_path, equipment=1):
@@ -105,6 +106,7 @@ def build_problem_data_context(yaml_data, model_def, example):
     """Build resolved context for the problem_data page."""
     page_yaml = yaml_data["pages"]["problem_data"]
     sections_out = []
+    page_default_buttons = bool(page_yaml.get("default_buttons", False))
 
     for section_id, section in page_yaml["sections"].items():
         element = section.get("element", "form_group")
@@ -112,7 +114,12 @@ def build_problem_data_context(yaml_data, model_def, example):
         color = section.get("color", "gray")
         source = section.get("source", "Model_Parameters")
 
-        resolved = {"id": section_id, "element": element, "title": title}
+        resolved = {
+            "id": section_id,
+            "element": element,
+            "title": title,
+            "default_button": bool(section.get("default_button", page_default_buttons)),
+        }
 
         if element == "radio_group":
             source_key = section["source_key"]
@@ -129,12 +136,14 @@ def build_problem_data_context(yaml_data, model_def, example):
                 })
             resolved["options"] = options
             resolved["source_key"] = source_key
+            resolved["width_class"] = "w-56"
             resolved["color"] = {}  # radio groups use hardcoded classes in template
 
         elif element == "form_group":
             resolved["color"] = PD_COLORS.get(color, PD_COLORS["gray"])
             resolved["width_class"] = "w-56" if color in ("red", "blue") else "w-72" if color == "green" else "w-64"
             fields = []
+            has_computed_field = False
             for key, field_meta in section.get("fields", {}).items():
                 try:
                     default_val = get_example_default(example, f"{source}.{key}")
@@ -157,8 +166,13 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "computed_hint": field_meta.get("computed_hint", False),
                     "options": field_meta.get("options"),
                 }
+                if field["computed_hint"]:
+                    has_computed_field = True
                 fields.append(field)
             resolved["fields"] = fields
+            resolved["default_keys"] = [field["key"] for field in fields]
+            if has_computed_field and _width_value(resolved["width_class"]) < 64:
+                resolved["width_class"] = "w-64"
 
         elif element == "limit_table":
             resolved["color"] = {}
@@ -178,9 +192,11 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "upper_key": upper_key,
                 })
             resolved["rows"] = rows
+            resolved["default_keys"] = [key for row in rows for key in (row["lower_key"], row["upper_key"])]
 
         elif element == "computed_display":
             resolved["color"] = PD_COLORS.get("pink")
+            resolved["width_class"] = "w-64"
             resolved["rows"] = section.get("rows", [])
 
         sections_out.append(resolved)
@@ -195,6 +211,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
     """
     page_yaml = yaml_data["pages"]["geometric_options"]
     sections_out = []
+    page_default_buttons = bool(page_yaml.get("default_buttons", False))
 
     # Get variable definitions from Model_Def
     list_of_vars = model_def["Model_Info"]["List_of_Variables"]
@@ -214,18 +231,33 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
         element = section.get("element", "checkbox_grid")
         title = section.get("title", "")
         color = section.get("color", "brown")
-        resolved = {"id": section_id, "element": element, "title": title}
+        resolved = {
+            "id": section_id,
+            "element": element,
+            "title": title,
+            "default_button": bool(section.get("default_button", page_default_buttons)),
+        }
 
         if element == "checkbox_grid":
             go_color = GO_COLORS.get(color, GO_COLORS["brown"])
+            if section.get("static"):
+                go_color = GO_COLORS["disabled"]
             resolved["color"] = go_color
+            resolved["width_class"] = "w-44"
             resolved["variable"] = section.get("variable", "")
+            resolved["static"] = bool(section.get("static"))
             # Handle title with line breaks for narrow columns
             resolved["title_nobreak"] = title.replace(" ", "&nbsp;")
 
             if section.get("static"):
                 items = []
                 for item in section.get("items", []):
+                    if "label" in item:
+                        print(
+                            f"  WARNING static checkbox section '{section_id}' uses label/value split. "
+                            "For preview-only static sections prefer {value: '...'} unless the internal value "
+                            "is intentionally reserved for a future model variable."
+                        )
                     items.append({
                         "label": str(item.get("label", item["value"])),
                         "value": item["value"],
@@ -258,6 +290,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
         elif element == "form_group":
             go_color = GO_COLORS.get(color, GO_COLORS["brown_dark"])
             resolved["color"] = go_color
+            resolved["width_class"] = "w-56"
             source = section.get("source", "Model_Parameters")
             fields = []
             for key, field_meta in section.get("fields", {}).items():
@@ -272,6 +305,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
                     "default": default_val,
                 })
             resolved["fields"] = fields
+            resolved["default_keys"] = [field["key"] for field in fields]
 
         sections_out.append(resolved)
 
@@ -289,6 +323,34 @@ def build_column_layout(sections, columns_spec):
                 col_sections.append(section_map[sid])
         if col_sections:
             columns.append(col_sections)
+    return columns
+
+
+def get_geometric_scalar_keys(model_ui):
+    keys = []
+    for section in model_ui.get("pages", {}).get("geometric_options", {}).get("sections", {}).values():
+        if section.get("element") == "form_group":
+            keys.extend(section.get("fields", {}).keys())
+    return keys
+
+
+_WC_MAP = {"w-44": 44, "w-56": 56, "w-64": 64, "w-72": 72}
+
+
+def _width_value(width_class):
+    return _WC_MAP.get(width_class, 0)
+
+
+def uniformize_column_widths(columns):
+    """Make all sections in each column share the widest width_class in that column."""
+    for col in columns:
+        if not col:
+            continue
+        max_w = max((_width_value(s.get("width_class", "")) for s in col), default=0)
+        if max_w > 0:
+            classname = f"w-{max_w}"
+            for s in col:
+                s["width_class"] = classname
     return columns
 
 
@@ -319,6 +381,7 @@ def build_results_context(yaml_data, model_def):
                         "key": row["key"],
                         "unit": row.get("unit", ""),
                         "highlight": row.get("highlight", False),
+                        "computed": row.get("computed", False),
                     })
                 resolved["subsections"].append({"title": sub.get("title", ""), "rows": sub_rows})
                 all_rows_flat.extend([r["key"] for r in sub_rows])
@@ -332,6 +395,7 @@ def build_results_context(yaml_data, model_def):
                     "unit": row.get("unit", ""),
                     "highlight": row.get("highlight", False),
                     "display_factor": row.get("display_factor", 1),
+                    "computed": row.get("computed", False),
                 })
                 all_rows_flat.append(row["key"])
 
@@ -342,6 +406,7 @@ def build_results_context(yaml_data, model_def):
                     "label": row["label"],
                     "key": row["key"],
                     "unit": row.get("unit", ""),
+                    "computed": row.get("computed", False),
                 })
                 all_rows_flat.append(row["key"])
 
@@ -399,7 +464,7 @@ def generate():
         "--all", action="store_true",
         help="Generate pages for every active model listed in common_ui.yaml",
     )
-    parser.add_argument("--example", default="Example1", help="Example name for defaults (default: Example1)")
+    parser.add_argument("--example", default=None, help="Deprecated: defaults now come from Projects/Default_Design.py")
     parser.add_argument("--output", default="output", help="Output directory (default: output)")
     parser.add_argument(
         "--no-sort-numeric-options",
@@ -450,6 +515,7 @@ def generate():
         {"label": "Problem Data", "file": "problem_data.html"},
         {"label": "Geometric Options", "file": "geometric_options.html"},
         {"label": "Results", "file": "results.html"},
+        {"label": "Projects", "file": "projects.html"},
     ]
 
     # --- Login page (once, in output/) ---
@@ -461,6 +527,11 @@ def generate():
     html = template.render(**login_context)
     (output_dir / "login.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/login.html")
+
+    template = env.get_template("reset_password.html")
+    html = template.render(header=header_data)
+    (output_dir / "reset_password.html").write_text(html, encoding="utf-8")
+    print(f"  ✓ output/reset_password.html")
 
     # --- Main Menu page (once, in output/) ---
     models_raw = common_ui.get("available_models", [])
@@ -492,7 +563,10 @@ def generate():
             model_ui = yaml.safe_load(f)
 
         model_def = load_model_def(model_name)
-        example = load_examples(model_name, args.example)
+        example = load_project_defaults(model_name, args.example)
+        model_meta = model_ui.get("model", {})
+        sync_scalar_keys = model_meta.get("sync_scalar_keys", [])
+        geometric_scalar_keys = get_geometric_scalar_keys(model_ui)
 
         model_output_dir = output_dir / model_name
         model_output_dir.mkdir(parents=True, exist_ok=True)
@@ -501,6 +575,7 @@ def generate():
         nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
         pd_sections = build_problem_data_context(model_ui, model_def, example)
         pd_columns = build_column_layout(pd_sections, model_ui["pages"]["problem_data"]["columns"])
+        pd_columns = uniformize_column_widths(pd_columns)
 
         template = env.get_template("problem_data.html")
         html = template.render(
@@ -508,6 +583,10 @@ def generate():
             nav_pages=nav_pd,
             columns=pd_columns,
             all_sections=pd_sections,
+            header=header_data,
+            model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/problem_data.html")
@@ -516,6 +595,7 @@ def generate():
         nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
         go_sections = build_geometric_options_context(model_ui, model_def, example, args.sort_numeric_options)
         go_columns = build_column_layout(go_sections, model_ui["pages"]["geometric_options"]["columns"])
+        go_columns = uniformize_column_widths(go_columns)
 
         template = env.get_template("geometric_options.html")
         html = template.render(
@@ -523,6 +603,10 @@ def generate():
             nav_pages=nav_go,
             columns=go_columns,
             all_sections=go_sections,
+            header=header_data,
+            model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/geometric_options.html")
@@ -546,11 +630,27 @@ def generate():
             var_keys=rs_var_keys,
             var_labels=rs_var_labels,
             var_units=rs_var_units,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
         )
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/results.html")
 
-    print(f"\nDone. Generated {len(model_list)} model(s) for example '{args.example}' in '{output_dir}/'")
+        # Projects page
+        nav_pr = [{"label": p["label"], "active": p["file"] == "projects.html", "file": p["file"]} for p in nav_pages]
+        template = env.get_template("projects.html")
+        html = template.render(
+            page_title="Projects",
+            nav_pages=nav_pr,
+            header=header_data,
+            model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
+        )
+        (model_output_dir / "projects.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/projects.html")
+
+
 
 
 if __name__ == "__main__":

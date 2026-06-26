@@ -2,6 +2,10 @@
 
 **OptiHexx** es una aplicación web para optimización de intercambiadores de calor usando **Set Trimming** y **Smart Enumeration** con garantía de optimalidad global. La UI se genera automáticamente a partir de modelos Python y archivos YAML de metadatos de presentación.
 
+> **Nota de nomenclatura actual:** los diseños de referencia read-only se muestran como **Design Tutorial Library**. Los antiguos `ExampleX.py` se tratan como tutoriales. Los **User Projects** son ahora contenedores de usuario que pueden incluir distintos **Designs** de uno o más modelos; cada Design es el caso resoluble individual y se almacena únicamente en el servidor.
+
+> **Backup/Restore:** la aplicación ya no importa ni exporta Designs como archivos `.py`. Los Projects y Designs del usuario autenticado se respaldan mediante **Backup My Projects** y se restauran con **Restore Backup** desde un archivo JSON local. La restauración sobrescribe por defecto Projects/Designs con nombres coincidentes, incluyendo la descripción del Project.
+
 ---
 
 ## 1. Arquitectura
@@ -142,6 +146,118 @@ Abrir **http://127.0.0.1:8000/ui/main_menu.html** en el navegador.
 3. **Geometric Options** → marcar/desmarcar rangos de variables discretas → **Run Optimization →**
 4. **Results** → la página llama al API y llena todas las tablas automáticamente
 
+### 3.5 Configuración SMTP para correos de usuarios
+
+El sistema de usuarios envía correos para:
+
+- Primer login con contraseña inicial importada desde Excel.
+- Recuperación de contraseña mediante **I forgot my password**.
+- Enlaces de actualización de password de un solo uso.
+
+La configuración SMTP se realiza mediante un archivo local `.env` dentro de `OptiAppsCreator/`.
+
+1. Copiar el archivo de ejemplo:
+
+```bash
+cd OptiAppsCreator
+cp .env.example .env
+```
+
+2. Editar `.env` con los datos reales del servidor SMTP:
+
+```env
+AUTH_DB_PATH=data/users.db
+
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=user@example.com
+SMTP_PASSWORD=change_me
+SMTP_FROM=user@example.com
+SMTP_USE_TLS=true
+SMTP_TIMEOUT=10
+
+APP_BASE_URL=http://127.0.0.1:8000
+SESSION_COOKIE_NAME=optihex_session
+SESSION_HOURS=8
+```
+
+| Variable | Descripción |
+|----------|-------------|
+| `AUTH_DB_PATH` | Ruta de la base SQLite de usuarios. Default recomendado: `data/users.db` |
+| `SMTP_HOST` | Host SMTP. Ejemplo: `smtp.gmail.com`, `smtp.office365.com` |
+| `SMTP_PORT` | Puerto SMTP. Usualmente `587` para STARTTLS |
+| `SMTP_USER` | Usuario de autenticación SMTP |
+| `SMTP_PASSWORD` | Password o app-password del servidor SMTP |
+| `SMTP_FROM` | Remitente que verá el usuario |
+| `SMTP_USE_TLS` | `true` para STARTTLS |
+| `SMTP_TIMEOUT` | Timeout de conexión SMTP en segundos |
+| `APP_BASE_URL` | URL pública/base de la app. Se usa para generar links de reset |
+| `SESSION_COOKIE_NAME` | Nombre de la cookie de sesión |
+| `SESSION_HOURS` | Duración de sesión activa en horas |
+
+> Para Gmail, normalmente se debe usar una **App Password**, no la contraseña normal de la cuenta.
+
+3. Inicializar usuarios desde Excel:
+
+El archivo Excel debe contener exactamente estas columnas:
+
+```text
+username | email | password
+```
+
+Ejecutar:
+
+```bash
+python init_users_from_excel.py --file data/users_import.xlsx
+```
+
+Esto crea/actualiza la base de datos `data/users.db`, hashea los passwords y marca a los usuarios para cambio obligatorio de contraseña en el primer login.
+
+4. Probar envío de correos:
+
+- Iniciar el servidor con `uvicorn solver_api:app --host 127.0.0.1 --port 8000`.
+- Abrir `http://127.0.0.1:8000/ui/login.html`.
+- Ingresar con usuario y password inicial.
+- El sistema registra el IP, genera un token válido por 24 horas y envía un correo con el enlace:
+
+```text
+{APP_BASE_URL}/ui/reset_password.html?token=...
+```
+
+5. Recuperación de contraseña:
+
+- En `login.html`, usar **I forgot my password**.
+- Ingresar el email del usuario.
+- Si el email existe en la base, se envía un enlace válido por 1 hora.
+- Por seguridad, si el email no existe, la respuesta visible es la misma.
+
+6. Modo desarrollo sin SMTP:
+
+Si `SMTP_HOST` no está configurado, el sistema no falla: imprime el contenido del email en la consola del servidor. Esto permite probar el flujo completo sin servidor SMTP real.
+
+Si `SMTP_HOST` está configurado pero el servidor no responde, rechaza la conexión o expira el timeout, el sistema registra el error en consola y también imprime el email como fallback. En ese caso revisar:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USE_TLS`
+- firewall/red
+- credenciales SMTP
+- si el proveedor requiere app-password
+
+7. Seguridad de archivos:
+
+Los siguientes archivos no deben versionarse:
+
+```text
+OptiAppsCreator/.env
+OptiAppsCreator/data/users.db
+OptiAppsCreator/data/users.db-journal
+OptiAppsCreator/data/users.db-wal
+OptiAppsCreator/data/users.db-shm
+```
+
+Ya están incluidos en `.gitignore`.
+
 ---
 
 ## 4. Referencia CLI
@@ -164,7 +280,7 @@ Ejemplos:
 
 ```bash
 python generate_ui.py                                    # solo STHE
-python generate_ui.py --model STHE GPHE --example Example1
+python generate_ui.py --model STHE GPHE
 python generate_ui.py --all                              # todos los activos
 python generate_ui.py --all --no-sort-numeric-options    # sin ordenar
 ```
@@ -548,14 +664,72 @@ configurations:
   color: brown
   static: true                      # No vinculado a variable del modelo
   items:
-    - {value: "series", label: "Series"}
-    - {value: "parallel", label: "Parallel"}
+    - {value: "Series"}
+    - {value: "Parallel"}
 ```
 
 | Etiqueta | Significado |
 |----------|-------------|
-| `static` | `true` para panel decorativo sin vinculación a variable |
-| `items` | Lista explícita de opciones con `value` y `label` |
+| `static` | `true` para previsualizar alternativas futuras sin vinculación al modelo |
+| `items` | Lista explícita de opciones visibles |
+
+Una sección `static: true` se usa para mostrar alternativas que todavía no existen como variables reales del modelo. Estas opciones:
+
+- se leen solamente desde el YAML;
+- no se leen desde `Standard_Variables_Values`;
+- no se leen desde `Discrete_Values_of_Variables`;
+- se muestran siempre marcadas (`checked`);
+- no pueden ser modificadas por el usuario;
+- se muestran con el indicador azul `(future)` junto al título;
+- no se guardan en `sessionStorage` como variables geométricas;
+- no se envían al solver.
+
+Formato recomendado para una previsualización simple:
+
+```yaml
+items:
+  - {value: "Series"}
+  - {value: "Parallel"}
+  - {value: "Hot series cold parallel"}
+  - {value: "Cold series hot parallel"}
+```
+
+También se admite separar valor interno y texto visible:
+
+```yaml
+items:
+  - {value: "series", label: "Series"}
+```
+
+Esto no genera problemas de renderizado, porque el generador usa `label` para mostrar texto y `value` como valor interno. Sin embargo, en secciones `static: true` el generador emite un warning si detecta `label`, ya que para previsualizaciones puramente visuales se recomienda `{value: "Texto visible"}`. El formato `value + label` solo debería usarse si se quiere reservar desde ahora el identificador interno que luego usará el modelo.
+
+**Cómo convertir una sección `static: true` en variable real del modelo**
+
+Cuando las alternativas estén implementadas en el solver, la sección debe dejar de ser estática y conectarse al modelo:
+
+1. Elegir un nombre interno de variable, por ejemplo `Config` o `Nshell`.
+2. Agregar ese nombre a `Model_Def_{M}.py → Model_Info["List_of_Variables"]`.
+3. Agregar sus alternativas a `Model_Def_{M}.py → Model_Info["Standard_Variables_Values"]`.
+4. Agregar la lista de alternativas seleccionadas en cada proyecto, dentro de `Discrete_Values_of_Variables`, respetando el orden de `List_of_Variables`.
+5. Cambiar el YAML de:
+
+```yaml
+static: true
+items:
+  - {value: "Series"}
+```
+
+a:
+
+```yaml
+variable: "Config"
+value_labels:
+  series: "Series"
+  parallel: "Parallel"
+```
+
+6. Adaptar `Parameters_Update`, `Constraints_and_OF`, módulos de `Calculations` y `Output_Info` si la nueva variable cambia cálculos, restricciones, costos, hidráulica o resultados.
+7. Probar que la nueva variable aparece en `optimal_variables`, que afecta la solución esperada y que no rompe proyectos existentes.
 
 ##### `form_group` (en geometric_options)
 

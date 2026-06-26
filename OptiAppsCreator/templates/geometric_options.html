@@ -5,36 +5,45 @@
     .bg-main { background-image: url('https://placehold.co/1920x1080/ffffff/eaeaea?text=Heat+Exchanger+CFD+Visualization+Background'); background-size: cover; background-position: center; }
     .tube-options-input { background: transparent; border: 1px solid white; border-radius: 4px; padding: 8px; color: white; font-size: 12px; width: 100%; margin-top: 4px; }
     .tube-options-label { position: absolute; top: -10px; left: 10px; background-color: #3d2b24; padding: 0 4px; font-size: 10px; color: white; }
+    .checkbox-scroll { scrollbar-gutter: stable; }
 </style>
 {% endblock %}
 
 {% block content %}
-<main class="flex-grow bg-main relative p-6 flex space-x-4 overflow-x-auto">
+<main class="h-[calc(100vh-132px)] bg-main relative p-6 flex flex-col overflow-hidden">
+    <div class="flex space-x-4 overflow-x-auto flex-1 items-stretch min-h-0">
 
 {% for column in columns %}
-<div class="flex flex-col {{ 'space-y-4' if column|length > 1 }} min-w-[120px]">
+<div class="flex flex-col gap-4 h-full min-h-0">
     {% for section in column %}
         {% if section.element == 'checkbox_grid' %}
-    <div class="{{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} {{ 'h-full' if column|length == 1 }}" data-var="{{ section.variable }}">
-        <h3 class="text-xs font-bold mb-3 leading-tight">{{ section.title_nobreak|safe }}</h3>
-        <div class="space-y-2 max-h-[500px] overflow-y-auto">
+    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col {{ 'opacity-70 grayscale cursor-not-allowed' if section.static else '' }}" data-var="{{ section.variable }}">
+        <h3 class="text-xs font-bold mb-3 leading-tight flex-shrink-0">
+            {{ section.title_nobreak|safe }}{% if section.static %} <span class="block mt-1 text-gray-700 text-[9px] font-bold whitespace-nowrap">Not Available Yet</span>{% endif %}
+        </h3>
+        <div class="checkbox-scroll flex-1 min-h-0 overflow-y-auto space-y-2 pr-8">
             {% for item in section.grid_items %}
             <div class="flex items-center justify-between">
-                <div class="checkbox-grid-input {{ '!text-black !border-black/20' if section.color.text_class == 'text-black' }}">{{ item.label }}</div>
-                <div class="checkbox-item ml-2 {{ 'checked' if item.checked else '' }}" data-value="{{ item.value }}"><i class="fas fa-check"></i></div>
+                <div class="checkbox-grid-input min-w-0 {{ '!text-black !border-black/20' if section.color.text_class == 'text-black' }}">{{ item.label }}</div>
+                <div class="checkbox-item ml-2 mr-3 flex-shrink-0 {{ 'checked' if item.checked else '' }} {{ 'cursor-not-allowed opacity-90' if section.static else '' }}" data-value="{{ item.value }}" data-static="{{ 'true' if section.static else 'false' }}"><i class="fas {{ 'fa-check' if item.checked else '' }}"></i></div>
             </div>
             {% endfor %}
         </div>
     </div>
 
         {% elif section.element == 'form_group' %}
-    <div class="{{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} mt-auto">
-        <h3 class="text-[10px] font-bold mb-4">{{ section.title }}</h3>
+    <div class="relative {{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} mt-auto">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "geometric")' class="absolute top-2 right-2 bg-white/20 text-white border border-white/30 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-white/30 transition-colors" title="Load default values for this block">
+            <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+        </button>
+        {% endif %}
+        <h3 class="text-[10px] font-bold {{ 'mt-3' if section.default_button else '' }} mb-4">{{ section.title }}</h3>
         <div class="space-y-4">
             {% for field in section.fields %}
             <div class="relative">
                 <span class="tube-options-label">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}</span>
-                <input type="text" data-key="{{ field.key }}" class="tube-options-input" value="{{ field.default }}">
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" class="tube-options-input" value="{{ field.default }}">
             </div>
             {% endfor %}
         </div>
@@ -44,30 +53,24 @@
 </div>
 {% endfor %}
 
-    <!-- Navigation Bar -->
-    <div class="flex justify-center gap-4 mt-4 mb-4">
-        <button onclick="window.location.href='problem_data.html'" class="bg-gray-500 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-gray-600 transition-colors shadow-md">
-            <i class="fas fa-arrow-left mr-1"></i> Back
-        </button>
-        <button id="btn-optimize" onclick="saveAndOptimize()" class="bg-green-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-green-700 transition-colors shadow-md">
-            <i class="fas fa-play mr-1"></i> Run Optimization
-        </button>
     </div>
 
 </main>
 
 <script>
-function saveAndOptimize() {
+function collectGeometricData(markDirty) {
+    if (!validateNumericInputs('.tube-options-input[data-numeric="true"]')) return null;
     // Collect checked items from checkbox grids by variable name
-    var discrete = {};
+    var discrete = getJson(geomStorageKey(), {});
     document.querySelectorAll('[data-var]').forEach(function(panel) {
         var varName = panel.dataset.var;
+        if (!varName) return;
         var checked = [];
         panel.querySelectorAll('.checkbox-item.checked').forEach(function(item) {
             var val = item.dataset.value;
             checked.push(isNaN(val) ? val : parseFloat(val));
         });
-        if (checked.length > 0) discrete[varName] = checked;
+        discrete[varName] = checked;
     });
 
     // Collect tube options / bell params form inputs via data-key
@@ -75,12 +78,55 @@ function saveAndOptimize() {
         var key = input.dataset.key;
         if (key) {
             var val = input.value;
-            discrete[key] = isNaN(parseFloat(val)) ? val : parseFloat(val);
+            discrete[key] = parseStrictNumber(val);
         }
     });
 
-    sessionStorage.setItem('optihex_geometric_data', JSON.stringify(discrete));
-    window.location.href = 'results.html';
+    const problemData = getJson(problemStorageKey(), {});
+    scalarGeometryParameterKeys().forEach(function(key) {
+        if (discrete[key] !== undefined) problemData[key] = discrete[key];
+    });
+
+    setJson(geomStorageKey(), discrete);
+    setJson(problemStorageKey(), problemData);
+    if (markDirty !== false) setDirty(true);
+    return discrete;
 }
+
+window.collectGeometricData = collectGeometricData;
+
+function restoreGeometricData() {
+    const discrete = getJson(geomStorageKey(), null);
+    if (!discrete) return;
+
+    document.querySelectorAll('[data-var]').forEach(function(panel) {
+        var varName = panel.dataset.var;
+        var selected = discrete[varName] || [];
+        panel.querySelectorAll('.checkbox-item').forEach(function(item) {
+            var val = item.dataset.value;
+            var numeric = isNaN(val) ? val : parseFloat(val);
+            var checked = selected.indexOf(numeric) >= 0 || selected.indexOf(val) >= 0;
+            item.classList.toggle('checked', checked);
+            var icon = item.querySelector('i');
+            if (icon) icon.classList.toggle('fa-check', checked);
+        });
+    });
+
+    document.querySelectorAll('.tube-options-input').forEach(function(input) {
+        var key = input.dataset.key;
+        if (key && discrete[key] !== undefined) input.value = discrete[key];
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    restoreGeometricData();
+    attachNumericFiltering('.tube-options-input[data-numeric="true"]');
+    attachEnterToAdvance('.tube-options-input[data-key]', 'collectGeometricData');
+    document.querySelectorAll('.tube-options-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            collectGeometricData(true);
+        });
+    });
+});
 </script>
 {% endblock %}

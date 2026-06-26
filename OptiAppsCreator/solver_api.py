@@ -40,17 +40,50 @@ import sys
 import json
 import uuid
 import subprocess
-import shutil
+import importlib
 from pathlib import Path
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Request, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from auth_db import (
+    create_reset_token,
+    create_session,
+    get_session_user,
+    get_user_by_email,
+    get_user_by_username,
+    init_db,
+    record_login,
+    reset_password_with_token,
+    revoke_session,
+    validate_reset_token,
+    verify_password,
+)
+from email_service import send_password_reset_email
+
+from project_store import (
+    ProjectError,
+    create_user_project,
+    export_user_backup,
+    list_user_designs,
+    list_user_projects,
+    list_projects,
+    load_default_design,
+    load_project,
+    load_user_design,
+    project_to_ui_payload,
+    save_user_design,
+    restore_user_backup,
+)
+
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+SESSION_COOKIE_NAME = os.getenv("SESSION_COOKIE_NAME", "optihex_session")
+SESSION_HOURS = int(os.getenv("SESSION_HOURS", "8"))
 
 # --- Pydantic models ---
 
@@ -73,12 +106,80 @@ class OptimizationResponse(BaseModel):
     error: str | None = None
 
 
+class ProjectSaveRequest(BaseModel):
+    name: str | None = None
+    user_project_id: int | None = None
+    user_project_name: str | None = None
+    parameters: dict
+    discrete_variables: dict
+    selected_of: str = "TAC_OF"
+    number_of_equipment: int = 1
+
+
+class UserProjectCreateRequest(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class BackupRestoreRequest(BaseModel):
+    backup: dict
+    overwrite: bool = True
+
+
+TEXT_PARAMETER_KEYS = {"Shell_Method", "Tube_Method", "yfluid", "_selected_of"}
+
+
+def validate_numeric_parameters(parameters: dict) -> None:
+    for key, value in parameters.items():
+        if key in TEXT_PARAMETER_KEYS or value is None:
+            continue
+        if isinstance(value, bool):
+            raise HTTPException(status_code=400, detail=f"Parameter '{key}' must be numeric")
+        if isinstance(value, (int, float)):
+            continue
+        if isinstance(value, str):
+            try:
+                float(value.strip())
+            except ValueError:
+                raise HTTPException(status_code=400, detail=f"Parameter '{key}' must be numeric")
+            continue
+        raise HTTPException(status_code=400, detail=f"Parameter '{key}' must be numeric")
+
+
+def normalize_numeric_parameters(parameters: dict) -> dict:
+    normalized = {}
+    for key, value in parameters.items():
+        if key in TEXT_PARAMETER_KEYS or value is None:
+            normalized[key] = value
+        elif isinstance(value, str):
+            normalized[key] = float(value.strip())
+        else:
+            normalized[key] = value
+    return normalized
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+    confirm_password: str
+
+
 # --- App setup ---
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Ensure tmp directory exists on startup."""
     os.makedirs("/tmp/opencode", exist_ok=True)
+    init_db()
     yield
 
 
@@ -92,6 +193,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def protect_ui_pages(request: Request, call_next):
+    path = request.url.path
+    public_ui = {"/ui/login.html", "/ui/reset_password.html"}
+    protected = path == "/ui/main_menu.html" or path.startswith("/ui/STHE/") or path.startswith("/ui/GPHE/")
+    if protected and path not in public_ui and not get_session_user(request.cookies.get(SESSION_COOKIE_NAME)):
+        return RedirectResponse(url="/ui/login.html", status_code=303)
+    return await call_next(request)
+
 # Serve generated HTML from output/ at /ui path
 output_dir = SCRIPT_DIR / "output"
 if output_dir.exists():
@@ -100,14 +211,251 @@ if output_dir.exists():
 
 # --- Routes ---
 
+def client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",", 1)[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def require_session(request: Request) -> dict:
+    user = get_session_user(request.cookies.get(SESSION_COOKIE_NAME))
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    return user
+
+def load_model_def(model_name: str) -> dict:
+    module = importlib.import_module(f"{model_name}.Model.Model_Def_{model_name}")
+    return getattr(module, f"Model_{model_name}")
+
+
+def build_project_response(model: str, project_name: str, scope: str = "users", user_id: int | None = None, user_project_id: int | None = None) -> dict:
+    model_def = load_model_def(model)
+    var_order = model_def["Model_Info"]["List_of_Variables"]
+    if scope == "users":
+        if user_id is None:
+            raise ProjectError("Authentication required")
+        payload = load_user_design(user_id, model, project_name, project_id=user_project_id)
+        payload["variable_order"] = var_order
+        return payload
+    project = load_project(model, project_name, scope=scope)
+    payload = project_to_ui_payload(model, project_name, project)
+    discrete_values = payload.pop("discrete_values")
+    payload["discrete_variables"] = {
+        var: discrete_values[idx] if idx < len(discrete_values) else []
+        for idx, var in enumerate(var_order)
+    }
+    payload["variable_order"] = var_order
+    payload["scope"] = scope
+    return payload
+
+
+def build_default_design_response(model: str) -> dict:
+    model_def = load_model_def(model)
+    var_order = model_def["Model_Info"]["List_of_Variables"]
+    project = load_default_design(model)
+    payload = project_to_ui_payload(model, "Default_Design", project)
+    discrete_values = payload.pop("discrete_values")
+    payload["discrete_variables"] = {
+        var: discrete_values[idx] if idx < len(discrete_values) else []
+        for idx, var in enumerate(var_order)
+    }
+    payload["variable_order"] = var_order
+    payload["scope"] = "default"
+    return payload
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "OptiProcess Solver API"}
 
 
+@app.post("/api/auth/login")
+async def auth_login(req: LoginRequest, request: Request, response: Response):
+    username = req.username.strip()
+    ip_address = client_ip(request)
+    user = get_user_by_username(username)
+    if not user:
+        record_login(None, username, ip_address, False, "unknown_user")
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    if not user.get("is_active"):
+        record_login(user["id"], username, ip_address, False, "inactive_user")
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    if not verify_password(req.password, user.get("password_hash")):
+        record_login(user["id"], username, ip_address, False, "bad_password")
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    record_login(user["id"], username, ip_address, True, None)
+
+    if user.get("must_change_password") and verify_password(req.password, user.get("initial_password_hash")):
+        token = create_reset_token(user["id"], "first_login_password_change", 24, request_ip=ip_address)
+        send_password_reset_email(user["email"], token, first_login=True)
+        return {"status": "must_change_password", "message": "A password update link was sent to your email."}
+
+    session_token = create_session(
+        user["id"], ip_address, request.headers.get("user-agent"), SESSION_HOURS
+    )
+    response.set_cookie(
+        SESSION_COOKIE_NAME,
+        session_token,
+        httponly=True,
+        samesite="lax",
+        max_age=SESSION_HOURS * 3600,
+    )
+    return {"status": "ok", "username": user["username"], "email": user["email"]}
+
+
+@app.post("/api/auth/logout")
+async def auth_logout(request: Request, response: Response):
+    revoke_session(request.cookies.get(SESSION_COOKIE_NAME))
+    response.delete_cookie(SESSION_COOKIE_NAME)
+    return {"status": "ok"}
+
+
+@app.get("/api/auth/me")
+async def auth_me(user: dict = Depends(require_session)):
+    return {"status": "ok", "username": user["username"], "email": user["email"]}
+
+
+@app.post("/api/auth/forgot-password")
+async def auth_forgot_password(req: ForgotPasswordRequest, request: Request):
+    email = req.email.strip().lower()
+    user = get_user_by_email(email)
+    if user and user.get("is_active"):
+        token = create_reset_token(user["id"], "forgot_password", 1, request_ip=client_ip(request))
+        send_password_reset_email(user["email"], token, first_login=False)
+    return {"status": "ok", "message": "If the email exists, a reset link was sent."}
+
+
+@app.get("/api/auth/validate-reset-token")
+async def auth_validate_reset_token(token: str):
+    token_data = validate_reset_token(token)
+    if not token_data:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    return {"status": "ok", "username": token_data["username"], "email": token_data["email"]}
+
+
+@app.post("/api/auth/reset-password")
+async def auth_reset_password(req: ResetPasswordRequest):
+    if req.new_password != req.confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+    if len(req.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must contain at least 8 characters")
+    if not reset_password_with_token(req.token, req.new_password):
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    return {"status": "ok"}
+
+
+@app.get("/api/user-projects")
+async def api_list_user_projects(user: dict = Depends(require_session)):
+    return {"projects": list_user_projects(user["id"])}
+
+
+@app.post("/api/user-projects")
+async def api_create_user_project(req: UserProjectCreateRequest, user: dict = Depends(require_session)):
+    try:
+        return create_user_project(user["id"], req.name, req.description)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/user-projects/{project_id}/designs")
+async def api_list_user_project_designs(project_id: int, model: str | None = None, user: dict = Depends(require_session)):
+    try:
+        return {"project_id": project_id, "designs": list_user_designs(user["id"], model=model, project_id=project_id)}
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/user-backup")
+async def api_export_user_backup(user: dict = Depends(require_session)):
+    try:
+        return export_user_backup(user["id"])
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/user-backup/restore")
+async def api_restore_user_backup(req: BackupRestoreRequest, user: dict = Depends(require_session)):
+    try:
+        return restore_user_backup(user["id"], req.backup, overwrite=req.overwrite)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/api/projects/{model}")
+async def api_list_projects(model: str, scope: str = Query("users"), user: dict = Depends(require_session)):
+    try:
+        if scope == "users":
+            return {"model": model, "scope": scope, "projects": list_user_designs(user["id"], model=model)}
+        return {"model": model, "scope": scope, "projects": list_projects(model, scope=scope)}
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/api/projects/{model}/default-design")
+async def api_default_design(model: str, user: dict = Depends(require_session)):
+    try:
+        return build_default_design_response(model)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/api/projects/{model}/{project_name}")
+async def api_load_project(model: str, project_name: str, scope: str = Query("users"), user_project_id: int | None = None, user: dict = Depends(require_session)):
+    try:
+        return build_project_response(model, project_name, scope=scope, user_id=user["id"], user_project_id=user_project_id)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/projects/{model}")
+async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = Depends(require_session)):
+    if not req.name:
+        raise HTTPException(status_code=400, detail="Project name is required")
+    try:
+        validate_numeric_parameters(req.parameters)
+        model_def = load_model_def(model)
+        var_order = model_def["Model_Info"]["List_of_Variables"]
+        payload = req.model_dump()
+        payload["parameters"] = normalize_numeric_parameters(payload["parameters"])
+        saved = save_user_design(user["id"], model, req.name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
+        saved["variable_order"] = var_order
+        return saved
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/projects/{model}/{project_name}")
+async def api_save_project(model: str, project_name: str, req: ProjectSaveRequest, user: dict = Depends(require_session)):
+    try:
+        validate_numeric_parameters(req.parameters)
+        model_def = load_model_def(model)
+        var_order = model_def["Model_Info"]["List_of_Variables"]
+        payload = req.model_dump()
+        payload["parameters"] = normalize_numeric_parameters(payload["parameters"])
+        saved = save_user_design(user["id"], model, project_name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
+        saved["variable_order"] = var_order
+        return saved
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 @app.post("/api/optimize", response_model=OptimizationResponse)
-async def optimize(req: OptimizationRequest):
+async def optimize(req: OptimizationRequest, user: dict = Depends(require_session)):
     """Run a heat exchanger design optimization with the submitted parameters."""
+    validate_numeric_parameters(req.parameters)
     job_id = uuid.uuid4().hex[:8]
     input_path = f"/tmp/opencode/input_{job_id}.json"
     output_path = f"/tmp/opencode/output_{job_id}.json"
@@ -115,7 +463,7 @@ async def optimize(req: OptimizationRequest):
     # Write input JSON
     input_data = {
         "model": req.model,
-        "parameters": req.parameters,
+        "parameters": normalize_numeric_parameters(req.parameters),
         "discrete_variables": req.discrete_variables,
         "selected_of": req.selected_of,
         "number_of_equipment": req.number_of_equipment,

@@ -4,10 +4,10 @@
 <div class="bg-industrial min-h-[calc(100vh-140px)] p-4 flex flex-wrap gap-4 items-start justify-center">
 
 {% for column in columns %}
-<div class="flex flex-col gap-4 {{ 'w-32' if loop.first else '' }}">
+<div class="flex flex-col gap-4">
     {% for section in column %}
         {% if section.element == 'radio_group' %}
-    <div class="bg-white/90 p-3 rounded-xl shadow-lg border border-blue-200">
+    <div class="bg-white/90 p-3 rounded-xl shadow-lg border border-blue-200 {{ section.width_class }}">
         <h3 class="text-[10px] font-bold text-blue-600 text-center mb-2 leading-tight">{{ section.title }}</h3>
         <div class="space-y-2 text-xs">
             {% for opt in section.options %}
@@ -20,12 +20,19 @@
     </div>
 
         {% elif section.element == 'form_group' %}
-    <div class="{{ section.color.bg }} p-4 rounded-2xl shadow-xl border {{ section.color.border }} {{ section.width_class }}">
-        <h2 class="{{ section.color.title }} font-bold text-center mb-4">{{ section.title }}</h2>
+    <div class="relative {{ section.color.bg }} p-4 rounded-2xl shadow-xl border {{ section.color.border }} {{ section.width_class }}">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-2 right-2 bg-white/80 text-gray-600 border border-gray-300 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors" title="Load default values for this block">
+            <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+        </button>
+        {% endif %}
+        <h2 class="{{ section.color.title }} font-bold text-center {{ 'mt-2' if section.default_button else '' }} mb-4">{{ section.title }}</h2>
         <div class="space-y-1">
             {% for field in section.fields %}
             <div class="input-container {{ section.color.bg }}">
-                <label class="input-label {{ section.color.label }}">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}</label>
+                <label class="input-label {{ section.color.label }}">
+                    <span class="whitespace-nowrap">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}{% if field.computed_hint %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span>
+                </label>
                 {% if field.element == 'select' %}
                 <select data-key="{{ field.key }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold">
                     {% for opt in field.options %}
@@ -33,7 +40,7 @@
                     {% endfor %}
                 </select>
                 {% else %}
-                <input type="text" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
                 {% endif %}
             </div>
             {% endfor %}
@@ -41,8 +48,13 @@
     </div>
 
         {% elif section.element == 'limit_table' %}
-    <div class="bg-white/90 rounded-xl shadow-lg border border-red-100 overflow-hidden {{ section.width_class }}">
-        <h2 class="text-red-500 font-bold text-center py-2 text-sm">{{ section.title }}</h2>
+    <div class="relative bg-white/90 rounded-xl shadow-lg border border-red-100 overflow-hidden {{ section.width_class }}">
+        {% if section.default_button %}
+        <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-1.5 right-2 bg-white/90 text-gray-600 border border-red-100 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors" title="Load default values for this block">
+            <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+        </button>
+        {% endif %}
+        <h2 class="text-red-500 font-bold text-center {{ 'pt-4' if section.default_button else 'py-2' }} {{ 'pb-2' if section.default_button else '' }} text-sm">{{ section.title }}</h2>
         <table class="w-full text-[10px] border-collapse">
             <thead>
                 <tr class="bg-red-50 text-red-600">
@@ -54,9 +66,9 @@
             <tbody class="text-center">
                 {% for row in section.rows %}
                 <tr>
-                    <td class="border border-red-100 p-1 text-red-500">{{ row.lower }}<input type="hidden" data-key="{{ row.lower_key }}" value="{{ row.lower }}"></td>
+                    <td class="border border-red-100 p-1 text-red-500"><input type="text" inputmode="decimal" data-numeric="true" data-key="{{ row.lower_key }}" value="{{ row.lower }}" class="w-full bg-white border border-red-100 rounded px-1 py-0.5 text-center text-red-500 font-semibold"></td>
                     <td class="border border-red-100 p-1 text-gray-700">{{ row.item }}{% if row.unit %} [{{ row.unit }}]{% endif %}</td>
-                    <td class="border border-red-100 p-1 text-red-500">{{ row.upper }}<input type="hidden" data-key="{{ row.upper_key }}" value="{{ row.upper }}"></td>
+                    <td class="border border-red-100 p-1 text-red-500"><input type="text" inputmode="decimal" data-numeric="true" data-key="{{ row.upper_key }}" value="{{ row.upper }}" class="w-full bg-white border border-red-100 rounded px-1 py-0.5 text-center text-red-500 font-semibold"></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -65,10 +77,12 @@
 
         {% elif section.element == 'computed_display' %}
     <div class="flex justify-center">
-        <div class="bg-pink-50/80 p-2 rounded-lg border border-pink-200 shadow-md w-40">
+        <div class="bg-pink-50/80 p-2 rounded-lg border border-pink-200 shadow-md {{ section.width_class }}">
             {% for row in section.rows %}
             <div class="input-container bg-pink-50 mt-2">
-                <label class="input-label text-gray-500 text-[10px]">{{ row.label }}</label>
+                <label class="input-label text-gray-500 text-[10px]">
+                    <span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span>
+                </label>
                 <input type="text" value="—" class="custom-input border-pink-300 text-gray-400 font-semibold text-center" disabled>
             </div>
             {% endfor %}
@@ -79,18 +93,12 @@
 </div>
 {% endfor %}
 
-    <!-- Navigation Bar -->
-    <div class="flex justify-center gap-4 mt-4 mb-4">
-        <button id="btn-next" onclick="saveAndNext()" class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
-            Next: Geometric Options <i class="fas fa-arrow-right ml-1"></i>
-        </button>
-    </div>
-
 </div>
 
 <script>
-function saveAndNext() {
-    const data = {};
+function collectProblemData(markDirty) {
+    if (!validateNumericInputs('input[data-numeric="true"][data-key]')) return null;
+    const data = getJson(problemStorageKey(), {});
 
     // Collect radio groups
     const targetRadio = document.querySelector('input[name="Selected_OF"]:checked');
@@ -104,11 +112,73 @@ function saveAndNext() {
         var key = input.dataset.key;
         if (!key) return;
         var val = input.value;
-        data[key] = (input.type === 'number' || !isNaN(parseFloat(val))) ? parseFloat(val) : val;
+        data[key] = input.dataset.numeric === 'true' && isStrictNumber(val) ? parseStrictNumber(val) : ((!isNaN(parseFloat(val))) ? parseFloat(val) : val);
     });
 
-    sessionStorage.setItem('optihex_problem_data', JSON.stringify(data));
-    window.location.href = 'geometric_options.html';
+    const geomData = getJson(geomStorageKey(), {});
+    scalarGeometryParameterKeys().forEach(function(key) {
+        if (data[key] !== undefined) geomData[key] = data[key];
+    });
+
+    setJson(problemStorageKey(), data);
+    setJson(geomStorageKey(), geomData);
+    sessionStorage.setItem(problemClearedKey(), 'false');
+    if (markDirty !== false) setDirty(true);
+    return data;
 }
+
+window.collectProblemData = collectProblemData;
+
+function clearProblemDataForm() {
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        if (input.type === 'hidden') return;
+        if (input.tagName === 'SELECT') input.selectedIndex = 0;
+        else input.value = '';
+    });
+    var radioNames = new Set();
+    document.querySelectorAll('input[type="radio"]').forEach(function(input) {
+        radioNames.add(input.name);
+        input.checked = false;
+    });
+    radioNames.forEach(function(name) {
+        var first = document.querySelector('input[type="radio"][name="' + name + '"]');
+        if (first) first.checked = true;
+    });
+}
+
+window.clearProblemDataForm = clearProblemDataForm;
+
+function restoreProblemData() {
+    if (sessionStorage.getItem(problemClearedKey()) === 'true') {
+        clearProblemDataForm();
+        return;
+    }
+    const data = getJson(problemStorageKey(), null);
+    if (!data) return;
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        var key = input.dataset.key;
+        if (!key || data[key] === undefined) return;
+        input.value = data[key];
+    });
+    if (data._selected_of !== undefined) {
+        var of = document.querySelector('input[name="Selected_OF"][value="' + data._selected_of + '"]');
+        if (of) of.checked = true;
+    }
+    if (data.yfluid !== undefined) {
+        var yf = document.querySelector('input[name="yfluid"][value="' + data.yfluid + '"]');
+        if (yf) yf.checked = true;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    restoreProblemData();
+    attachNumericFiltering('input[data-numeric="true"][data-key]');
+    attachEnterToAdvance('input[data-key]:not(:disabled), select[data-key]', 'collectProblemData');
+    document.querySelectorAll('input[data-key], select[data-key], input[type="radio"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            collectProblemData(true);
+        });
+    });
+});
 </script>
 {% endblock %}
