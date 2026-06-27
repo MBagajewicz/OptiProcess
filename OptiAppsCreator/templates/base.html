@@ -195,16 +195,18 @@
         });
     }
 
-    function attachEnterToAdvance(selector, collectFnName) {
+    function attachEnterToAdvance(selector, collectFnName, afterCollectFnName) {
         const fields = Array.from(document.querySelectorAll(selector)).filter(function(input) {
             return !input.disabled && input.type !== 'hidden';
         });
         fields.forEach(function(input, index) {
-            input.addEventListener('keydown', function(event) {
+            input.addEventListener('keydown', async function(event) {
                 if (event.key !== 'Enter') return;
                 event.preventDefault();
                 const collectFn = window[collectFnName];
                 if (typeof collectFn === 'function' && collectFn(true) === null) return;
+                const afterCollectFn = window[afterCollectFnName];
+                if (typeof afterCollectFn === 'function' && await afterCollectFn(true) === null) return;
                 const next = fields[index + 1];
                 if (next) {
                     next.focus();
@@ -511,6 +513,7 @@
             if (target === 'geometric' && typeof window.collectGeometricData === 'function') window.collectGeometricData(true);
             else if (typeof window.collectProblemData === 'function') window.collectProblemData(true);
             else setDirty(true);
+            if (typeof window.updateConditionalSections === 'function') window.updateConditionalSections();
         } catch(e) {
             alert('Could not load default values: ' + e.message);
         }

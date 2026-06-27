@@ -41,6 +41,7 @@ import json
 import uuid
 import subprocess
 import importlib
+import copy
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -114,6 +115,10 @@ class ProjectSaveRequest(BaseModel):
     discrete_variables: dict
     selected_of: str = "TAC_OF"
     number_of_equipment: int = 1
+
+
+class CalculatedInputsRequest(BaseModel):
+    parameters: dict
 
 
 class UserProjectCreateRequest(BaseModel):
@@ -264,6 +269,60 @@ def build_default_design_response(model: str) -> dict:
     payload["scope"] = "default"
     return payload
 
+
+def update_energy_balance_calculated_parameters(parameters: dict) -> dict:
+    calculated = {}
+    try:
+        mh = float(parameters["mh"])
+        cph = float(parameters["Cph"])
+        thi = float(parameters["Thi"])
+        tho = float(parameters["Tho"])
+        mc = float(parameters["mc"])
+        cpc = float(parameters["Cpc"])
+        tci = float(parameters["Tci"])
+        if mc != 0 and cpc != 0:
+            parameters["Tco"] = tci + mh * cph * (thi - tho) / (mc * cpc)
+            calculated["Tco"] = parameters["Tco"]
+    except (KeyError, TypeError, ValueError):
+        pass
+    return calculated
+
+
+def build_calculated_inputs_response(model: str, parameters: dict) -> dict:
+    from OptiCode import Calculations_Consistency_Check, Import_Functions, Import_Models
+
+    validate_numeric_parameters(parameters)
+    model = model.strip()
+    normalized_parameters = normalize_numeric_parameters(parameters)
+    project = copy.deepcopy(load_default_design(model))
+    equipment = project["Equipment1"]
+    equipment["Model_Parameters"].update({k: v for k, v in normalized_parameters.items() if k != "_selected_of"})
+    if normalized_parameters.get("_selected_of"):
+        equipment["Model_Declarations"]["Selected_OF"] = [normalized_parameters["_selected_of"]]
+
+    active_models_list = [model, equipment["Model_Declarations"].get("Type_Equipment", model)]
+    active_models_list = list(set(active_models_list))
+    active_models = {
+        "Models_Def": Import_Models.Import_Models(active_models_list, "Model_Def_"),
+        "Constraints_and_OF": Import_Functions.Import_Functions(active_models_list, "Constraints_and_OF_"),
+        "Parameters_Update": Import_Functions.Import_Functions(active_models_list, "Parameters_Update_"),
+    }
+    messages = []
+
+    def save_result(*texts):
+        messages.append(" ".join(str(text) for text in texts))
+
+    consistency_report = Calculations_Consistency_Check.Consistency_Check(project, active_models, save_result)
+    model_parameters = equipment["Model_Parameters"]
+    calculated = update_energy_balance_calculated_parameters(model_parameters)
+    return {
+        "status": "ok",
+        "model": model,
+        "parameters": calculated,
+        "consistency": consistency_report,
+        "messages": messages[-20:],
+    }
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "OptiProcess Solver API"}
@@ -402,6 +461,18 @@ async def api_default_design(model: str, user: dict = Depends(require_session)):
         return build_default_design_response(model)
     except ProjectError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/models/{model}/calculated-inputs")
+async def api_calculated_inputs(model: str, req: CalculatedInputsRequest, user: dict = Depends(require_session)):
+    try:
+        return build_calculated_inputs_response(model, req.parameters)
+    except ProjectError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except HTTPException:
+        raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 

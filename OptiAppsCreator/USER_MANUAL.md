@@ -362,6 +362,48 @@ uvicorn solver_api:app --host 127.0.0.1 --port 8000
 | `number_of_solutions` | int | Cantidad de candidatos igualmente óptimos |
 | `elapsed_seconds` | number | Tiempo de ejecución del solver |
 
+### `POST /api/models/{model}/calculated-inputs`
+
+Endpoint liviano para recalcular campos de entrada marcados como `(calculated)` sin ejecutar la optimización completa.
+
+Se usa desde `Problem Data` cuando el usuario modifica un campo o presiona `ENTER`. El navegador envía los `parameters` actuales, el servidor completa faltantes desde `Default_Design.py`, ejecuta la lógica Python mínima de cálculo/consistencia y devuelve solo los campos calculados actualizados.
+
+**Request:**
+
+```json
+{
+    "parameters": {
+        "mh": 20,
+        "Cph": 2840,
+        "Thi": 120,
+        "Tho": 80,
+        "mc": 60,
+        "Cpc": 4187,
+        "Tci": 47,
+        "Tco": 56
+    }
+}
+```
+
+**Response:**
+
+```json
+{
+    "status": "ok",
+    "model": "STHE",
+    "parameters": {
+        "Tco": 56.0
+    },
+    "consistency": {
+        "passed": true,
+        "warnings": [],
+        "mandatory_failures": []
+    }
+}
+```
+
+Este endpoint no ejecuta Set Trimming, Enumeration ni el solver completo. Solo actualiza campos calculados de entrada.
+
 ---
 
 ## 6. Formato de los Archivos YAML
@@ -536,6 +578,89 @@ hot_stream:
 | `display_factor` | Multiplicador para conversión de display (ej. `int_rate: 0.1` → mostrado como `10` si `display_factor: 100`). No afecta el valor enviado al solver. |
 | `computed_hint` | `true` para deshabilitar el campo (valor calculado, no editable) |
 | `default` | Valor por defecto si no existe en `Examples_{M}.py` |
+
+##### Campos `computed_hint: true`
+
+Un campo con:
+
+```yaml
+computed_hint: true
+```
+
+se renderiza como:
+
+- campo deshabilitado;
+- campo marcado visualmente con `(calculated)`;
+- valor no editable por el usuario;
+- valor actualizado desde servidor mediante `POST /api/models/{model}/calculated-inputs`.
+
+Ejemplo:
+
+```yaml
+cold_stream:
+  title: "COLD STREAM"
+  element: form_group
+  color: blue
+  source: "Model_Parameters"
+  fields:
+    Tci:
+      label: "Inlet Temperature"
+      unit: "°C"
+    Tco:
+      label: "Outlet Temperature"
+      unit: "°C"
+      computed_hint: true
+```
+
+En este caso `Tco` se actualiza desde Python usando el balance de energía:
+
+```text
+Tco = Tci + mh * Cph * (Thi - Tho) / (mc * Cpc)
+```
+
+El navegador no debe duplicar fórmulas del modelo. La UI solo solicita el cálculo al servidor y actualiza el valor recibido.
+
+##### Cómo agregar una nueva variable `(calculated)`
+
+Para incorporar una nueva variable calculada de entrada:
+
+1. Declarar el campo en `{MODEL}_ui.yaml` dentro de un `form_group`:
+
+```yaml
+NewVar:
+  label: "New Calculated Variable"
+  unit: "..."
+  computed_hint: true
+```
+
+2. Asegurar que `NewVar` exista en `{MODEL}/Projects/Default_Design.py` dentro de `Equipment1["Model_Parameters"]`. Ese valor funciona como default inicial antes de cualquier recálculo interactivo.
+
+3. Implementar el cálculo server-side en `solver_api.py`, dentro del flujo usado por `POST /api/models/{model}/calculated-inputs`. Actualmente ese flujo está centralizado en `build_calculated_inputs_response(...)` y helpers asociados.
+
+4. Devolver el valor calculado en el objeto `parameters` de la respuesta:
+
+```json
+{
+    "parameters": {
+        "NewVar": 123.45
+    }
+}
+```
+
+5. Regenerar la UI:
+
+```bash
+python generate_ui.py --all
+```
+
+6. Probar en `Problem Data`:
+
+- modificar un parámetro dependiente;
+- presionar `ENTER` o cambiar de campo;
+- confirmar que el campo `(calculated)` se actualiza;
+- confirmar que `RUN` pasa a verde porque cambió el input del modelo.
+
+**Regla de arquitectura:** las variables `(calculated)` de entrada deben calcularse del lado servidor. El frontend no debe implementar fórmulas del modelo; solo debe enviar los parámetros actuales y aplicar la respuesta.
 
 ##### `limit_table`
 

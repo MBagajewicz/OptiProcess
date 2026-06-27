@@ -17,8 +17,19 @@
 <div class="flex flex-col gap-4 h-full min-h-0">
     {% for section in column %}
         {% if section.element == 'checkbox_grid' %}
-    <div class="{{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col {{ 'opacity-70 grayscale cursor-not-allowed' if section.static else '' }}" data-var="{{ section.variable }}">
-        <h3 class="text-xs font-bold mb-3 leading-tight flex-shrink-0">
+    <div class="relative {{ section.width_class }} {{ section.color.panel }} p-3 rounded-xl panel-shadow {{ section.color.text }} h-full min-h-0 flex flex-col {{ 'opacity-70 grayscale cursor-not-allowed' if section.static else '' }}" data-var="{{ section.variable }}">
+        {% if not section.static %}
+        <div class="absolute top-2 right-2 z-20">
+            <button type="button" onclick="toggleCheckboxGridMenu(this)" class="bg-white/25 border border-white/40 rounded-full px-2 py-0.5 text-[8px] font-bold hover:bg-white/35 transition-colors" title="Checkbox selection options">
+                Checks <i class="fas fa-caret-down ml-0.5"></i>
+            </button>
+            <div class="checkbox-grid-menu hidden absolute right-0 top-6 min-w-[88px] overflow-hidden rounded-lg border border-white/30 bg-white text-slate-700 shadow-lg text-[10px]">
+                <button type="button" onclick="applyCheckboxGridSelection(this, 'all')" class="block w-full px-2 py-1 text-left hover:bg-slate-100">Check all</button>
+                <button type="button" onclick="applyCheckboxGridSelection(this, 'none')" class="block w-full px-2 py-1 text-left hover:bg-slate-100">Uncheck all</button>
+            </div>
+        </div>
+        {% endif %}
+        <h3 class="text-xs font-bold {{ 'mt-5' if not section.static else '' }} mb-3 leading-tight flex-shrink-0">
             {{ section.title_nobreak|safe }}{% if section.static %} <span class="block mt-1 text-gray-700 text-[9px] font-bold whitespace-nowrap">Not Available Yet</span>{% endif %}
         </h3>
         <div class="checkbox-scroll flex-1 min-h-0 overflow-y-auto space-y-2 pr-8">
@@ -58,6 +69,30 @@
 </main>
 
 <script>
+function toggleCheckboxGridMenu(button) {
+    const menu = button.parentElement.querySelector('.checkbox-grid-menu');
+    if (!menu) return;
+    document.querySelectorAll('.checkbox-grid-menu').forEach(function(other) {
+        if (other !== menu) other.classList.add('hidden');
+    });
+    menu.classList.toggle('hidden');
+}
+
+function applyCheckboxGridSelection(button, mode) {
+    const menu = button.closest('.checkbox-grid-menu');
+    const panel = button.closest('[data-var]');
+    if (menu) menu.classList.add('hidden');
+    if (!panel) return;
+    panel.querySelectorAll('.checkbox-item').forEach(function(item) {
+        if (item.dataset.static === 'true') return;
+        const checked = mode === 'all';
+        item.classList.toggle('checked', checked);
+        const icon = item.querySelector('i');
+        if (icon) icon.classList.toggle('fa-check', checked);
+    });
+    collectGeometricData(true);
+}
+
 function collectGeometricData(markDirty) {
     if (!validateNumericInputs('.tube-options-input[data-numeric="true"]')) return null;
     // Collect checked items from checkbox grids by variable name

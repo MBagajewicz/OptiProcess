@@ -20,7 +20,7 @@ pages:
       # Column layout: list of sections per column, left to right
       - [optimization_target, fluid_allocation]
       - [hot_stream, cold_stream, lmtd_display]
-      - [flow_limits, lmtd_settings, other_options]
+      - [flow_limits, lmtd_settings, other_options, bell_params]
       - [economic]
 
     sections:
@@ -116,6 +116,20 @@ pages:
           Shell_Method:  {label: "Shell Method", element: select, options: ["Kern", "Bell"]}
           Tube_Method:   {label: "Tube Method", element: select, options: ["Dittus_Boelter", "Dewiit_Saunders", "Gnielinski", "Hausen", "Sieder_Tate"]}
 
+      bell_params:
+        title: "BELL METHOD PARAMETERS"
+        element: form_group
+        default_button: true
+        color: gray
+        source: "Model_Parameters"
+        visible_when:
+          key: Shell_Method
+          equals: "Bell"
+        fields:
+          Nss:     {label: "Number of sealing strips", default: 0}
+          plbmax1: {label: "Max unsupported span (type 1)", default: 52}
+          plbmax2: {label: "Max unsupported span (type 2)", default: 0.532}
+
       economic:
         title: "ECONOMIC PARAMETERS"
         element: form_group
@@ -140,7 +154,7 @@ pages:
       - [tube_passes, layouts, pitch_ratio]
       - [shell_diameter]
       - [tube_diameter, tube_length]
-      - [baffle_cut, tube_options, bell_params]
+      - [baffle_cut, tube_options]
       - [baffle_count]
 
     sections:
@@ -236,17 +250,6 @@ pages:
           UBLD:   {label: "Maximum Tube Length", unit: "m"}
           ktube:  {label: "Thermal Conductivity", unit: "W/(m K)"}
           thk:    {label: "Tube Thickness", unit: "m"}
-
-      bell_params:
-        title: "Bell Method Parameters"
-        element: form_group
-        default_button: true
-        color: brown_dark
-        source: "Model_Parameters"
-        fields:
-          Nss:     {label: "Number of sealing strips", default: 0}
-          plbmax1: {label: "Max unsupported span (type 1)", default: 52}
-          plbmax2: {label: "Max unsupported span (type 2)", default: 0.532}
 
   # ============================================================
   # RESULTS PAGE
