@@ -119,6 +119,7 @@ def build_problem_data_context(yaml_data, model_def, example):
             "element": element,
             "title": title,
             "default_button": bool(section.get("default_button", page_default_buttons)),
+            "visible_when": section.get("visible_when"),
         }
 
         if element == "radio_group":
@@ -236,6 +237,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
             "element": element,
             "title": title,
             "default_button": bool(section.get("default_button", page_default_buttons)),
+            "visible_when": section.get("visible_when"),
         }
 
         if element == "checkbox_grid":

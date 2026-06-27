@@ -122,6 +122,9 @@ pages:
         default_button: true
         color: gray
         source: "Model_Parameters"
+        visible_when:
+          key: Shell_Method
+          equals: "Bell"
         fields:
           Nss:     {label: "Number of sealing strips", default: 0}
           plbmax1: {label: "Max unsupported span (type 1)", default: 52}

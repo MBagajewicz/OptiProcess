@@ -513,6 +513,7 @@
             if (target === 'geometric' && typeof window.collectGeometricData === 'function') window.collectGeometricData(true);
             else if (typeof window.collectProblemData === 'function') window.collectProblemData(true);
             else setDirty(true);
+            if (typeof window.updateConditionalSections === 'function') window.updateConditionalSections();
         } catch(e) {
             alert('Could not load default values: ' + e.message);
         }
