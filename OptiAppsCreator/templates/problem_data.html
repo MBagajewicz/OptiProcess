@@ -40,7 +40,7 @@
                     {% endfor %}
                 </select>
                 {% else %}
-                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'data-computed=true disabled' if field.computed_hint }}>
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} {{ 'bg-gray-300' if field.computed_hint else '' }} font-semibold" {{ 'data-computed=true disabled' if field.computed_hint }}>
                 {% endif %}
             </div>
             {% endfor %}
