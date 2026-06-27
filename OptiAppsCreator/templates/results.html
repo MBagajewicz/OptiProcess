@@ -583,7 +583,7 @@ async function runOptimization() {
             renderConsistencyMessages(result.consistency || null, true);
             renderSolverDiagnostics(result.solver_diagnostics || null);
             errorBox.classList.remove('hidden');
-            errorBox.innerHTML = '<p><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p>';
+            errorBox.innerHTML = '<p class="text-xl font-bold leading-snug"><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p>';
             overlay.classList.add('hidden');
             return null;
         }

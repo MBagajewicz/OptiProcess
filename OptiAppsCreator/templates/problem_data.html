@@ -40,7 +40,7 @@
                     {% endfor %}
                 </select>
                 {% else %}
-                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'disabled' if field.computed_hint }}>
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold" {{ 'data-computed=true disabled' if field.computed_hint }}>
                 {% endif %}
             </div>
             {% endfor %}
@@ -129,6 +129,38 @@ function collectProblemData(markDirty) {
 
 window.collectProblemData = collectProblemData;
 
+function formatCalculatedValue(value) {
+    if (typeof value !== 'number') return value;
+    return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(6)));
+}
+
+async function refreshProblemCalculatedFields(markDirty) {
+    const data = collectProblemData(false);
+    if (!data) return null;
+    try {
+        const response = await fetch('/api/models/' + encodeURIComponent(MODEL) + '/calculated-inputs', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({parameters: data})
+        });
+        if (!response.ok) throw new Error(await response.text());
+        const result = await response.json();
+        const calculated = result.parameters || {};
+        document.querySelectorAll('input[data-key][data-computed="true"]').forEach(function(input) {
+            const key = input.dataset.key;
+            if (calculated[key] === undefined) return;
+            input.value = formatCalculatedValue(calculated[key]);
+        });
+        collectProblemData(markDirty !== false);
+        return result;
+    } catch(e) {
+        console.warn('Could not refresh calculated fields:', e);
+        return null;
+    }
+}
+
+window.refreshProblemCalculatedFields = refreshProblemCalculatedFields;
+
 function clearProblemDataForm() {
     document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
         if (input.type === 'hidden') return;
@@ -173,10 +205,11 @@ function restoreProblemData() {
 document.addEventListener('DOMContentLoaded', function() {
     restoreProblemData();
     attachNumericFiltering('input[data-numeric="true"][data-key]');
-    attachEnterToAdvance('input[data-key]:not(:disabled), select[data-key]', 'collectProblemData');
+    attachEnterToAdvance('input[data-key]:not(:disabled), select[data-key]', 'collectProblemData', 'refreshProblemCalculatedFields');
     document.querySelectorAll('input[data-key], select[data-key], input[type="radio"]').forEach(function(input) {
-        input.addEventListener('change', function() {
+        input.addEventListener('change', async function() {
             collectProblemData(true);
+            await refreshProblemCalculatedFields(false);
         });
     });
 });
