@@ -109,6 +109,7 @@ class OptimizationResponse(BaseModel):
 
 class ProjectSaveRequest(BaseModel):
     name: str | None = None
+    design_name: str | None = None
     user_project_id: int | None = None
     user_project_name: str | None = None
     parameters: dict
@@ -489,7 +490,8 @@ async def api_load_project(model: str, project_name: str, scope: str = Query("us
 
 @app.post("/api/projects/{model}")
 async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = Depends(require_session)):
-    if not req.name:
+    design_name = req.design_name or req.name
+    if not design_name:
         raise HTTPException(status_code=400, detail="Project name is required")
     try:
         validate_numeric_parameters(req.parameters)
@@ -497,7 +499,7 @@ async def api_save_project_as(model: str, req: ProjectSaveRequest, user: dict = 
         var_order = model_def["Model_Info"]["List_of_Variables"]
         payload = req.model_dump()
         payload["parameters"] = normalize_numeric_parameters(payload["parameters"])
-        saved = save_user_design(user["id"], model, req.name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
+        saved = save_user_design(user["id"], model, design_name, payload, project_id=req.user_project_id, user_project_name=req.user_project_name)
         saved["variable_order"] = var_order
         return saved
     except ProjectError as exc:

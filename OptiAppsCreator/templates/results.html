@@ -426,14 +426,15 @@ function buildPayload(data) {
     };
 }
 
-function buildProjectPayload(name) {
+function buildProjectPayload(name, userProjectId, userProjectName) {
     const sessionData = getSessionData();
     if (!sessionData) return null;
     const solverPayload = buildPayload(sessionData);
     return {
         name: name || getCurrentProject(),
-        user_project_id: sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) ? parseInt(sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID), 10) : null,
-        user_project_name: sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || null,
+        design_name: name || getCurrentProject(),
+        user_project_id: userProjectId !== undefined ? userProjectId : (sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) ? parseInt(sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID), 10) : null),
+        user_project_name: userProjectName !== undefined ? userProjectName : (sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || null),
         parameters: solverPayload.parameters,
         discrete_variables: solverPayload.discrete_variables,
         selected_of: solverPayload.selected_of,
@@ -466,32 +467,78 @@ async function saveCloud() {
 
 async function saveAsCloud() {
     document.getElementById('save-menu').classList.add('hidden');
-    const previousUserProjectName = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || '';
-    const userProjectName = prompt('User project name:', previousUserProjectName || 'My_Designs');
-    if (!userProjectName) return false;
-    if (previousUserProjectName && userProjectName !== previousUserProjectName) sessionStorage.removeItem(STORAGE_KEY_USER_PROJECT_ID);
-    sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, userProjectName);
-    const name = prompt('Design name:', getCurrentProject() || 'NewDesign');
-    if (!name) return false;
-    const payload = buildProjectPayload(name);
-    if (!payload) return alert('No project data available to save.');
-    const response = await fetch(API_PROJECTS_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-    });
-    if (!response.ok) {
-        alert('Could not save project: ' + await response.text());
+    const previousUserProjectId = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) || '';
+    let projects = [];
+    try {
+        const resp = await fetch('/api/user-projects');
+        if (!resp.ok) throw new Error(await resp.text());
+        const data = await resp.json();
+        projects = Array.isArray(data.projects) ? data.projects : [];
+    } catch(e) {
+        alert('Could not load user projects: ' + (e.message || e));
         return false;
     }
-    const data = await response.json();
-    setCurrentProject(data.name || name);
-    if (data.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, data.user_project_id);
-    if (data.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, data.user_project_name);
-    sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
-    setDirty(false);
-    saveSnapshot();
-    return true;
+
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'save-as-modal';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'background:white;border-radius:12px;padding:24px;width:400px;max-width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+
+    modal.innerHTML = '<h3 style="margin:0 0 16px;font-size:18px;font-weight:700;">Save Design As</h3>' +
+        '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Project:</label>' +
+        '<select id="save-as-project-select" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:16px;">' +
+        (projects.length > 0 ? projects.map(function(p) {
+            var id = String(p.id);
+            var sel = (id === previousUserProjectId || (!previousUserProjectId && p.name === 'My_Designs')) ? ' selected' : '';
+            return '<option value="' + id.replace(/"/g,'&quot;') + '" data-name="' + String(p.name || '').replace(/"/g,'&quot;') + '"' + sel + '>' + String(p.name || '').replace(/</g,'&lt;') + '</option>';
+        }).join('') : '<option value="" disabled selected>No user projects available</option>') +
+        '</select>' +
+        '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Design name:</label>' +
+        '<input id="save-as-design-input" type="text" value="' + (getCurrentProject() || 'NewDesign').replace(/"/g,'&quot;') + '" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:20px;">' +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+        '<button id="save-as-cancel-btn" style="padding:8px 20px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:14px;">Cancel</button>' +
+        '<button id="save-as-confirm-btn" style="padding:8px 20px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;">Save</button>' +
+        '</div>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    return new Promise(function(resolve) {
+        document.getElementById('save-as-cancel-btn').onclick = function() { overlay.remove(); resolve(false); };
+        document.getElementById('save-as-confirm-btn').onclick = async function() {
+            const sel = document.getElementById('save-as-project-select');
+            const selectedOption = sel && sel.selectedOptions.length ? sel.selectedOptions[0] : null;
+            const userProjectId = sel && sel.value ? parseInt(sel.value, 10) : null;
+            const userProjectName = selectedOption ? selectedOption.getAttribute('data-name') || selectedOption.textContent : null;
+            if (!userProjectId) { alert('Please select a user project.'); return; }
+            const name = document.getElementById('save-as-design-input').value.trim();
+            if (!name) { alert('Please enter a design name.'); return; }
+            overlay.remove();
+            const payload = buildProjectPayload(name, userProjectId, userProjectName);
+            if (!payload) { resolve(false); return; }
+            const response = await fetch(API_PROJECTS_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                alert('Could not save project: ' + await response.text());
+                resolve(false);
+                return;
+            }
+            const data = await response.json();
+            setCurrentProject(data.name || name);
+            if (data.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, data.user_project_id);
+            if (data.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, data.user_project_name);
+            sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
+            setDirty(false);
+            saveSnapshot();
+            resolve(true);
+        };
+    });
 }
 
 function applyProjectPayload(project, source) {
