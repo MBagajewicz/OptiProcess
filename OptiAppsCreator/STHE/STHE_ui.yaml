@@ -82,7 +82,7 @@ pages:
         element: computed_display
         color: pink
         rows:
-          - {label: "LMTD (Calculated)", unit: "°C", computed: true}
+          - {label: "LMTD (Calculated)", key: "LMTD", unit: "°C", computed: true}
 
       flow_limits:
         title: "FLOW LIMITS"

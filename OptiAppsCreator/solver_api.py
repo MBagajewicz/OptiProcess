@@ -42,6 +42,7 @@ import uuid
 import subprocess
 import importlib
 import copy
+import math
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -284,6 +285,13 @@ def update_energy_balance_calculated_parameters(parameters: dict) -> dict:
         if mc != 0 and cpc != 0:
             parameters["Tco"] = tci + mh * cph * (thi - tho) / (mc * cpc)
             calculated["Tco"] = parameters["Tco"]
+            dt1 = thi - parameters["Tco"]
+            dt2 = tho - tci
+            if dt1 > 0 and dt2 > 0:
+                if dt1 == dt2:
+                    calculated["LMTD"] = dt1
+                else:
+                    calculated["LMTD"] = (dt1 - dt2) / math.log(dt1 / dt2)
     except (KeyError, TypeError, ValueError):
         pass
     return calculated

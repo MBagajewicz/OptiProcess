@@ -93,7 +93,7 @@
                 <label class="input-label text-gray-500 text-[10px]">
                     <span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span>
                 </label>
-                <input type="text" value="—" class="custom-input border-pink-300 text-gray-400 font-semibold text-center" disabled>
+                <input type="text" value="—"{% if row.key %} data-key="{{ row.key }}" data-computed="true"{% endif %} class="custom-input border-pink-300 text-gray-400 font-semibold text-center" disabled>
             </div>
             {% endfor %}
         </div>
