@@ -16,26 +16,26 @@
         .btn-shadow { box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.4); }
     </style>
 </head>
-<body class="flex flex-col items-center justify-start min-h-screen pt-10">
+<body class="flex flex-col items-center justify-start min-h-screen px-4 pt-6 sm:pt-10">
 
     <!-- Header Section -->
-    <div class="header-box w-[600px] border-2 border-black rounded-[20px] p-6 text-center mb-8">
-        <h1 class="header-font text-7xl text-black mb-2" style="letter-spacing: -2px;">{{ header.title }}</h1>
-        <h2 class="header-font text-3xl text-black mb-4">{{ header.subtitle }}</h2>
+    <div class="header-box w-full max-w-[600px] border-2 border-black rounded-[20px] p-4 sm:p-6 text-center mb-6 sm:mb-8">
+        <h1 class="header-font text-5xl sm:text-7xl text-black mb-2 leading-none" style="letter-spacing: -2px;">{{ header.title }}</h1>
+        <h2 class="header-font text-xl sm:text-3xl text-black mb-4 leading-tight">{{ header.subtitle }}</h2>
         <p class="text-gray-600 text-sm font-bold mb-1">{{ header.prototype }}</p>
         <p class="menu-font text-gray-600 text-sm font-bold tracking-widest">MAIN MENU</p>
     </div>
 
     <!-- Menu Section -->
-    <div class="menu-box w-[600px] border border-black rounded-[15px] p-6 flex flex-col items-center">
-        <div class="flex flex-wrap justify-center gap-2 mb-4">
+    <div class="menu-box w-full max-w-[600px] border border-black rounded-[15px] p-4 sm:p-6 flex flex-col items-center">
+        <div class="grid w-full grid-cols-1 sm:flex sm:flex-wrap sm:justify-center gap-2 mb-4">
             {% for model in models %}
-            <a href="{{ model.link }}" class="{{ model.css }} px-4 py-1 rounded-full text-xs font-bold border border-gray-300 btn-shadow">
+            <a href="{{ model.link }}" class="{{ model.css }} block w-full sm:w-auto px-4 py-2 sm:py-1 rounded-full text-center text-xs font-bold border border-gray-300 btn-shadow">
                 {{ model.label }}
             </a>
             {% endfor %}
         </div>
-        <button onclick="logout()" class="bg-[#3b5998] text-white px-6 py-1 rounded-full text-xs font-bold border border-black shadow-md">
+        <button onclick="logout()" class="bg-[#3b5998] text-white w-full sm:w-auto px-6 py-2 sm:py-1 rounded-full text-xs font-bold border border-black shadow-md">
             Logout
         </button>
     </div>
