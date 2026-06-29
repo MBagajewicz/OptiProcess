@@ -93,10 +93,50 @@ Model_STHE = {
                   5.4439, 5.7079, 5.9719],
             'Nb': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
             'Bc': [0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45]
-        }
+        },
 
         # Functions that checks if Example Data provided by user has any consistency problems (e.g. negative flows or compositions)
         # These functions must be provided on Parameters_Update_{Model}.py file
+        
+	'Recomended_Limit_Parameters': {
+	    # Hot stream
+	    'mh': (10, 150),                 # kg/s - scenario range, not universal
+	    'roh': (650, 1000),              # kg/m3 - depends on the fluid
+	    'Cph': (1800, 4300),             # J/(kg K) - depends on the fluid
+	    'mih': (0.0003, 0.01),           # Pa s - depends on the fluid and temperature
+	    'kh': (0.10, 0.70),              # W/(m K) - depends on the fluid
+	    'Rfh': (0.00009, 0.0007),        # m2 K/W
+	    'DPhdisp': (50000.0, 100000.0),  # Pa
+
+	    # Cold stream
+	    'mc': (10, 250),                 # kg/s - scenario range, not universal
+	    'roc': (950, 1000),              # kg/m3 - typical for liquid water
+	    'Cpc': (4100, 4300),             # J/(kg K) - typical for liquid water
+	    'mic': (0.0003, 0.005),          # Pa s
+	    'kc': (0.55, 0.70),              # W/(m K)
+	    'Rfc': (0.00009, 0.0007),        # m2 K/W
+	    'DPcdisp': (50000.0, 100000.0),  # Pa
+
+	    # Heat exchanger
+	    'ktube': (15, 60),               # W/(m K), stainless steel to carbon steel
+	    'thk': (0.001, 0.003),           # m
+
+	    # Problem / thermal constraints
+	    'Aexc': (5, 20),                 # %
+	    'Tci': (0, 250),                 # °C, adjust according to the process
+	    'Tco': (0, 250),                 # °C, adjust according to the process
+	    'Thi': (0, 250),                 # °C, adjust according to the process
+	    'Tho': (0, 250),                 # °C, adjust according to the process
+
+	    # Economic data
+	    'par_a': (600, 800),             # depends on the cost correlation
+	    'par_b': (0.5, 0.8),             # depends on the cost correlation
+	    'pc': (0.05, 0.30),              # $/kWh or another unit defined by the model
+	    'int_rate': (0.05, 0.20),
+	    'n': (5, 20),                    # years
+	    'eta': (0.5, 0.85),
+	    'Nop': (2000, 8760),             # h/year
+	}
         
     },
 

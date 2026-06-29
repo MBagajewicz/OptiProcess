@@ -107,6 +107,7 @@ def build_problem_data_context(yaml_data, model_def, example):
     page_yaml = yaml_data["pages"]["problem_data"]
     sections_out = []
     page_default_buttons = bool(page_yaml.get("default_buttons", False))
+    recommended_limits = get_recommended_limit_parameters(model_def)
 
     for section_id, section in page_yaml["sections"].items():
         element = section.get("element", "form_group")
@@ -167,6 +168,10 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "computed_hint": field_meta.get("computed_hint", False),
                     "options": field_meta.get("options"),
                 }
+                recommended_limit = resolve_recommended_limit(recommended_limits, key, field_meta)
+                if recommended_limit:
+                    field["recommended_min"] = recommended_limit[0]
+                    field["recommended_max"] = recommended_limit[1]
                 if field["computed_hint"]:
                     has_computed_field = True
                 fields.append(field)
@@ -217,6 +222,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
     # Get variable definitions from Model_Def
     list_of_vars = model_def["Model_Info"]["List_of_Variables"]
     std_values = model_def["Model_Info"]["Standard_Variables_Values"]
+    recommended_limits = get_recommended_limit_parameters(model_def)
     discrete_vals = example["Equipment1"]["Model_Declarations"]["Discrete_Values_of_Variables"]
 
     # Build a lookup: variable_name → (index, selected_values)
@@ -300,12 +306,17 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
                 # Use YAML default as fallback when not in the example
                 if isinstance(default_val, str) and default_val == "" and "default" in field_meta:
                     default_val = field_meta["default"]
-                fields.append({
+                field = {
                     "key": key,
                     "label": field_meta.get("label", key),
                     "unit": field_meta.get("unit"),
                     "default": default_val,
-                })
+                }
+                recommended_limit = resolve_recommended_limit(recommended_limits, key, field_meta)
+                if recommended_limit:
+                    field["recommended_min"] = recommended_limit[0]
+                    field["recommended_max"] = recommended_limit[1]
+                fields.append(field)
             resolved["fields"] = fields
             resolved["default_keys"] = [field["key"] for field in fields]
 
@@ -337,6 +348,27 @@ def get_geometric_scalar_keys(model_ui):
 
 
 _WC_MAP = {"w-44": 44, "w-56": 56, "w-64": 64, "w-72": 72}
+
+
+def get_recommended_limit_parameters(model_def):
+    """Return optional recommended parameter limits from Model_Info."""
+    model_info = model_def.get("Model_Info", {})
+    recommended_limits = model_info.get("Recomended_Limit_Parameters", {})
+    return recommended_limits if isinstance(recommended_limits, dict) else {}
+
+
+def resolve_recommended_limit(recommended_limits, key, field_meta):
+    """Resolve recommended UI limits for a field, applying display_factor when needed."""
+    limits = recommended_limits.get(key)
+    if not limits or len(limits) != 2:
+        return None
+    lower, upper = limits
+    display_factor = field_meta.get("display_factor")
+    if display_factor is not None:
+        factor = float(display_factor)
+        lower = lower * factor
+        upper = upper * factor
+    return lower, upper
 
 
 def _width_value(width_class):

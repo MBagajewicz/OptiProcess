@@ -579,6 +579,83 @@ hot_stream:
 | `computed_hint` | `true` para deshabilitar el campo (valor calculado, no editable) |
 | `default` | Valor por defecto si no existe en `Examples_{M}.py` |
 
+##### Límites recomendados para `form_group`
+
+Los campos de un `form_group` pueden tener límites recomendados definidos en el modelo Python, sin duplicar esos rangos en el YAML.
+
+El generador busca opcionalmente este diccionario dentro de `Model_Info` en `{MODEL}/Model/Model_Def_{MODEL}.py`:
+
+```python
+"Model_Info": {
+    ...
+    "Recomended_Limit_Parameters": {
+        "mh": (10, 150),
+        "Cph": (1800, 4300),
+        "int_rate": (0.05, 0.20),
+    },
+}
+```
+
+Si una key del YAML dentro de `fields` coincide con una key de `Recomended_Limit_Parameters`, el input generado recibe los atributos:
+
+```html
+data-recommended-min="10"
+data-recommended-max="150"
+```
+
+Cuando el usuario carga un valor numérico fuera de ese rango, la celda se colorea en amarillo. Esto es una advertencia visual, no bloquea el guardado ni la optimización.
+
+Ejemplo:
+
+```yaml
+hot_stream:
+  title: "HOT STREAM"
+  element: form_group
+  color: red
+  source: "Model_Parameters"
+  fields:
+    mh:
+      label: "Flow Rate"
+      unit: "kg/s"
+```
+
+Si `Model_Def_STHE.py` contiene:
+
+```python
+"Recomended_Limit_Parameters": {
+    "mh": (10, 150),
+}
+```
+
+entonces `mh` se marcará en amarillo si el usuario carga un valor menor que `10` o mayor que `150`.
+
+Si el campo usa `display_factor`, los límites recomendados se convierten a la misma escala visible para el usuario. Por ejemplo, si el modelo guarda `int_rate` como fracción y el YAML muestra porcentaje:
+
+```yaml
+int_rate:
+  label: "Interest"
+  unit: "%"
+  display_factor: 100
+```
+
+con:
+
+```python
+"int_rate": (0.05, 0.20)
+```
+
+la UI usa límites visibles `5.0` a `20.0`.
+
+Por compatibilidad, si `Recomended_Limit_Parameters` no existe en `Model_Info`, el generador asume que ningún parámetro tiene límites recomendados. El modelo sigue funcionando sin cambios.
+
+Para verificar esta regla:
+
+```bash
+cd OptiAppsCreator
+python generate_ui.py --all
+python scripts/verify_recommended_limits.py
+```
+
 ##### Campos `computed_hint: true`
 
 Un campo con:
@@ -1022,10 +1099,15 @@ Model_MiModelo = {
             "Optimization_Variables_Names": ["TAC", "CAPEX", "Area"],
             "Unit_OF": ["$/year", "$", "m²"]
         },
+        "Recomended_Limit_Parameters": {                     # Opcional
+            "param1": (min_recomendado, max_recomendado),
+        },
     },
     ...
 }
 ```
+
+`Recomended_Limit_Parameters` es opcional. Si no se define, la UI interpreta que el modelo no tiene límites recomendados para sus parámetros de entrada.
 
 ### Paso 3: Escribir `Examples_MiModelo.py`
 

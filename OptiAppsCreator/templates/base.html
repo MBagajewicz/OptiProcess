@@ -19,6 +19,7 @@
         .checkbox-grid-input { background-color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; padding: 4px 8px; font-size: 12px; width: 100%; text-align: left; color: inherit; }
         .bg-industrial { background-image: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('https://placehold.co/1920x1080/2c3e50/ffffff?text=Industrial+Heat+Exchanger+Background'); background-size: cover; background-position: center; }
         .numeric-invalid { border-color: #dc2626 !important; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25); }
+        .recommended-limit-warning { background-color: #fde68a !important; border-color: #f59e0b !important; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25); }
     </style>
     {% block extra_style %}{% endblock %}
 </head>
@@ -169,12 +170,29 @@
         else input.removeAttribute('title');
     }
 
+    function updateRecommendedLimitWarning(input) {
+        if (!input || input.dataset.recommendedMin === undefined || input.dataset.recommendedMax === undefined) return;
+        const min = parseFloat(input.dataset.recommendedMin);
+        const max = parseFloat(input.dataset.recommendedMax);
+        const value = parseStrictNumber(input.value);
+        const isValidNumber = isStrictNumber(input.value);
+        const outOfRange = isValidNumber && (value < min || value > max);
+        input.classList.toggle('recommended-limit-warning', outOfRange);
+        if (outOfRange) input.title = 'Recommended range: ' + min + ' to ' + max + '.';
+        else if (input.title && input.title.indexOf('Recommended range:') === 0) input.removeAttribute('title');
+    }
+
+    function updateRecommendedLimitWarnings(selector) {
+        document.querySelectorAll(selector || 'input[data-recommended-min][data-recommended-max]').forEach(updateRecommendedLimitWarning);
+    }
+
     function validateNumericInputs(selector) {
         const invalid = [];
         document.querySelectorAll(selector).forEach(function(input) {
             if (input.disabled || input.type === 'hidden') return;
             const valid = isStrictNumber(input.value);
             markNumericValidity(input, valid);
+            updateRecommendedLimitWarning(input);
             if (!valid) invalid.push(input);
         });
         if (invalid.length) {
@@ -191,6 +209,7 @@
                 const clean = sanitizeNumericValue(this.value);
                 if (this.value !== clean) this.value = clean;
                 markNumericValidity(this, this.value ? isStrictNumber(this.value) : false);
+                updateRecommendedLimitWarning(this);
                 setDirty(true);
             });
         });
