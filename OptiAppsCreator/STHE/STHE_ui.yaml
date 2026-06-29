@@ -19,8 +19,10 @@ pages:
     columns:
       # Column layout: list of sections per column, left to right
       - [optimization_target, fluid_allocation]
-      - [hot_stream, cold_stream, lmtd_display]
-      - [flow_limits, lmtd_settings, other_options, bell_params]
+      - [cold_stream]
+      - [hot_stream]
+      - [lmtd_settings, lmtd_display]
+      - [flow_limits, other_options, bell_params]
       - [economic]
 
     sections:
