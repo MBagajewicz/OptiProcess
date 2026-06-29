@@ -42,7 +42,6 @@ import uuid
 import subprocess
 import importlib
 import copy
-import math
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -273,6 +272,8 @@ def build_default_design_response(model: str) -> dict:
 
 
 def update_energy_balance_calculated_parameters(parameters: dict) -> dict:
+    from Common_Equations_HEX import Calculations_HEX_LMTD
+
     calculated = {}
     try:
         mh = float(parameters["mh"])
@@ -285,13 +286,10 @@ def update_energy_balance_calculated_parameters(parameters: dict) -> dict:
         if mc != 0 and cpc != 0:
             parameters["Tco"] = tci + mh * cph * (thi - tho) / (mc * cpc)
             calculated["Tco"] = parameters["Tco"]
-            dt1 = thi - parameters["Tco"]
-            dt2 = tho - tci
-            if dt1 > 0 and dt2 > 0:
-                if dt1 == dt2:
-                    calculated["LMTD"] = dt1
-                else:
-                    calculated["LMTD"] = (dt1 - dt2) / math.log(dt1 / dt2)
+            try:
+                calculated["LMTD"] = float(Calculations_HEX_LMTD.HEX_lmtd(thi, tho, tci, parameters["Tco"]))
+            except Exception:
+                pass
     except (KeyError, TypeError, ValueError):
         pass
     return calculated

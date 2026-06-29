@@ -699,7 +699,7 @@ flow_limits:
 
 ##### `computed_display`
 
-Panel de solo lectura para valores calculados en el navegador (sin enviar al solver).
+Panel de solo lectura para valores calculados por el servidor (sin enviar al solver).
 
 ```yaml
 lmtd_display:
@@ -707,7 +707,7 @@ lmtd_display:
   element: computed_display
   color: pink
   rows:
-    - {label: "LMTD (Calculated)", unit: "°C", computed: true}
+    - {label: "LMTD (Calculated)", key: "LMTD", unit: "°C", computed: true}
 ```
 
 | Etiqueta | Significado |
@@ -715,6 +715,16 @@ lmtd_display:
 | `element` | Debe ser `computed_display` |
 | `color` | `pink` (único usado) |
 | `rows` | Lista de filas |
+
+Si una fila define `key`, el frontend la usa solo como identificador visual (`data-display-key`) para actualizar el valor devuelto por `POST /api/models/{model}/calculated-inputs`. No se guarda como `Model_Parameters` ni se envía al solver.
+
+Para verificar esta regla después de modificar YAML, templates o cálculos server-side:
+
+```bash
+cd OptiAppsCreator
+python generate_ui.py --all
+python scripts/verify_computed_displays.py
+```
 
 ---
 

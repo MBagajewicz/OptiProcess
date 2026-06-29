@@ -93,7 +93,7 @@
                 <label class="input-label text-gray-500 text-[10px]">
                     <span class="whitespace-nowrap">{{ row.label }}{% if row.computed %} <span class="ml-1 text-red-600 text-[9px] font-bold whitespace-nowrap">(calculated)</span>{% endif %}</span>
                 </label>
-                <input type="text" value="—"{% if row.key %} data-key="{{ row.key }}" data-computed="true"{% endif %} class="custom-input border-pink-300 text-gray-400 font-semibold text-center" disabled>
+                <input type="text" value="—"{% if row.key %} data-display-key="{{ row.key }}" data-computed-display="true"{% endif %} class="custom-input border-pink-300 text-gray-400 font-semibold text-center" disabled>
             </div>
             {% endfor %}
         </div>
@@ -123,6 +123,11 @@ function collectProblemData(markDirty) {
         if (!key) return;
         var val = input.value;
         data[key] = input.dataset.numeric === 'true' && isStrictNumber(val) ? parseStrictNumber(val) : ((!isNaN(parseFloat(val))) ? parseFloat(val) : val);
+    });
+
+    // Computed displays are visual only. Remove stale values saved by older generated pages.
+    document.querySelectorAll('input[data-display-key][data-computed-display="true"]').forEach(function(input) {
+        delete data[input.dataset.displayKey];
     });
 
     const geomData = getJson(geomStorageKey(), {});
@@ -174,6 +179,11 @@ async function refreshProblemCalculatedFields(markDirty) {
         const calculated = result.parameters || {};
         document.querySelectorAll('input[data-key][data-computed="true"]').forEach(function(input) {
             const key = input.dataset.key;
+            if (calculated[key] === undefined) return;
+            input.value = formatCalculatedValue(calculated[key]);
+        });
+        document.querySelectorAll('input[data-display-key][data-computed-display="true"]').forEach(function(input) {
+            const key = input.dataset.displayKey;
             if (calculated[key] === undefined) return;
             input.value = formatCalculatedValue(calculated[key]);
         });
