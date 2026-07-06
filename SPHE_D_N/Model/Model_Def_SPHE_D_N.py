@@ -23,7 +23,7 @@
 
 # region INPUT EXAMPLE 1 - STHE + STHE
 
-Model_SPHE_D = {
+Model_SPHE_D_N = {
 
     # =========================================== General Information ============================================
     # The first entries are General (True or False) Information regarding the Model Operation Mode.
@@ -52,7 +52,7 @@ Model_SPHE_D = {
         # For bilevel optimization models (e.g. Kettle Model used in next_level of DC_ST_HE model), some of the 
         # functions of the list may be skipped and should be called by model programmer inside Next_Level_Set_Up function
 
-        'List_of_Variables': ['L', 'H', 'ds', 'dh', 'dc'],
+        'List_of_Variables': ['N', 'H', 'ds', 'dh', 'dc'],
         # List of discrete design variables. User will give discrete options in example file in the same order as 
         # defined here, and this is also the same order that must be used in Constraints_and_OF.py functions
 

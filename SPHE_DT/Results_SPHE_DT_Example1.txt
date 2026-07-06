@@ -1,0 +1,23 @@
+********** Normal Set Trimming running **********
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00215 seconds
+
+Primordial Set Trimming time:  0.00283 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [25600, 17152, 5248]
+
+******************** Starting Execution for SPHE_DT_Example1 ********************
+
+The solution of Equipment1 "SPHE_DT" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [5248, 1008, 1008, 458, 458, 434, 326, 326, 326, 166, 166]
+{'SPHE_OF': {'OF_Solution': np.float64(11887.031296243153), 'Number_of_solutions': 2}, 'L': np.float64(6.6599), 'H': np.float64(0.3048), 'ds': np.float64(0.2032), 'dh': np.float64(0.0048), 'dc': np.float64(0.0064)}
+Elapsed time for Equipment1 "SPHE_DT": 0.90 seconds 
+
+OF Solution total ($/year) 11887.031296243153
+Total time elapsed: 0.91771 seconds
+
