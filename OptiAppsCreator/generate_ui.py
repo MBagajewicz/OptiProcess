@@ -82,6 +82,44 @@ def load_model_def(model_name):
     return getattr(module, var_name)
 
 
+def load_common_units(script_dir):
+    units_path = Path(script_dir) / "common_units.yaml"
+    if not units_path.exists():
+        return {"unit_dimensions": {}, "conversions": {}}
+    with open(units_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {"unit_dimensions": {}, "conversions": {}}
+
+
+def build_unit_options(common_units):
+    options_by_base = {}
+    for dimension in common_units.get("unit_dimensions", {}).values():
+        base = dimension.get("base")
+        if base:
+            options_by_base[base] = dimension.get("options", [base])
+    return options_by_base
+
+
+def get_model_base_units(model_def, group="Model_Parameters"):
+    return model_def.get("Model_Info", {}).get("Base_Units", {}).get(group, {}) or {}
+
+
+def resolve_unit_metadata(key, field_meta, base_units, unit_options_by_base, model_unit_defaults):
+    if field_meta.get("display_factor") is not None:
+        return {}
+    base_unit = base_units.get(key)
+    if not base_unit:
+        return {}
+    unit_options = unit_options_by_base.get(base_unit, [base_unit])
+    display_unit = model_unit_defaults.get(key, base_unit)
+    if display_unit not in unit_options:
+        display_unit = base_unit
+    return {
+        "base_unit": base_unit,
+        "display_unit": display_unit,
+        "unit_options": unit_options,
+    }
+
+
 def load_project_defaults(model_name, project_name=None):
     """Load model defaults from Projects/Default_Design.py."""
     return load_default_design(model_name)
@@ -102,12 +140,16 @@ def get_example_default(example, key_path, equipment=1):
     return ""
 
 
-def build_problem_data_context(yaml_data, model_def, example):
+def build_problem_data_context(yaml_data, model_def, example, common_units=None):
     """Build resolved context for the problem_data page."""
     page_yaml = yaml_data["pages"]["problem_data"]
     sections_out = []
     page_default_buttons = bool(page_yaml.get("default_buttons", False))
     recommended_limits = get_recommended_limit_parameters(model_def)
+    common_units = common_units or {}
+    unit_options_by_base = build_unit_options(common_units)
+    base_units = get_model_base_units(model_def, "Model_Parameters")
+    model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
 
     for section_id, section in page_yaml["sections"].items():
         element = section.get("element", "form_group")
@@ -172,6 +214,7 @@ def build_problem_data_context(yaml_data, model_def, example):
                 if recommended_limit:
                     field["recommended_min"] = recommended_limit[0]
                     field["recommended_max"] = recommended_limit[1]
+                field.update(resolve_unit_metadata(key, field_meta, base_units, unit_options_by_base, model_unit_defaults))
                 if field["computed_hint"]:
                     has_computed_field = True
                 fields.append(field)
@@ -196,6 +239,8 @@ def build_problem_data_context(yaml_data, model_def, example):
                     "upper": upper_val,
                     "lower_key": lower_key,
                     "upper_key": upper_key,
+                    "lower_unit": resolve_unit_metadata(lower_key, {}, base_units, unit_options_by_base, model_unit_defaults),
+                    "upper_unit": resolve_unit_metadata(upper_key, {}, base_units, unit_options_by_base, model_unit_defaults),
                 })
             resolved["rows"] = rows
             resolved["default_keys"] = [key for row in rows for key in (row["lower_key"], row["upper_key"])]
@@ -210,7 +255,7 @@ def build_problem_data_context(yaml_data, model_def, example):
     return sections_out
 
 
-def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=True):
+def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=True, common_units=None):
     """Build resolved context for the geometric_options page.
     
     sort_numeric: if True, sort purely-numeric option lists before rendering checkbox grids.
@@ -223,6 +268,10 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
     list_of_vars = model_def["Model_Info"]["List_of_Variables"]
     std_values = model_def["Model_Info"]["Standard_Variables_Values"]
     recommended_limits = get_recommended_limit_parameters(model_def)
+    common_units = common_units or {}
+    unit_options_by_base = build_unit_options(common_units)
+    base_units = get_model_base_units(model_def, "Model_Parameters")
+    model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
     discrete_vals = example["Equipment1"]["Model_Declarations"]["Discrete_Values_of_Variables"]
 
     # Build a lookup: variable_name → (index, selected_values)
@@ -316,6 +365,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
                 if recommended_limit:
                     field["recommended_min"] = recommended_limit[0]
                     field["recommended_max"] = recommended_limit[1]
+                field.update(resolve_unit_metadata(key, field_meta, base_units, unit_options_by_base, model_unit_defaults))
                 fields.append(field)
             resolved["fields"] = fields
             resolved["default_keys"] = [field["key"] for field in fields]
@@ -488,6 +538,56 @@ def build_results_js_context(yaml_data):
     return var_keys, var_labels, var_units
 
 
+def build_units_context(yaml_data, model_def, common_units=None):
+    """Build unit configuration rows from model base units plus UI labels/order."""
+    common_units = common_units or {}
+    unit_options_by_base = build_unit_options(common_units)
+    base_units = get_model_base_units(model_def, "Model_Parameters")
+    model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
+    rows = []
+
+    def add_row(page_label, section_title, key, label, unit=None):
+        metadata = resolve_unit_metadata(key, {}, base_units, unit_options_by_base, model_unit_defaults)
+        if not metadata or len(metadata.get("unit_options", [])) <= 1:
+            return
+        rows.append({
+            "page": page_label,
+            "section": section_title,
+            "key": key,
+            "label": label,
+            "yaml_unit": unit,
+            **metadata,
+        })
+
+    problem_sections = yaml_data.get("pages", {}).get("problem_data", {}).get("sections", {})
+    for section in problem_sections.values():
+        title = section.get("title", "")
+        element = section.get("element")
+        if element == "form_group":
+            for key, field_meta in section.get("fields", {}).items():
+                if field_meta.get("element") == "select" or field_meta.get("display_factor") is not None:
+                    continue
+                add_row("Problem Data", title, key, field_meta.get("label", key), field_meta.get("unit"))
+        elif element == "limit_table":
+            for row in section.get("rows", []):
+                item = row.get("item", "")
+                unit = row.get("unit")
+                add_row("Problem Data", title, row["lower"], f"{item} lower", unit)
+                add_row("Problem Data", title, row["upper"], f"{item} upper", unit)
+
+    geometric_sections = yaml_data.get("pages", {}).get("geometric_options", {}).get("sections", {})
+    for section in geometric_sections.values():
+        if section.get("element") != "form_group":
+            continue
+        title = section.get("title", "")
+        for key, field_meta in section.get("fields", {}).items():
+            if field_meta.get("display_factor") is not None:
+                continue
+            add_row("Geometric Options", title, key, field_meta.get("label", key), field_meta.get("unit"))
+
+    return rows
+
+
 def generate():
     parser = argparse.ArgumentParser(description="Generate HTML UI pages from model data + YAML")
     parser.add_argument(
@@ -517,6 +617,7 @@ def generate():
     common_yaml_path = os.path.join(script_dir, "common_ui.yaml")
     with open(common_yaml_path, "r", encoding="utf-8") as f:
         common_ui = yaml.safe_load(f)
+    common_units = load_common_units(script_dir)
 
     # Determine which models to generate
     if args.all:
@@ -607,7 +708,7 @@ def generate():
 
         # Problem Data page
         nav_pd = [{"label": p["label"], "active": p["file"] == "problem_data.html", "file": p["file"]} for p in nav_pages]
-        pd_sections = build_problem_data_context(model_ui, model_def, example)
+        pd_sections = build_problem_data_context(model_ui, model_def, example, common_units)
         pd_columns = build_column_layout(pd_sections, model_ui["pages"]["problem_data"]["columns"])
         pd_columns = uniformize_column_widths(pd_columns)
 
@@ -621,13 +722,14 @@ def generate():
             model_name=model_name,
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
         )
         (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/problem_data.html")
 
         # Geometric Options page
         nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]
-        go_sections = build_geometric_options_context(model_ui, model_def, example, args.sort_numeric_options)
+        go_sections = build_geometric_options_context(model_ui, model_def, example, args.sort_numeric_options, common_units)
         go_columns = build_column_layout(go_sections, model_ui["pages"]["geometric_options"]["columns"])
         go_columns = uniformize_column_widths(go_columns)
 
@@ -641,9 +743,27 @@ def generate():
             model_name=model_name,
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
         )
         (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/geometric_options.html")
+
+        # Unit Configuration page
+        nav_units = [{"label": p["label"], "active": False, "file": p["file"]} for p in nav_pages]
+        unit_config_fields = build_units_context(model_ui, model_def, common_units)
+        template = env.get_template("units.html")
+        html = template.render(
+            page_title="Units Configuration",
+            nav_pages=nav_units,
+            unit_config_fields=unit_config_fields,
+            header=header_data,
+            model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
+        )
+        (model_output_dir / "units.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/units.html")
 
         # Results page
         nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]
@@ -666,6 +786,7 @@ def generate():
             var_units=rs_var_units,
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
         )
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/results.html")
@@ -680,6 +801,7 @@ def generate():
             model_name=model_name,
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
         )
         (model_output_dir / "projects.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/projects.html")

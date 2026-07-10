@@ -91,6 +91,7 @@ SESSION_HOURS = int(os.getenv("SESSION_HOURS", "8"))
 class OptimizationRequest(BaseModel):
     model: str = "STHE"
     parameters: dict
+    parameter_units: dict | None = None
     discrete_variables: dict
     selected_of: str = "TAC_OF"
     number_of_equipment: int = 1
@@ -113,6 +114,7 @@ class ProjectSaveRequest(BaseModel):
     user_project_id: int | None = None
     user_project_name: str | None = None
     parameters: dict
+    parameter_units: dict | None = None
     discrete_variables: dict
     selected_of: str = "TAC_OF"
     number_of_equipment: int = 1

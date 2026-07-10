@@ -95,6 +95,36 @@ Model_STHE = {
             'Bc': [0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45]
         },
 
+        'Base_Units': {
+            'Model_Parameters': {
+                'Thi': 'degC', 'Tho': 'degC', 'Tci': 'degC', 'Tco': 'degC',
+                'mh': 'kg/s', 'mc': 'kg/s',
+                'roh': 'kg/m3', 'roc': 'kg/m3',
+                'Cph': 'J/kg/K', 'Cpc': 'J/kg/K',
+                'mih': 'Pa.s', 'mic': 'Pa.s',
+                'kh': 'W/m/K', 'kc': 'W/m/K',
+                'Rfh': 'm2.K/W', 'Rfc': 'm2.K/W',
+                'DPhdisp': 'Pa', 'DPcdisp': 'Pa',
+                'vtmin': 'm/s', 'vtmax': 'm/s', 'vsmin': 'm/s', 'vsmax': 'm/s',
+                'Retmin': 'dimensionless', 'Retmax': 'dimensionless',
+                'Resmin': 'dimensionless', 'Resmax': 'dimensionless',
+                'LBLD': 'dimensionless', 'UBLD': 'dimensionless',
+                'Xp': 'dimensionless', 'F_min': 'dimensionless',
+                'Aexc': 'percent', 'eta': 'dimensionless',
+                'Nss': 'count', 'plbmax1': 'dimensionless', 'plbmax2': 'm',
+                'n': 'count', 'pc': '$/kWh', 'Nop': 'count',
+                'int_rate': 'fraction', 'par_a': '$', 'par_b': 'dimensionless',
+                'ktube': 'W/m/K', 'thk': 'm',
+            },
+            'Discrete_Variables': {
+                'Ds': 'm', 'dte': 'm', 'Npt': 'count', 'rp': 'dimensionless',
+                'lay': 'dimensionless', 'L': 'm', 'Nb': 'count', 'Bc': 'm',
+            },
+            'Results': {
+                'Area': 'm2', 'CAPEX': '$', 'TAC': '$/year', 'LMTD': 'degC',
+            },
+        },
+
         # Functions that checks if Example Data provided by user has any consistency problems (e.g. negative flows or compositions)
         # These functions must be provided on Parameters_Update_{Model}.py file
         

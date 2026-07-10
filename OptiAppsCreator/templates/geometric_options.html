@@ -54,8 +54,8 @@
         <div class="space-y-4">
             {% for field in section.fields %}
             <div class="form_group relative">
-                <label class="tube-options-label">{{ field.label }}{% if field.unit %} [{{ field.unit }}]{% endif %}</label>
-                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}"{% if field.recommended_min is defined and field.recommended_max is defined %} data-recommended-min="{{ field.recommended_min }}" data-recommended-max="{{ field.recommended_max }}"{% endif %} class="tube-options-input" value="{{ field.default }}">
+                <label class="tube-options-label">{{ field.label }}{% if field.unit or field.base_unit is defined %} [<span{% if field.base_unit is defined %} data-unit-label-for="{{ field.key }}" data-default-unit="{{ field.display_unit }}"{% endif %}>{{ field.display_unit if field.base_unit is defined else field.unit }}</span>]{% endif %}</label>
+                <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}"{% if field.base_unit is defined %} data-base-unit="{{ field.base_unit }}" data-display-unit="{{ field.display_unit }}"{% endif %}{% if field.recommended_min is defined and field.recommended_max is defined %} data-recommended-min="{{ field.recommended_min }}" data-recommended-max="{{ field.recommended_max }}"{% endif %} class="tube-options-input" value="{{ field.default }}">
             </div>
             {% endfor %}
         </div>
@@ -115,7 +115,7 @@ function collectGeometricData(markDirty) {
         var key = input.dataset.key;
         if (key) {
             var val = input.value;
-            discrete[key] = parseStrictNumber(val);
+            discrete[key] = input.dataset.numeric === 'true' && isStrictNumber(val) ? readNumericInputBaseValue(input) : parseStrictNumber(val);
         }
     });
 
@@ -151,12 +151,13 @@ function restoreGeometricData() {
 
     document.querySelectorAll('.tube-options-input').forEach(function(input) {
         var key = input.dataset.key;
-        if (key && discrete[key] !== undefined) input.value = discrete[key];
+        if (key && discrete[key] !== undefined) setNumericInputFromBase(input, discrete[key]);
         updateRecommendedLimitWarning(input);
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    attachUnitSelectors();
     restoreGeometricData();
     attachNumericFiltering('.tube-options-input[data-numeric="true"]');
     attachEnterToAdvance('.tube-options-input[data-key]', 'collectGeometricData');

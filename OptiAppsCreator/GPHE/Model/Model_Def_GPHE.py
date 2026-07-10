@@ -74,6 +74,31 @@ Model_GPHE = {
             'Sa': [30, 45, 50, 60, 65],            # Sa - Chevron angle
             'Nph': [1, 2],                         # Nph - Number of passes of hot stream
             'Npc': [1, 2]                           # Npc - number of passes of cold stream
+        },
+
+        'Base_Units': {
+            'Model_Parameters': {
+                'Thi': 'degC', 'Tho': 'degC', 'Tci': 'degC', 'Tco': 'degC',
+                'mh': 'kg/s', 'mc': 'kg/s',
+                'roh': 'kg/m3', 'roc': 'kg/m3',
+                'Cph': 'J/kg/K', 'Cpc': 'J/kg/K',
+                'mih': 'Pa.s', 'mic': 'Pa.s',
+                'kh': 'W/m/K', 'kc': 'W/m/K',
+                'Rfh': 'm2.K/W', 'Rfc': 'm2.K/W',
+                'DPhdisp': 'Pa', 'DPcdisp': 'Pa',
+                'vhmin': 'm/s', 'vhmax': 'm/s', 'vcmin': 'm/s', 'vcmax': 'm/s',
+                'Aexc': 'percent', 'eta': 'dimensionless',
+                'kplate': 'W/m/K', 'thk': 'm', 'phi': 'dimensionless', 'bp': 'm',
+                'n': 'count', 'pc': '$/kWh', 'Nop': 'count',
+                'int_rate': 'fraction', 'par_a': '$', 'par_b': 'dimensionless',
+            },
+            'Discrete_Variables': {
+                'Ntp': 'count', 'Pl': 'dimensionless', 'Sa': 'deg',
+                'Nph': 'count', 'Npc': 'count',
+            },
+            'Results': {
+                'Area': 'm2', 'CAPEX': '$', 'TAC': '$/year', 'LMTD': 'degC',
+            },
         }
 
         # Functions that checks if Example Data provided by user has any consistency problems (e.g. negative flows or compositions)
@@ -138,4 +163,3 @@ Model_GPHE = {
     }
 
 }
-

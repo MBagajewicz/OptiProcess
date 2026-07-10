@@ -74,6 +74,14 @@
                     <button type="button" onclick="saveAsCloud()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Save Design As...</button>
                 </div>
             </div>
+            <div class="relative">
+                <button type="button" onclick="toggleConfigMenu()" class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-indigo-700">
+                    Configurations <i class="fas fa-caret-down ml-1"></i>
+                </button>
+                <div id="config-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] text-xs">
+                    <button type="button" onclick="openUnitsConfiguration()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Units Configuration</button>
+                </div>
+            </div>
             <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
                 Reset
             </button>
@@ -105,12 +113,14 @@
     const MODEL = '{{ model_name }}';
     const SYNC_SCALAR_KEYS = {{ sync_scalar_keys | default([]) | tojson }};
     const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
+    const UNIT_CONVERSIONS = {{ unit_conversions | default({}) | tojson }};
     const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
     const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 
     function modelKey(name) { return 'optihex_' + MODEL + '_' + name; }
     function problemStorageKey() { return modelKey('problem_data'); }
     function geomStorageKey() { return modelKey('geometric_data'); }
+    function parameterUnitsStorageKey() { return modelKey('parameter_units'); }
     function currentProjectKey() { return modelKey('current_project'); }
     function currentUserProjectIdKey() { return modelKey('current_user_project_id'); }
     function currentUserProjectNameKey() { return modelKey('current_user_project_name'); }
@@ -119,6 +129,7 @@
     function problemClearedKey() { return modelKey('problem_data_cleared'); }
     function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
     function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
+    function lastSavedParameterUnitsKey() { return modelKey('last_saved_parameter_units'); }
     function lastSavedProjectKey() { return modelKey('last_saved_project_name'); }
     function lastSavedUserProjectIdKey() { return modelKey('last_saved_user_project_id'); }
     function lastSavedUserProjectNameKey() { return modelKey('last_saved_user_project_name'); }
@@ -164,6 +175,77 @@
         return parseFloat(String(value).trim());
     }
 
+    function conversionRule(baseUnit, displayUnit) {
+        if (!baseUnit || !displayUnit || baseUnit === displayUnit) return {factor: 1, offset: 0};
+        const byBase = UNIT_CONVERSIONS[baseUnit] || {};
+        return byBase[displayUnit] || null;
+    }
+
+    function convertDisplayToBase(value, baseUnit, displayUnit) {
+        const numeric = parseStrictNumber(value);
+        const rule = conversionRule(baseUnit, displayUnit);
+        if (!rule) return numeric;
+        return numeric * Number(rule.factor) + Number(rule.offset || 0);
+    }
+
+    function convertBaseToDisplay(value, baseUnit, displayUnit) {
+        const numeric = parseStrictNumber(value);
+        const rule = conversionRule(baseUnit, displayUnit);
+        if (!rule) return numeric;
+        return (numeric - Number(rule.offset || 0)) / Number(rule.factor);
+    }
+
+    function formatUnitValue(value) {
+        if (typeof value !== 'number' || !Number.isFinite(value)) return value;
+        return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(8)));
+    }
+
+    function getParameterUnits() {
+        return getJson(parameterUnitsStorageKey(), {});
+    }
+
+    function setInputDisplayUnit(input, unit) {
+        if (!input || !unit) return;
+        input.dataset.displayUnit = unit;
+        const units = getParameterUnits();
+        units[input.dataset.key] = unit;
+        setJson(parameterUnitsStorageKey(), units);
+    }
+
+    function selectedDisplayUnitForInput(input) {
+        if (!input) return null;
+        const units = getParameterUnits();
+        return units[input.dataset.key] || input.dataset.displayUnit || input.dataset.baseUnit || null;
+    }
+
+    function readNumericInputBaseValue(input) {
+        const displayUnit = selectedDisplayUnitForInput(input);
+        if (input.dataset.baseUnit && displayUnit) return convertDisplayToBase(input.value, input.dataset.baseUnit, displayUnit);
+        return parseStrictNumber(input.value);
+    }
+
+    function setNumericInputFromBase(input, baseValue) {
+        const displayUnit = selectedDisplayUnitForInput(input);
+        const value = input.dataset.baseUnit && displayUnit ? convertBaseToDisplay(baseValue, input.dataset.baseUnit, displayUnit) : baseValue;
+        input.value = formatUnitValue(value);
+    }
+
+    function attachUnitSelectors() {
+        const units = getParameterUnits();
+        document.querySelectorAll('input[data-key][data-base-unit]').forEach(function(input) {
+            if (units[input.dataset.key]) input.dataset.displayUnit = units[input.dataset.key];
+        });
+        updateUnitLabels();
+    }
+
+    function updateUnitLabels() {
+        const units = getParameterUnits();
+        document.querySelectorAll('[data-unit-label-for]').forEach(function(label) {
+            const key = label.dataset.unitLabelFor;
+            label.textContent = units[key] || label.dataset.defaultUnit || label.textContent;
+        });
+    }
+
     function markNumericValidity(input, valid) {
         input.classList.toggle('numeric-invalid', !valid);
         if (!valid) input.title = 'Only numeric values are accepted.';
@@ -174,8 +256,8 @@
         if (!input || input.dataset.recommendedMin === undefined || input.dataset.recommendedMax === undefined) return;
         const min = parseFloat(input.dataset.recommendedMin);
         const max = parseFloat(input.dataset.recommendedMax);
-        const value = parseStrictNumber(input.value);
         const isValidNumber = isStrictNumber(input.value);
+        const value = isValidNumber ? readNumericInputBaseValue(input) : NaN;
         const outOfRange = isValidNumber && (value < min || value > max);
         input.classList.toggle('recommended-limit-warning', outOfRange);
         if (outOfRange) input.title = 'Recommended range: ' + min + ' to ' + max + '.';
@@ -248,6 +330,12 @@
     function setDirty(value) {
         sessionStorage.setItem(dirtyKey(), value ? 'true' : 'false');
         if (value) sessionStorage.setItem(optimizationDirtyKey(), 'true');
+        updateProjectIndicator();
+        updateRunButtonState();
+    }
+
+    function setProjectMetadataDirty(value) {
+        sessionStorage.setItem(dirtyKey(), value ? 'true' : 'false');
         updateProjectIndicator();
         updateRunButtonState();
     }
@@ -358,6 +446,7 @@
     function saveSnapshot() {
         sessionStorage.setItem(lastSavedProblemKey(), sessionStorage.getItem(problemStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedGeomKey(), sessionStorage.getItem(geomStorageKey()) || '{}');
+        sessionStorage.setItem(lastSavedParameterUnitsKey(), sessionStorage.getItem(parameterUnitsStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedProjectKey(), getCurrentProject());
         sessionStorage.setItem(lastSavedUserProjectIdKey(), sessionStorage.getItem(currentUserProjectIdKey()) || '');
         sessionStorage.setItem(lastSavedUserProjectNameKey(), sessionStorage.getItem(currentUserProjectNameKey()) || '');
@@ -376,6 +465,7 @@
         }
         sessionStorage.setItem(problemStorageKey(), sessionStorage.getItem(lastSavedProblemKey()) || '{}');
         sessionStorage.setItem(geomStorageKey(), sessionStorage.getItem(lastSavedGeomKey()) || '{}');
+        sessionStorage.setItem(parameterUnitsStorageKey(), sessionStorage.getItem(lastSavedParameterUnitsKey()) || '{}');
         sessionStorage.setItem(currentProjectKey(), sessionStorage.getItem(lastSavedProjectKey()) || '');
         sessionStorage.setItem(currentUserProjectIdKey(), sessionStorage.getItem(lastSavedUserProjectIdKey()) || '');
         sessionStorage.setItem(currentUserProjectNameKey(), sessionStorage.getItem(lastSavedUserProjectNameKey()) || '');
@@ -388,6 +478,7 @@
 
     function clearProblemData() {
         sessionStorage.setItem(problemStorageKey(), '{}');
+        sessionStorage.removeItem(parameterUnitsStorageKey());
         sessionStorage.setItem(problemClearedKey(), 'true');
         if (typeof window.clearProblemDataForm === 'function') window.clearProblemDataForm();
         setDirty(true);
@@ -412,6 +503,7 @@
             user_project_id: userProjectId !== undefined ? userProjectId : (sessionStorage.getItem(currentUserProjectIdKey()) ? parseInt(sessionStorage.getItem(currentUserProjectIdKey()), 10) : null),
             user_project_name: userProjectName !== undefined ? userProjectName : (sessionStorage.getItem(currentUserProjectNameKey()) || null),
             parameters: cleanParams,
+            parameter_units: getParameterUnits(),
             discrete_variables: discrete,
             selected_of: selectedOf,
             number_of_equipment: 1
@@ -424,6 +516,16 @@
 
     function toggleLoadMenu() {
         document.getElementById('load-menu').classList.toggle('hidden');
+    }
+
+    function toggleConfigMenu() {
+        document.getElementById('config-menu').classList.toggle('hidden');
+    }
+
+    function openUnitsConfiguration() {
+        document.getElementById('config-menu').classList.add('hidden');
+        if (!syncCurrentPageState()) return;
+        window.location.href = 'units.html';
     }
 
     function loadExamples() {
@@ -537,6 +639,8 @@
 
     function applyProjectPayload(project, source) {
         const params = Object.assign({}, project.parameters || {});
+        setJson(parameterUnitsStorageKey(), project.parameter_units || {});
+        updateUnitLabels();
         if (typeof params.int_rate === 'number') params.int_rate = params.int_rate * 100;
         params._selected_of = project.selected_of || 'TAC_OF';
         const geom = Object.assign({}, project.discrete_variables || {});
@@ -560,7 +664,8 @@
     function setSectionDefaultInputValue(key, value) {
         document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
             if (input.dataset.key !== key) return;
-            input.value = value;
+            if (input.dataset.numeric === 'true' && isStrictNumber(value)) setNumericInputFromBase(input, value);
+            else input.value = value;
             if (input.dataset.numeric === 'true') markNumericValidity(input, isStrictNumber(input.value));
         });
     }
@@ -598,7 +703,7 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey(), lastOptimizationSignatureKey(), lastOptimizationResultKey(), lastOptimizationSessionDataKey(), optimizationDirtyKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), parameterUnitsStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedParameterUnitsKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey(), lastOptimizationSignatureKey(), lastOptimizationResultKey(), lastOptimizationSessionDataKey(), optimizationDirtyKey()].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
         [modelKey('project_temporal_local'), modelKey('project_saved_local'), modelKey('last_saved_temporal_local')].forEach(function(key) {

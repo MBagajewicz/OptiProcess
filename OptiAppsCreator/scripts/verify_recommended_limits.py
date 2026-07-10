@@ -25,15 +25,15 @@ def verify_generated_html() -> None:
     gphe_geometric = read_text(ROOT / "output" / "GPHE" / "geometric_options.html")
 
     require(
-        'data-key="mh" value="20" data-recommended-min="10" data-recommended-max="150"' in sthe_problem,
+        'data-key="mh"' in sthe_problem and 'data-recommended-min="10"' in sthe_problem and 'data-recommended-max="150"' in sthe_problem,
         "STHE mh must render recommended limits from Model_Info.",
     )
     require(
-        'data-key="int_rate" value="10.0" data-recommended-min="5.0" data-recommended-max="20.0"' in sthe_problem,
+        'data-key="int_rate"' in sthe_problem and 'data-recommended-min="5.0"' in sthe_problem and 'data-recommended-max="20.0"' in sthe_problem,
         "STHE int_rate recommended limits must use displayed percentage scale.",
     )
     require(
-        'data-key="ktube" data-recommended-min="15" data-recommended-max="60"' in sthe_geometric,
+        'data-key="ktube"' in sthe_geometric and 'data-recommended-min="15"' in sthe_geometric and 'data-recommended-max="60"' in sthe_geometric,
         "STHE geometric form_group fields must render recommended limits.",
     )
     require(

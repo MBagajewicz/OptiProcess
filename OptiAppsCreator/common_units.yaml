@@ -1,0 +1,117 @@
+unit_dimensions:
+  temperature:
+    base: degC
+    options: [degC, K, degF]
+  mass_flow:
+    base: kg/s
+    options: [kg/s, kg/h, lb/h]
+  pressure:
+    base: Pa
+    options: [Pa, kPa, bar, psi]
+  density:
+    base: kg/m3
+    options: [kg/m3, g/cm3, lb/ft3]
+  heat_capacity:
+    base: J/kg/K
+    options: [J/kg/K, kJ/kg/K]
+  viscosity:
+    base: Pa.s
+    options: [Pa.s, cP]
+  thermal_conductivity:
+    base: W/m/K
+    options: [W/m/K]
+  fouling_factor:
+    base: m2.K/W
+    options: [m2.K/W]
+  length:
+    base: m
+    options: [m, mm, inch, ft]
+  velocity:
+    base: m/s
+    options: [m/s, ft/s]
+  area:
+    base: m2
+    options: [m2, ft2]
+  percent:
+    base: percent
+    options: [percent, fraction]
+  fraction:
+    base: fraction
+    options: [fraction, percent]
+  dimensionless:
+    base: dimensionless
+    options: [dimensionless]
+  count:
+    base: count
+    options: [count]
+  energy_cost:
+    base: $/kWh
+    options: [$/kWh]
+  money:
+    base: $
+    options: [$]
+  annual_money:
+    base: $/year
+    options: [$/year]
+  angle:
+    base: deg
+    options: [deg, rad]
+
+conversions:
+  degC:
+    degC: {factor: 1, offset: 0}
+    K: {factor: 1, offset: -273.15}
+    degF: {factor: 0.5555555555555556, offset: -17.77777777777778}
+  kg/s:
+    kg/s: {factor: 1, offset: 0}
+    kg/h: {factor: 0.0002777777777777778, offset: 0}
+    lb/h: {factor: 0.000125997881, offset: 0}
+  Pa:
+    Pa: {factor: 1, offset: 0}
+    kPa: {factor: 1000, offset: 0}
+    bar: {factor: 100000, offset: 0}
+    psi: {factor: 6894.757293168, offset: 0}
+  kg/m3:
+    kg/m3: {factor: 1, offset: 0}
+    g/cm3: {factor: 1000, offset: 0}
+    lb/ft3: {factor: 16.01846337396, offset: 0}
+  J/kg/K:
+    J/kg/K: {factor: 1, offset: 0}
+    kJ/kg/K: {factor: 1000, offset: 0}
+  Pa.s:
+    Pa.s: {factor: 1, offset: 0}
+    cP: {factor: 0.001, offset: 0}
+  W/m/K:
+    W/m/K: {factor: 1, offset: 0}
+  m2.K/W:
+    m2.K/W: {factor: 1, offset: 0}
+  m:
+    m: {factor: 1, offset: 0}
+    mm: {factor: 0.001, offset: 0}
+    inch: {factor: 0.0254, offset: 0}
+    ft: {factor: 0.3048, offset: 0}
+  m/s:
+    m/s: {factor: 1, offset: 0}
+    ft/s: {factor: 0.3048, offset: 0}
+  m2:
+    m2: {factor: 1, offset: 0}
+    ft2: {factor: 0.09290304, offset: 0}
+  percent:
+    percent: {factor: 1, offset: 0}
+    fraction: {factor: 100, offset: 0}
+  fraction:
+    fraction: {factor: 1, offset: 0}
+    percent: {factor: 0.01, offset: 0}
+  dimensionless:
+    dimensionless: {factor: 1, offset: 0}
+  count:
+    count: {factor: 1, offset: 0}
+  $/kWh:
+    $/kWh: {factor: 1, offset: 0}
+  $:
+    $: {factor: 1, offset: 0}
+  $/year:
+    $/year: {factor: 1, offset: 0}
+  deg:
+    deg: {factor: 1, offset: 0}
+    rad: {factor: 57.29577951308232, offset: 0}

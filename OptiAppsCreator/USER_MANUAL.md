@@ -656,6 +656,77 @@ python generate_ui.py --all
 python scripts/verify_recommended_limits.py
 ```
 
+##### Unidades base y unidades visuales
+
+Los modelos siempre calculan con las unidades base declaradas por cada desarrollador en `{MODEL}/Model/Model_Def_{MODEL}.py`, dentro de `Model_Info.Base_Units`.
+
+Ejemplo:
+
+```python
+"Base_Units": {
+    "Model_Parameters": {
+        "Thi": "degC",
+        "mh": "kg/s",
+        "DPhdisp": "Pa",
+    },
+    "Discrete_Variables": {
+        "Ds": "m",
+        "L": "m",
+    },
+}
+```
+
+Las conversiones disponibles son comunes a todos los modelos y se definen en:
+
+```text
+common_units.yaml
+```
+
+La UI puede mostrar un campo en una unidad distinta, pero `parameters` se guarda siempre en unidad base. La unidad visual seleccionada se persiste como metadata en `parameter_units`.
+
+La selección se realiza desde el navbar:
+
+```text
+Configurations → Units Configuration
+```
+
+Esta opción abre `{MODEL}/units.html`, una página de configuración generada automáticamente para cada modelo. La asignación se realiza variable por variable. La tabla se arma combinando:
+
+```text
+Model_Def_{MODEL}.py → Model_Info.Base_Units
+{MODEL}_ui.yaml      → labels, secciones y orden visual
+common_units.yaml    → unidades disponibles y factores de conversión
+```
+
+`Units Configuration` no forma parte del flujo `Back / Next`; es una configuración transversal disponible desde cualquier página del modelo.
+
+Ejemplo de diseño guardado:
+
+```json
+{
+    "parameters": {
+        "mh": 20
+    },
+    "parameter_units": {
+        "mh": "kg/h"
+    }
+}
+```
+
+En este ejemplo, `mh = 20` sigue estando guardado en `kg/s`, porque esa es la unidad base del modelo. `kg/h` solo indica cómo mostrar/editar el campo en la UI.
+
+Por compatibilidad, si un diseño no tiene `parameter_units`, la UI asume que cada variable se muestra en su unidad base.
+
+Cambiar solo unidades visuales marca el diseño como modificado para poder guardarlo, pero no marca la optimización como pendiente, porque los valores base enviados al solver no cambian.
+
+Para verificar esta integración:
+
+```bash
+cd OptiAppsCreator
+python generate_ui.py --all
+python scripts/verify_units.py
+```
+
 ##### Campos `computed_hint: true`
 
 Un campo con:
