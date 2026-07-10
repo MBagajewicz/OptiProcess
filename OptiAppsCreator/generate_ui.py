@@ -149,6 +149,7 @@ def build_problem_data_context(yaml_data, model_def, example, common_units=None)
     common_units = common_units or {}
     unit_options_by_base = build_unit_options(common_units)
     base_units = get_model_base_units(model_def, "Model_Parameters")
+    discrete_base_units = get_model_base_units(model_def, "Discrete_Variables")
     model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
 
     for section_id, section in page_yaml["sections"].items():
@@ -271,6 +272,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
     common_units = common_units or {}
     unit_options_by_base = build_unit_options(common_units)
     base_units = get_model_base_units(model_def, "Model_Parameters")
+    discrete_base_units = get_model_base_units(model_def, "Discrete_Variables")
     model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
     discrete_vals = example["Equipment1"]["Model_Declarations"]["Discrete_Values_of_Variables"]
 
@@ -303,6 +305,8 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
             resolved["width_class"] = "w-44"
             resolved["variable"] = section.get("variable", "")
             resolved["static"] = bool(section.get("static"))
+            resolved.update(resolve_unit_metadata(resolved["variable"], {}, discrete_base_units, unit_options_by_base, model_unit_defaults))
+            resolved["show_unit_in_title"] = bool(resolved.get("base_unit") and len(resolved.get("unit_options", [])) > 1)
             # Handle title with line breaks for narrow columns
             resolved["title_nobreak"] = title.replace(" ", "&nbsp;")
 
@@ -340,6 +344,7 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
                         items.append({
                             "label": label,
                             "value": val,
+                            "convert_label": not bool(label_map) and isinstance(val, (int, float)) and not isinstance(val, bool),
                             "checked": val in selected_set,
                         })
                 resolved["grid_items"] = items
@@ -543,6 +548,7 @@ def build_units_context(yaml_data, model_def, common_units=None):
     common_units = common_units or {}
     unit_options_by_base = build_unit_options(common_units)
     base_units = get_model_base_units(model_def, "Model_Parameters")
+    discrete_base_units = get_model_base_units(model_def, "Discrete_Variables")
     model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
     rows = []
 
@@ -577,13 +583,24 @@ def build_units_context(yaml_data, model_def, common_units=None):
 
     geometric_sections = yaml_data.get("pages", {}).get("geometric_options", {}).get("sections", {})
     for section in geometric_sections.values():
-        if section.get("element") != "form_group":
-            continue
         title = section.get("title", "")
-        for key, field_meta in section.get("fields", {}).items():
-            if field_meta.get("display_factor") is not None:
-                continue
-            add_row("Geometric Options", title, key, field_meta.get("label", key), field_meta.get("unit"))
+        if section.get("element") == "checkbox_grid" and section.get("variable") and not section.get("static"):
+            variable = section.get("variable")
+            metadata = resolve_unit_metadata(variable, {}, discrete_base_units, unit_options_by_base, model_unit_defaults)
+            if metadata and len(metadata.get("unit_options", [])) > 1:
+                rows.append({
+                    "page": "Geometric Options",
+                    "section": title,
+                    "key": variable,
+                    "label": title,
+                    "yaml_unit": None,
+                    **metadata,
+                })
+        elif section.get("element") == "form_group":
+            for key, field_meta in section.get("fields", {}).items():
+                if field_meta.get("display_factor") is not None:
+                    continue
+                add_row("Geometric Options", title, key, field_meta.get("label", key), field_meta.get("unit"))
 
     return rows
 

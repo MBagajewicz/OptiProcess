@@ -312,7 +312,7 @@ pages:
         rows:
           - {label: "Shell diameter", key: "Ds", unit: "m", result_var: true}
           - {label: "Number of baffles", key: "Nb", result_var: true}
-          - {label: "Baffle cut", key: "Bc", result_var: true}
+          - {label: "Baffle cut", key: "Bc", result_var: true, unit: "%", display_factor:100}
           - {label: "Number of tubes", key: "Nt", computed: true}
           - {label: "Number tube passes", key: "Npt", result_var: true}
           - {label: "Outer tube diam.", key: "dte", unit: "m", result_var: true}

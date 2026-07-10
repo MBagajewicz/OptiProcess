@@ -118,7 +118,7 @@ Model_STHE = {
             },
             'Discrete_Variables': {
                 'Ds': 'm', 'dte': 'm', 'Npt': 'count', 'rp': 'dimensionless',
-                'lay': 'dimensionless', 'L': 'm', 'Nb': 'count', 'Bc': 'm',
+                'lay': 'dimensionless', 'L': 'm', 'Nb': 'count', 'Bc': 'fraction',
             },
             'Results': {
                 'Area': 'm2', 'CAPEX': '$', 'TAC': '$/year', 'LMTD': 'degC',

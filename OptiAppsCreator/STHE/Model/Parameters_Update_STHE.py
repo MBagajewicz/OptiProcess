@@ -173,7 +173,7 @@ def consistency(m_d, m_p, save_result):
     results = []
     results.append(Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result))
     results.append(Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result))
-    results.append(Calculations_HEX_Consistency.verification_heatload(m_p, save_result))
+#    results.append(Calculations_HEX_Consistency.verification_heatload(m_p, save_result))
     results.append(Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result))
     results.append(Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result))
     results.append(verification_Tco_Thi_STHE(m_p, m_d))

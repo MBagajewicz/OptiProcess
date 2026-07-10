@@ -52,6 +52,13 @@ def verify_generated_html() -> None:
     require('data-unit-config-key="mh"' in sthe_units, "STHE units.html must allow selecting mh display unit.")
     require('data-unit-config-key="Thi"' in sthe_units, "STHE units.html must allow selecting Thi display unit.")
     require('data-unit-config-key="thk"' in sthe_units, "STHE units.html must allow selecting thk display unit.")
+    require('data-unit-config-key="Ds"' in sthe_units, "STHE units.html must allow selecting Ds display unit.")
+    require('data-unit-config-key="dte"' in sthe_units, "STHE units.html must allow selecting dte display unit.")
+    require('data-var="Ds" data-base-unit="m"' in sthe_geometric, "STHE Ds checkbox grid must expose base unit metadata.")
+    require('data-option-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox options must expose convertible display labels.")
+    require('data-unit-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox title must expose dynamic unit metadata.")
+    require('data-unit-label-for="dte"' in sthe_geometric, "STHE dte checkbox title must expose dynamic unit metadata.")
+    require('data-unit-label-for="L"' in sthe_geometric, "STHE L checkbox title must expose dynamic unit metadata.")
     require("parameter_units" in sthe_problem, "Problem Data must include parameter_units persistence hooks.")
     require("parameter_units" in sthe_results, "Results must preserve parameter_units when saving designs.")
 

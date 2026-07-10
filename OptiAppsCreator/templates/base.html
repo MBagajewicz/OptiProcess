@@ -244,6 +244,17 @@
             const key = label.dataset.unitLabelFor;
             label.textContent = units[key] || label.dataset.defaultUnit || label.textContent;
         });
+        document.querySelectorAll('[data-var][data-base-unit]').forEach(function(panel) {
+            const key = panel.dataset.var;
+            panel.dataset.displayUnit = units[key] || panel.dataset.displayUnit || panel.dataset.baseUnit;
+        });
+        document.querySelectorAll('[data-option-label-for]').forEach(function(label) {
+            const key = label.dataset.optionLabelFor;
+            const panel = document.querySelector('[data-var="' + key + '"]');
+            if (!panel || !panel.dataset.baseUnit) return;
+            const displayUnit = units[key] || panel.dataset.displayUnit || panel.dataset.baseUnit;
+            label.textContent = formatUnitValue(convertBaseToDisplay(label.dataset.baseValue, panel.dataset.baseUnit, displayUnit));
+        });
     }
 
     function markNumericValidity(input, valid) {
