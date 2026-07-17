@@ -78,6 +78,7 @@
                 </button>
                 <div id="config-menu" class="hidden absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] text-xs">
                     <button type="button" onclick="openUnitsConfiguration()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Units Configuration</button>
+                    <button type="button" onclick="openResultsUnitsConfiguration()" class="block w-full text-left px-3 py-2 hover:bg-gray-50">Results Units Configuration</button>
                 </div>
             </div>
             <button type="button" onclick="resetProjectState()" class="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-emerald-700">
@@ -201,11 +202,13 @@ const API_URL = window.location.origin + '/api/optimize';
 const MODEL = '{{ model_name }}';
 const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
 const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
+const UNIT_CONVERSIONS = {{ unit_conversions | default({}) | tojson }};
 const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
 const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
 const STORAGE_KEY_GEOMETRIC_STANDARDS = 'optihex_' + MODEL + '_geometric_standards';
 const STORAGE_KEY_PARAMETER_UNITS = 'optihex_' + MODEL + '_parameter_units';
+const STORAGE_KEY_RESULT_UNITS = 'optihex_' + MODEL + '_result_units';
 const STORAGE_KEY_PROJECT = 'optihex_' + MODEL + '_current_project';
 const STORAGE_KEY_USER_PROJECT_ID = 'optihex_' + MODEL + '_current_user_project_id';
 const STORAGE_KEY_USER_PROJECT_NAME = 'optihex_' + MODEL + '_current_user_project_name';
@@ -216,6 +219,7 @@ const STORAGE_KEY_LAST_SAVED_PROBLEM = 'optihex_' + MODEL + '_last_saved_problem
 const STORAGE_KEY_LAST_SAVED_GEOM = 'optihex_' + MODEL + '_last_saved_geometric_data';
 const STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS = 'optihex_' + MODEL + '_last_saved_geometric_standards';
 const STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS = 'optihex_' + MODEL + '_last_saved_parameter_units';
+const STORAGE_KEY_LAST_SAVED_RESULT_UNITS = 'optihex_' + MODEL + '_last_saved_result_units';
 const STORAGE_KEY_LAST_SAVED_PROJECT = 'optihex_' + MODEL + '_last_saved_project_name';
 const STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID = 'optihex_' + MODEL + '_last_saved_user_project_id';
 const STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME = 'optihex_' + MODEL + '_last_saved_user_project_name';
@@ -314,6 +318,10 @@ function openUnitsConfiguration() {
     document.getElementById('config-menu').classList.add('hidden');
     window.location.href = 'units.html';
 }
+function openResultsUnitsConfiguration() {
+    document.getElementById('config-menu').classList.add('hidden');
+    window.location.href = 'result_units.html';
+}
 function loadExamples() {
     document.getElementById('load-menu').classList.add('hidden');
     window.location.href = 'projects.html?scope=examples';
@@ -327,6 +335,7 @@ function saveSnapshot() {
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_GEOM, sessionStorage.getItem(STORAGE_KEY_GEOM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS, sessionStorage.getItem(STORAGE_KEY_GEOMETRIC_STANDARDS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS, sessionStorage.getItem(STORAGE_KEY_PARAMETER_UNITS) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_RESULT_UNITS, sessionStorage.getItem(STORAGE_KEY_RESULT_UNITS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROJECT, getCurrentProject());
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) || '');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || '');
@@ -347,6 +356,7 @@ function resetProjectState() {
     sessionStorage.setItem(STORAGE_KEY_GEOM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_GEOMETRIC_STANDARDS, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_PARAMETER_UNITS, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_RESULT_UNITS, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_RESULT_UNITS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_PROJECT, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROJECT) || '');
     sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID) || '');
     sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME) || '');
@@ -394,6 +404,37 @@ const ROW_UNITS = {
     {% endfor %}
     {% endfor %}
 };
+const RESULT_BASE_UNITS = {
+    {% for field in result_unit_fields|default([]) %}
+    "{{ field.key }}": "{{ field.base_unit }}",
+    {% endfor %}
+};
+const DEFAULT_RESULT_UNITS = {
+    {% for field in result_unit_fields|default([]) %}
+    "{{ field.key }}": "{{ field.display_unit }}",
+    {% endfor %}
+};
+
+function conversionRule(baseUnit, displayUnit) {
+    if (!baseUnit || !displayUnit || baseUnit === displayUnit) return {factor: 1, offset: 0};
+    const byBase = UNIT_CONVERSIONS[baseUnit] || {};
+    return byBase[displayUnit] || null;
+}
+
+function convertBaseToDisplay(value, baseUnit, displayUnit) {
+    const numeric = Number(value);
+    const rule = conversionRule(baseUnit, displayUnit);
+    if (!rule || !Number.isFinite(numeric)) return value;
+    return (numeric - Number(rule.offset || 0)) / Number(rule.factor);
+}
+
+function getResultUnits() {
+    try {
+        return JSON.parse(sessionStorage.getItem(STORAGE_KEY_RESULT_UNITS) || '{}');
+    } catch(e) {
+        return {};
+    }
+}
 
 // --- Load data from sessionStorage ---
 function getSessionData() {
@@ -459,6 +500,7 @@ function buildProjectPayload(name, userProjectId, userProjectName) {
         user_project_name: userProjectName !== undefined ? userProjectName : (sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || null),
         parameters: solverPayload.parameters,
         parameter_units: solverPayload.parameter_units,
+        result_units: JSON.parse(sessionStorage.getItem(STORAGE_KEY_RESULT_UNITS) || '{}'),
         geometric_standards: JSON.parse(sessionStorage.getItem(STORAGE_KEY_GEOMETRIC_STANDARDS) || '{}'),
         discrete_variables: solverPayload.discrete_variables,
         selected_of: solverPayload.selected_of,
@@ -577,6 +619,7 @@ function applyProjectPayload(project, source) {
     sessionStorage.setItem(STORAGE_KEY_GEOM, JSON.stringify(geom));
     sessionStorage.setItem(STORAGE_KEY_GEOMETRIC_STANDARDS, JSON.stringify(project.geometric_standards || {}));
     sessionStorage.setItem(STORAGE_KEY_PARAMETER_UNITS, JSON.stringify(project.parameter_units || {}));
+    sessionStorage.setItem(STORAGE_KEY_RESULT_UNITS, JSON.stringify(project.result_units || {}));
     sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
     sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_RESULT);
     sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SESSION_DATA);
@@ -595,7 +638,7 @@ function applyProjectPayload(project, source) {
 function hideCloseSessionModal() { document.getElementById('close-session-modal').classList.add('hidden'); }
 function showCloseSessionModal() { document.getElementById('close-session-modal').classList.remove('hidden'); }
 function clearModelSession() {
-    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_GEOMETRIC_STANDARDS, STORAGE_KEY_PARAMETER_UNITS, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS, STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, STORAGE_KEY_LAST_OPT_SIGNATURE, STORAGE_KEY_LAST_OPT_RESULT, STORAGE_KEY_LAST_OPT_SESSION_DATA, STORAGE_KEY_OPT_DIRTY].forEach(function(key) {
+    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_GEOMETRIC_STANDARDS, STORAGE_KEY_PARAMETER_UNITS, STORAGE_KEY_RESULT_UNITS, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS, STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS, STORAGE_KEY_LAST_SAVED_RESULT_UNITS, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, STORAGE_KEY_LAST_OPT_SIGNATURE, STORAGE_KEY_LAST_OPT_RESULT, STORAGE_KEY_LAST_OPT_SESSION_DATA, STORAGE_KEY_OPT_DIRTY].forEach(function(key) {
         sessionStorage.removeItem(key);
     });
     ['optihex_' + MODEL + '_project_temporal_local', 'optihex_' + MODEL + '_project_saved_local', 'optihex_' + MODEL + '_last_saved_temporal_local'].forEach(function(key) {
@@ -751,7 +794,7 @@ function populateResults(data, sessionData) {
     setVal('Thi', params.Thi, '°C');
     setVal('Tho', params.Tho, '°C');
     setVal('roh', params.roh, 'kg/m³');
-    setVal('mih', params.mih ? params.mih * 1000 : null, 'mPa s');
+    setVal('mih', params.mih, 'Pa.s');
     setVal('Cph', params.Cph, 'J/(kg K)');
     setVal('kh', params.kh, 'W/(m K)');
     setVal('Rfh', params.Rfh, 'm² K/W');
@@ -760,7 +803,7 @@ function populateResults(data, sessionData) {
     setVal('Tci', params.Tci, '°C');
     setVal('Tco', params.Tco, '°C');
     setVal('roc', params.roc, 'kg/m³');
-    setVal('mic', params.mic ? params.mic * 1000 : null, 'mPa s');
+    setVal('mic', params.mic, 'Pa.s');
     setVal('Cpc', params.Cpc, 'J/(kg K)');
     setVal('kc', params.kc, 'W/(m K)');
     setVal('Rfc', params.Rfc, 'm² K/W');
@@ -840,10 +883,14 @@ function setVal(key, value, unit) {
         el.textContent = '—';
         return;
     }
-    const factor = DISPLAY_FACTORS[key] || 1;
-    const displayVal = factor !== 1 ? value * factor : value;
+    const resultUnits = getResultUnits();
+    const baseUnit = RESULT_BASE_UNITS[key] || '';
+    const displayUnit = resultUnits[key] || DEFAULT_RESULT_UNITS[key] || baseUnit || unit || ROW_UNITS[key] || '';
+    const factor = baseUnit ? 1 : (DISPLAY_FACTORS[key] || 1);
+    const converted = baseUnit ? convertBaseToDisplay(value, baseUnit, displayUnit) : value;
+    const displayVal = factor !== 1 && typeof converted === 'number' ? converted * factor : converted;
     const formatted = typeof displayVal === 'number' ? displayVal.toFixed(4).replace(/\.?0+$/, '') : String(displayVal);
-    const unitSuffix = unit || ROW_UNITS[key] || '';
+    const unitSuffix = displayUnit || unit || ROW_UNITS[key] || '';
     el.textContent = unitSuffix ? formatted + ' ' + unitSuffix : formatted;
 }
 

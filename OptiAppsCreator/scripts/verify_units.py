@@ -44,6 +44,7 @@ def verify_generated_html() -> None:
     sthe_geometric = read_text(ROOT / "output" / "STHE" / "geometric_options.html")
     sthe_results = read_text(ROOT / "output" / "STHE" / "results.html")
     sthe_units = read_text(ROOT / "output" / "STHE" / "units.html")
+    sthe_result_units = read_text(ROOT / "output" / "STHE" / "result_units.html")
 
     require('data-key="mh"' in sthe_problem and 'data-base-unit="kg/s"' in sthe_problem, "STHE mh input must expose base unit metadata.")
     require('data-unit-label-for="mh"' in sthe_problem, "STHE mh label must expose dynamic unit metadata.")
@@ -53,12 +54,16 @@ def verify_generated_html() -> None:
     require('data-key="ktube"' in sthe_geometric and 'data-base-unit="W/m/K"' in sthe_geometric, "STHE ktube must expose base unit metadata.")
     require('data-unit-label-for="thk"' in sthe_geometric, "STHE thk label must expose dynamic unit metadata.")
     require('Configurations' in sthe_problem and 'units.html' in sthe_problem, "Navbar must expose Configurations -> Units Configuration.")
+    require('Results Units Configuration' in sthe_problem and 'result_units.html' in sthe_problem, "Navbar must expose Configurations -> Results Units Configuration.")
     require('Units Configuration' in sthe_units, "STHE units.html must be generated.")
-    require('data-unit-config-key="mh"' in sthe_units, "STHE units.html must allow selecting mh display unit.")
-    require('data-unit-config-key="Thi"' in sthe_units, "STHE units.html must allow selecting Thi display unit.")
-    require('data-unit-config-key="thk"' in sthe_units, "STHE units.html must allow selecting thk display unit.")
-    require('data-unit-config-key="Ds"' in sthe_units, "STHE units.html must allow selecting Ds display unit.")
-    require('data-unit-config-key="dte"' in sthe_units, "STHE units.html must allow selecting dte display unit.")
+    require('Results Units Configuration' in sthe_result_units, "STHE result_units.html must be generated.")
+    require('data-unit-group-id="temperatures"' in sthe_units, "STHE units.html must allow selecting the temperatures group display unit.")
+    require('data-unit-group-id="flow_rates"' in sthe_units, "STHE units.html must allow selecting the flow rates group display unit.")
+    require('data-unit-group-id="diameters"' in sthe_units, "STHE units.html must allow selecting the diameters group display unit.")
+    require('data-unit-group-id="tube_length"' in sthe_units, "STHE units.html must allow selecting tube length display unit separately.")
+    require('data-unit-config-key="Thi"' not in sthe_units, "Grouped STHE temperatures must not be duplicated as individual unit rows.")
+    require('data-unit-config-key="Ds"' not in sthe_units, "Grouped STHE diameters must not be duplicated as individual unit rows.")
+    require('data-unit-config-key="plbmax2"' in sthe_units, "Ungrouped STHE length parameters must remain individually configurable.")
     require('data-var="Ds" data-base-unit="m"' in sthe_geometric, "STHE Ds checkbox grid must expose base unit metadata.")
     require('data-option-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox options must expose convertible display labels.")
     require('data-unit-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox title must expose dynamic unit metadata.")
@@ -68,6 +73,11 @@ def verify_generated_html() -> None:
     require('data-unit-label-for="L"' in sthe_geometric, "STHE L checkbox title must expose dynamic unit metadata.")
     require("parameter_units" in sthe_problem, "Problem Data must include parameter_units persistence hooks.")
     require("parameter_units" in sthe_results, "Results must preserve parameter_units when saving designs.")
+    require("result_units" in sthe_results, "Results must preserve result_units when saving designs.")
+    require('data-result-unit-config-key="Q"' in sthe_result_units, "STHE result_units.html must allow selecting Q display unit.")
+    require('data-result-unit-config-key="DPt"' in sthe_result_units, "STHE result_units.html must allow selecting pressure drop display unit.")
+    require('STORAGE_KEY_RESULT_UNITS' in sthe_results, "Results page must read stored result unit preferences.")
+    require('RESULT_BASE_UNITS' in sthe_results, "Results page must include result base unit metadata.")
     require("geometric_standards" in sthe_results, "Results must preserve geometric_standards when saving designs.")
 
 
@@ -75,10 +85,11 @@ def verify_persistence() -> None:
     sys.path.insert(0, str(ROOT))
     from project_store import _design_payload_to_json
 
-    payload = {"parameters": {"mh": 20}, "parameter_units": {"mh": "kg/h"}, "geometric_standards": {"Ds": "TEMA"}}
+    payload = {"parameters": {"mh": 20}, "parameter_units": {"mh": "kg/h"}, "result_units": {"Q": "MW"}, "geometric_standards": {"Ds": "TEMA"}}
     data = json.loads(_design_payload_to_json("STHE", "UnitTest", payload))
     require(data["parameters"] == {"mh": 20}, "Parameters must be persisted in base units.")
     require(data["parameter_units"] == {"mh": "kg/h"}, "parameter_units must be persisted as visual metadata.")
+    require(data["result_units"] == {"Q": "MW"}, "result_units must be persisted as visual metadata.")
     require(data["geometric_standards"] == {"Ds": "TEMA"}, "geometric_standards must be persisted as visual metadata.")
 
 

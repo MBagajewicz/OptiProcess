@@ -115,6 +115,7 @@ class ProjectSaveRequest(BaseModel):
     user_project_name: str | None = None
     parameters: dict
     parameter_units: dict | None = None
+    result_units: dict | None = None
     geometric_standards: dict | None = None
     discrete_variables: dict
     selected_of: str = "TAC_OF"

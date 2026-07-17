@@ -684,19 +684,47 @@ common_units.yaml
 
 La UI puede mostrar un campo en una unidad distinta, pero `parameters` se guarda siempre en unidad base. La unidad visual seleccionada se persiste como metadata en `parameter_units`.
 
+Las unidades visuales de Results se configuran por separado y se persisten como metadata en `result_units`. Esto evita que cambiar la visualización de una variable de salida modifique cómo se editan las variables de entrada con la misma key.
+
 La selección se realiza desde el navbar:
 
 ```text
 Configurations → Units Configuration
+Configurations → Results Units Configuration
 ```
 
 Esta opción abre `{MODEL}/units.html`, una página de configuración generada automáticamente para cada modelo. La asignación se realiza variable por variable. La tabla se arma combinando:
+
+`Results Units Configuration` abre `{MODEL}/result_units.html`, una página equivalente para las filas de Results. La tabla se arma a partir de `Model_Info.Base_Units.Results`, `{MODEL}_ui.yaml → pages.results` y `common_units.yaml`.
 
 ```text
 Model_Def_{MODEL}.py → Model_Info.Base_Units
 {MODEL}_ui.yaml      → labels, secciones y orden visual
 common_units.yaml    → unidades disponibles y factores de conversión
 ```
+
+La página también puede mostrar grupos de unidades definidos en `{MODEL}_ui.yaml → model.input_unit_groups`. Esto permite que varias variables de entrada compartan una unidad visual, por ejemplo todas las temperaturas en `K` o todos los caudales en `kg/h`, sin cambiar las unidades base del modelo.
+
+Ejemplo:
+
+```yaml
+model:
+  input_unit_groups:
+    temperatures:
+      label: "Temperatures"
+      keys: [Thi, Tho, Tci, Tco]
+      default_unit: degC
+    diameters:
+      label: "Diameters and thicknesses"
+      keys: [Ds, dte, thk]
+      default_unit: mm
+    tube_length:
+      label: "Tube length"
+      keys: [L]
+      default_unit: m
+```
+
+Los grupos son explícitos. No se agrupa automáticamente por dimensión física, porque algunas variables con la misma dimensión pueden necesitar unidades visuales distintas. Por ejemplo, el largo de tubo puede mantenerse en `m` mientras los diámetros se muestran en `mm` o `inch`.
 
 `Units Configuration` no forma parte del flujo `Back / Next`; es una configuración transversal disponible desde cualquier página del modelo.
 
@@ -709,11 +737,17 @@ Ejemplo de diseño guardado:
     },
     "parameter_units": {
         "mh": "kg/h"
+    },
+    "result_units": {
+        "Q": "MW",
+        "DPt": "psi"
     }
 }
 ```
 
 En este ejemplo, `mh = 20` sigue estando guardado en `kg/s`, porque esa es la unidad base del modelo. `kg/h` solo indica cómo mostrar/editar el campo en la UI.
+
+`result_units` solo cambia la visualización de Results. No se envía al solver y no modifica `parameters` ni `discrete_variables`.
 
 Por compatibilidad, si un diseño no tiene `parameter_units`, la UI asume que cada variable se muestra en su unidad base.
 

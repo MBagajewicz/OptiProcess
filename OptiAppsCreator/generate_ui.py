@@ -121,6 +121,44 @@ def resolve_unit_metadata(key, field_meta, base_units, unit_options_by_base, mod
     }
 
 
+UNIT_ALIASES = {
+    "°C": "degC",
+    "°": "deg",
+    "kg/m³": "kg/m3",
+    "m²": "m2",
+    "m² K/W": "m2.K/W",
+    "Pa s": "Pa.s",
+    "mPa s": "cP",
+    "W/(m K)": "W/m/K",
+    "W/(m² K)": "W/m2/K",
+    "$/y": "$/y",
+    "%": "percent",
+}
+
+
+def normalize_unit_name(unit):
+    if not unit:
+        return unit
+    return UNIT_ALIASES.get(unit, unit)
+
+
+def resolve_result_unit_metadata(key, row_meta, result_base_units, unit_options_by_base, result_unit_defaults):
+    base_unit = result_base_units.get(key)
+    if not base_unit:
+        return {}
+    unit_options = unit_options_by_base.get(base_unit, [base_unit])
+    display_unit = result_unit_defaults.get(key)
+    if not display_unit:
+        display_unit = normalize_unit_name(row_meta.get("display_unit") or row_meta.get("unit")) or base_unit
+    if display_unit not in unit_options:
+        display_unit = base_unit
+    return {
+        "base_unit": base_unit,
+        "display_unit": display_unit,
+        "unit_options": unit_options,
+    }
+
+
 def load_project_defaults(model_name, project_name=None):
     """Load model defaults from Projects/Default_Design.py."""
     return load_default_design(model_name)
@@ -492,6 +530,8 @@ def build_results_context(yaml_data, model_def):
                         "label": row["label"],
                         "key": row["key"],
                         "unit": row.get("unit", ""),
+                        "display_unit": row.get("display_unit"),
+                        "display_factor": row.get("display_factor", 1),
                         "highlight": row.get("highlight", False),
                         "computed": row.get("computed", False),
                     })
@@ -505,6 +545,7 @@ def build_results_context(yaml_data, model_def):
                     "label": row["label"],
                     "key": row["key"],
                     "unit": row.get("unit", ""),
+                    "display_unit": row.get("display_unit"),
                     "highlight": row.get("highlight", False),
                     "display_factor": row.get("display_factor", 1),
                     "computed": row.get("computed", False),
@@ -518,6 +559,8 @@ def build_results_context(yaml_data, model_def):
                     "label": row["label"],
                     "key": row["key"],
                     "unit": row.get("unit", ""),
+                    "display_unit": row.get("display_unit"),
+                    "display_factor": row.get("display_factor", 1),
                     "computed": row.get("computed", False),
                 })
                 all_rows_flat.append(row["key"])
@@ -572,10 +615,44 @@ def build_units_context(yaml_data, model_def, common_units=None):
     unit_options_by_base = build_unit_options(common_units)
     base_units = get_model_base_units(model_def, "Model_Parameters")
     discrete_base_units = get_model_base_units(model_def, "Discrete_Variables")
+    all_input_base_units = {**base_units, **discrete_base_units}
     model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
+    unit_groups = yaml_data.get("model", {}).get("input_unit_groups", {}) or {}
+    grouped_keys = set()
+    group_rows = []
     rows = []
 
+    for group_id, group in unit_groups.items():
+        keys = list(group.get("keys") or [])
+        if not keys:
+            continue
+        missing = [key for key in keys if key not in all_input_base_units]
+        if missing:
+            raise ValueError(f"input_unit_groups.{group_id} references unknown unit keys: {missing}")
+        base_unit = all_input_base_units[keys[0]]
+        mismatched = [key for key in keys if all_input_base_units[key] != base_unit]
+        if mismatched:
+            raise ValueError(f"input_unit_groups.{group_id} mixes base units: {mismatched}")
+        unit_options = unit_options_by_base.get(base_unit, [base_unit])
+        if len(unit_options) <= 1:
+            grouped_keys.update(keys)
+            continue
+        display_unit = group.get("default_unit") or model_unit_defaults.get(keys[0], base_unit)
+        if display_unit not in unit_options:
+            display_unit = base_unit
+        group_rows.append({
+            "id": group_id,
+            "label": group.get("label", group_id),
+            "member_keys": keys,
+            "base_unit": base_unit,
+            "display_unit": display_unit,
+            "unit_options": unit_options,
+        })
+        grouped_keys.update(keys)
+
     def add_row(page_label, section_title, key, label, unit=None):
+        if key in grouped_keys:
+            return
         metadata = resolve_unit_metadata(key, {}, base_units, unit_options_by_base, model_unit_defaults)
         if not metadata or len(metadata.get("unit_options", [])) <= 1:
             return
@@ -609,6 +686,8 @@ def build_units_context(yaml_data, model_def, common_units=None):
         title = section.get("title", "")
         if section.get("element") == "checkbox_grid" and section.get("variable") and not section.get("static"):
             variable = section.get("variable")
+            if variable in grouped_keys:
+                continue
             metadata = resolve_unit_metadata(variable, {}, discrete_base_units, unit_options_by_base, model_unit_defaults)
             if metadata and len(metadata.get("unit_options", [])) > 1:
                 rows.append({
@@ -625,6 +704,48 @@ def build_units_context(yaml_data, model_def, common_units=None):
                     continue
                 add_row("Geometric Options", title, key, field_meta.get("label", key), field_meta.get("unit"))
 
+    return group_rows, rows
+
+
+def iter_result_rows(yaml_data):
+    result_sections = yaml_data.get("pages", {}).get("results", {}).get("sections", {})
+    for section in result_sections.values():
+        section_title = section.get("title", "")
+        for row in section.get("rows", []):
+            yield section_title, row
+        for subsection in section.get("subsections", []):
+            title = subsection.get("title") or section_title
+            for row in subsection.get("rows", []):
+                yield title, row
+        for row in section.get("footer_rows", []):
+            yield section_title, row
+
+
+def build_result_units_context(yaml_data, model_def, common_units=None):
+    """Build configurable display-unit rows for the results page."""
+    common_units = common_units or {}
+    unit_options_by_base = build_unit_options(common_units)
+    result_base_units = get_model_base_units(model_def, "Results")
+    result_unit_defaults = yaml_data.get("model", {}).get("default_result_units", {}) or {}
+    rows = []
+    seen = set()
+
+    for section_title, row in iter_result_rows(yaml_data):
+        key = row.get("key")
+        if not key or key in seen:
+            continue
+        metadata = resolve_result_unit_metadata(key, row, result_base_units, unit_options_by_base, result_unit_defaults)
+        if not metadata or len(metadata.get("unit_options", [])) <= 1:
+            continue
+        seen.add(key)
+        rows.append({
+            "page": "Results",
+            "section": section_title,
+            "key": key,
+            "label": row.get("label", key),
+            "yaml_unit": row.get("display_unit") or row.get("unit"),
+            **metadata,
+        })
     return rows
 
 
@@ -790,11 +911,12 @@ def generate():
 
         # Unit Configuration page
         nav_units = [{"label": p["label"], "active": False, "file": p["file"]} for p in nav_pages]
-        unit_config_fields = build_units_context(model_ui, model_def, common_units)
+        unit_group_config_fields, unit_config_fields = build_units_context(model_ui, model_def, common_units)
         template = env.get_template("units.html")
         html = template.render(
             page_title="Units Configuration",
             nav_pages=nav_units,
+            unit_group_config_fields=unit_group_config_fields,
             unit_config_fields=unit_config_fields,
             header=header_data,
             model_name=model_name,
@@ -804,6 +926,22 @@ def generate():
         )
         (model_output_dir / "units.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/units.html")
+
+        # Results Unit Configuration page
+        result_unit_config_fields = build_result_units_context(model_ui, model_def, common_units)
+        template = env.get_template("result_units.html")
+        html = template.render(
+            page_title="Results Units Configuration",
+            nav_pages=nav_units,
+            result_unit_config_fields=result_unit_config_fields,
+            header=header_data,
+            model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
+        )
+        (model_output_dir / "result_units.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/result_units.html")
 
         # Results page
         nav_rs = [{"label": p["label"], "active": p["file"] == "results.html", "file": p["file"]} for p in nav_pages]
@@ -826,6 +964,7 @@ def generate():
             var_units=rs_var_units,
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
+            result_unit_fields=result_unit_config_fields,
             unit_conversions=common_units.get("conversions", {}),
         )
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")

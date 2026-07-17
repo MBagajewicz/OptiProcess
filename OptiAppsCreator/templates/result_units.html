@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="min-h-[calc(100vh-140px)] bg-industrial p-4">
+    <div class="mx-auto max-w-6xl rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-xl">
+        <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-xl font-bold text-slate-800">Results Units Configuration</h1>
+                <p class="text-xs text-slate-600">Select display units for results only. Solver inputs and stored result values remain in model base units.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="resetResultUnitsToBase()" class="rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200">Reset To Base Units</button>
+                <button type="button" onclick="saveResultUnitConfiguration()" class="rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700">Save Results Units</button>
+                <button type="button" onclick="window.history.back()" class="rounded-full bg-gray-500 px-4 py-2 text-xs font-bold text-white hover:bg-gray-600">Back</button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full min-w-[760px] border-collapse text-xs">
+                <thead class="bg-slate-100 text-left text-slate-700">
+                    <tr>
+                        <th class="border-b border-slate-200 px-3 py-2">Page</th>
+                        <th class="border-b border-slate-200 px-3 py-2">Section</th>
+                        <th class="border-b border-slate-200 px-3 py-2">Variable</th>
+                        <th class="border-b border-slate-200 px-3 py-2">Label</th>
+                        <th class="border-b border-slate-200 px-3 py-2">Base Unit</th>
+                        <th class="border-b border-slate-200 px-3 py-2">Display Unit</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for field in result_unit_config_fields %}
+                    <tr class="hover:bg-blue-50/50">
+                        <td class="px-3 py-2 text-slate-600">{{ field.page }}</td>
+                        <td class="px-3 py-2 text-slate-600">{{ field.section }}</td>
+                        <td class="px-3 py-2 font-mono font-semibold text-slate-800">{{ field.key }}</td>
+                        <td class="px-3 py-2 text-slate-700">{{ field.label }}{% if field.yaml_unit %} <span class="text-slate-400">[{{ field.yaml_unit }}]</span>{% endif %}</td>
+                        <td class="px-3 py-2 font-semibold text-slate-700">{{ field.base_unit }}</td>
+                        <td class="px-3 py-2">
+                            <select data-result-unit-config-key="{{ field.key }}" data-base-unit="{{ field.base_unit }}" class="w-full rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                                {% for unit in field.unit_options %}
+                                <option value="{{ unit }}" {{ 'selected' if unit == field.display_unit }}>{{ unit }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not result_unit_config_fields %}
+                    <tr>
+                        <td colspan="6" class="px-3 py-8 text-center text-slate-500">No configurable result unit fields were found for this model.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+function getResultUnits() {
+    return getJson(resultUnitsStorageKey(), {});
+}
+
+function applyStoredResultUnitsToConfig() {
+    const units = getResultUnits();
+    document.querySelectorAll('select[data-result-unit-config-key]').forEach(function(select) {
+        const key = select.dataset.resultUnitConfigKey;
+        if (units[key]) select.value = units[key];
+    });
+}
+
+function collectResultUnitConfiguration() {
+    const units = getResultUnits();
+    document.querySelectorAll('select[data-result-unit-config-key]').forEach(function(select) {
+        const key = select.dataset.resultUnitConfigKey;
+        const baseUnit = select.dataset.baseUnit;
+        if (select.value && select.value !== baseUnit) units[key] = select.value;
+        else delete units[key];
+    });
+    setJson(resultUnitsStorageKey(), units);
+    return units;
+}
+
+function saveResultUnitConfiguration() {
+    collectResultUnitConfiguration();
+    setProjectMetadataDirty(true);
+    alert('Results unit configuration saved for this design.');
+}
+
+function resetResultUnitsToBase() {
+    document.querySelectorAll('select[data-result-unit-config-key]').forEach(function(select) {
+        select.value = select.dataset.baseUnit;
+    });
+    setJson(resultUnitsStorageKey(), {});
+    setProjectMetadataDirty(true);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    applyStoredResultUnitsToConfig();
+    document.querySelectorAll('select[data-result-unit-config-key]').forEach(function(select) {
+        select.addEventListener('change', function() {
+            collectResultUnitConfiguration();
+            setProjectMetadataDirty(true);
+        });
+    });
+});
+</script>
+{% endblock %}

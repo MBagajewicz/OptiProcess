@@ -8,6 +8,9 @@ unit_dimensions:
   pressure:
     base: Pa
     options: [Pa, kPa, bar, psi]
+  pressure_kpa:
+    base: kPa
+    options: [Pa, kPa, bar, psi]
   density:
     base: kg/m3
     options: [kg/m3, g/cm3, lb/ft3]
@@ -20,6 +23,9 @@ unit_dimensions:
   thermal_conductivity:
     base: W/m/K
     options: [W/m/K]
+  heat_transfer_coefficient:
+    base: W/m2/K
+    options: [W/m2/K]
   fouling_factor:
     base: m2.K/W
     options: [m2.K/W]
@@ -32,6 +38,9 @@ unit_dimensions:
   area:
     base: m2
     options: [m2, ft2]
+  power:
+    base: kW
+    options: [W, kW, MW]
   percent:
     base: percent
     options: [percent, fraction]
@@ -52,7 +61,7 @@ unit_dimensions:
     options: [$]
   annual_money:
     base: $/year
-    options: [$/year]
+    options: [$/year, $/y]
   angle:
     base: deg
     options: [deg, rad]
@@ -71,6 +80,11 @@ conversions:
     kPa: {factor: 1000, offset: 0}
     bar: {factor: 100000, offset: 0}
     psi: {factor: 6894.757293168, offset: 0}
+  kPa:
+    Pa: {factor: 0.001, offset: 0}
+    kPa: {factor: 1, offset: 0}
+    bar: {factor: 100, offset: 0}
+    psi: {factor: 6.894757293168, offset: 0}
   kg/m3:
     kg/m3: {factor: 1, offset: 0}
     g/cm3: {factor: 1000, offset: 0}
@@ -83,6 +97,8 @@ conversions:
     cP: {factor: 0.001, offset: 0}
   W/m/K:
     W/m/K: {factor: 1, offset: 0}
+  W/m2/K:
+    W/m2/K: {factor: 1, offset: 0}
   m2.K/W:
     m2.K/W: {factor: 1, offset: 0}
   m:
@@ -96,6 +112,10 @@ conversions:
   m2:
     m2: {factor: 1, offset: 0}
     ft2: {factor: 0.09290304, offset: 0}
+  kW:
+    W: {factor: 0.001, offset: 0}
+    kW: {factor: 1, offset: 0}
+    MW: {factor: 1000, offset: 0}
   percent:
     percent: {factor: 1, offset: 0}
     fraction: {factor: 100, offset: 0}
@@ -112,6 +132,7 @@ conversions:
     $: {factor: 1, offset: 0}
   $/year:
     $/year: {factor: 1, offset: 0}
+    $/y: {factor: 1, offset: 0}
   deg:
     deg: {factor: 1, offset: 0}
     rad: {factor: 57.29577951308232, offset: 0}

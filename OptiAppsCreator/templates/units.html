@@ -6,7 +6,7 @@
         <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
                 <h1 class="text-xl font-bold text-slate-800">Units Configuration</h1>
-                <p class="text-xs text-slate-600">Select display units variable by variable. Model parameters are still stored and sent to the solver in base units.</p>
+                <p class="text-xs text-slate-600">Select grouped or individual display units. Model parameters are still stored and sent to the solver in base units.</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 <button type="button" onclick="resetUnitsToBase()" class="rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200">Reset To Base Units</button>
@@ -15,6 +15,41 @@
             </div>
         </div>
 
+        {% if unit_group_config_fields %}
+        <div class="mb-5">
+            <h2 class="mb-2 text-sm font-bold text-slate-800">Unit Groups</h2>
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full min-w-[760px] border-collapse text-xs">
+                    <thead class="bg-slate-100 text-left text-slate-700">
+                        <tr>
+                            <th class="border-b border-slate-200 px-3 py-2">Group</th>
+                            <th class="border-b border-slate-200 px-3 py-2">Variables</th>
+                            <th class="border-b border-slate-200 px-3 py-2">Base Unit</th>
+                            <th class="border-b border-slate-200 px-3 py-2">Display Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for group in unit_group_config_fields %}
+                        <tr class="hover:bg-blue-50/50">
+                            <td class="px-3 py-2 font-semibold text-slate-800">{{ group.label }}</td>
+                            <td class="px-3 py-2 font-mono text-[11px] text-slate-600">{{ group.member_keys | join(', ') }}</td>
+                            <td class="px-3 py-2 font-semibold text-slate-700">{{ group.base_unit }}</td>
+                            <td class="px-3 py-2">
+                                <select data-unit-group-id="{{ group.id }}" data-unit-group-keys='{{ group.member_keys | tojson }}' data-base-unit="{{ group.base_unit }}" data-default-unit="{{ group.display_unit }}" class="w-full rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                                    {% for unit in group.unit_options %}
+                                    <option value="{{ unit }}" {{ 'selected' if unit == group.display_unit }}>{{ unit }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <h2 class="mb-2 text-sm font-bold text-slate-800">Individual Units</h2>
         <div class="overflow-x-auto rounded-xl border border-slate-200">
             <table class="w-full min-w-[760px] border-collapse text-xs">
                 <thead class="bg-slate-100 text-left text-slate-700">
@@ -58,6 +93,13 @@
 <script>
 function applyStoredUnitsToConfig() {
     const units = getParameterUnits();
+    document.querySelectorAll('select[data-unit-group-id]').forEach(function(select) {
+        const keys = JSON.parse(select.dataset.unitGroupKeys || '[]');
+        const storedValues = keys.map(function(key) { return units[key]; }).filter(Boolean);
+        if (!storedValues.length) return;
+        const first = storedValues[0];
+        if (storedValues.every(function(unit) { return unit === first; })) select.value = first;
+    });
     document.querySelectorAll('select[data-unit-config-key]').forEach(function(select) {
         const key = select.dataset.unitConfigKey;
         if (units[key]) select.value = units[key];
@@ -66,6 +108,14 @@ function applyStoredUnitsToConfig() {
 
 function collectUnitConfiguration() {
     const units = getParameterUnits();
+    document.querySelectorAll('select[data-unit-group-id]').forEach(function(select) {
+        const keys = JSON.parse(select.dataset.unitGroupKeys || '[]');
+        const baseUnit = select.dataset.baseUnit;
+        keys.forEach(function(key) {
+            if (select.value && select.value !== baseUnit) units[key] = select.value;
+            else delete units[key];
+        });
+    });
     document.querySelectorAll('select[data-unit-config-key]').forEach(function(select) {
         const key = select.dataset.unitConfigKey;
         const baseUnit = select.dataset.baseUnit;
@@ -84,6 +134,9 @@ function saveUnitConfiguration() {
 }
 
 function resetUnitsToBase() {
+    document.querySelectorAll('select[data-unit-group-id]').forEach(function(select) {
+        select.value = select.dataset.baseUnit;
+    });
     document.querySelectorAll('select[data-unit-config-key]').forEach(function(select) {
         select.value = select.dataset.baseUnit;
     });
@@ -94,6 +147,12 @@ function resetUnitsToBase() {
 
 document.addEventListener('DOMContentLoaded', function() {
     applyStoredUnitsToConfig();
+    document.querySelectorAll('select[data-unit-group-id]').forEach(function(select) {
+        select.addEventListener('change', function() {
+            collectUnitConfiguration();
+            setProjectMetadataDirty(true);
+        });
+    });
     document.querySelectorAll('select[data-unit-config-key]').forEach(function(select) {
         select.addEventListener('change', function() {
             collectUnitConfiguration();
