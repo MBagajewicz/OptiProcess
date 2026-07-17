@@ -22,16 +22,21 @@ def read_text(path: Path) -> str:
 def verify_model_definitions() -> None:
     sys.path.insert(0, str(ROOT))
     from generate_ui import build_unit_options, load_common_units, load_model_def
+    from standard_values import flatten_standard_values, grouped_standard_options
 
     common_units = load_common_units(ROOT)
     unit_options = build_unit_options(common_units)
     require(unit_options["kg/s"] == ["kg/s", "kg/h", "lb/h"], "Mass flow unit options must be available.")
 
     sthe_units = load_model_def("STHE")["Model_Info"]["Base_Units"]
+    sthe_standard_values = load_model_def("STHE")["Model_Info"]["Standard_Variables_Values"]
     gphe_units = load_model_def("GPHE")["Model_Info"]["Base_Units"]
     require(sthe_units["Model_Parameters"]["mh"] == "kg/s", "STHE mh base unit must be kg/s.")
     require(sthe_units["Discrete_Variables"]["Ds"] == "m", "STHE Ds base unit must be m.")
     require(gphe_units["Model_Parameters"]["bp"] == "m", "GPHE bp base unit must be m.")
+    require("TEMA" in grouped_standard_options(sthe_standard_values["Ds"]), "STHE Ds standards must include TEMA.")
+    require(0.2032 in flatten_standard_values(sthe_standard_values["Ds"]), "Grouped STHE Ds values must flatten for validation.")
+    require(grouped_standard_options(sthe_standard_values["dte"]) is None, "STHE dte must remain a flat standard list.")
 
 
 def verify_generated_html() -> None:
@@ -57,20 +62,24 @@ def verify_generated_html() -> None:
     require('data-var="Ds" data-base-unit="m"' in sthe_geometric, "STHE Ds checkbox grid must expose base unit metadata.")
     require('data-option-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox options must expose convertible display labels.")
     require('data-unit-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox title must expose dynamic unit metadata.")
+    require('data-standard-for="Ds"' in sthe_geometric, "STHE Ds checkbox grid must expose a standard selector.")
+    require('data-standard="TEMA"' in sthe_geometric, "STHE grouped geometric options must identify TEMA values.")
     require('data-unit-label-for="dte"' in sthe_geometric, "STHE dte checkbox title must expose dynamic unit metadata.")
     require('data-unit-label-for="L"' in sthe_geometric, "STHE L checkbox title must expose dynamic unit metadata.")
     require("parameter_units" in sthe_problem, "Problem Data must include parameter_units persistence hooks.")
     require("parameter_units" in sthe_results, "Results must preserve parameter_units when saving designs.")
+    require("geometric_standards" in sthe_results, "Results must preserve geometric_standards when saving designs.")
 
 
 def verify_persistence() -> None:
     sys.path.insert(0, str(ROOT))
     from project_store import _design_payload_to_json
 
-    payload = {"parameters": {"mh": 20}, "parameter_units": {"mh": "kg/h"}}
+    payload = {"parameters": {"mh": 20}, "parameter_units": {"mh": "kg/h"}, "geometric_standards": {"Ds": "TEMA"}}
     data = json.loads(_design_payload_to_json("STHE", "UnitTest", payload))
     require(data["parameters"] == {"mh": 20}, "Parameters must be persisted in base units.")
     require(data["parameter_units"] == {"mh": "kg/h"}, "parameter_units must be persisted as visual metadata.")
+    require(data["geometric_standards"] == {"Ds": "TEMA"}, "geometric_standards must be persisted as visual metadata.")
 
 
 def main() -> int:

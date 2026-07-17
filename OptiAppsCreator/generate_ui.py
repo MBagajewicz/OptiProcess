@@ -18,6 +18,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from project_store import load_default_design, load_project
+from standard_values import flatten_standard_values, grouped_standard_options
 
 
 # --- Color CSS class maps ---
@@ -282,7 +283,8 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
         var_selection[var_name] = {
             "index": idx,
             "selected": discrete_vals[idx] if idx < len(discrete_vals) else [],
-            "standard": std_values.get(var_name, []),
+            "standard": flatten_standard_values(std_values.get(var_name, [])),
+            "standards": grouped_standard_options(std_values.get(var_name, [])),
         }
 
     for section_id, section in page_yaml["sections"].items():
@@ -344,9 +346,30 @@ def build_geometric_options_context(yaml_data, model_def, example, sort_numeric=
                         items.append({
                             "label": label,
                             "value": val,
+                            "standard": None,
                             "convert_label": not bool(label_map) and isinstance(val, (int, float)) and not isinstance(val, bool),
                             "checked": val in selected_set,
                         })
+                    if var_info.get("standards"):
+                        standard_items = []
+                        for standard_name, standard_options in var_info["standards"].items():
+                            standard_options_render = standard_options
+                            if (sort_numeric and isinstance(standard_options_render, list)
+                                    and standard_options_render
+                                    and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in standard_options_render)):
+                                standard_options_render = sorted(standard_options_render)
+                            for val in standard_options_render:
+                                label = label_map.get(val, str(val))
+                                standard_items.append({
+                                    "label": label,
+                                    "value": val,
+                                    "standard": standard_name,
+                                    "convert_label": not bool(label_map) and isinstance(val, (int, float)) and not isinstance(val, bool),
+                                    "checked": val in selected_set,
+                                })
+                        resolved["standards"] = list(var_info["standards"].keys())
+                        resolved["default_standard"] = resolved["standards"][0] if resolved["standards"] else None
+                        items = standard_items
                 resolved["grid_items"] = items
 
         elif element == "form_group":

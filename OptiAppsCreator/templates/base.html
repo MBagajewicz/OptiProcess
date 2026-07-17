@@ -120,6 +120,7 @@
     function modelKey(name) { return 'optihex_' + MODEL + '_' + name; }
     function problemStorageKey() { return modelKey('problem_data'); }
     function geomStorageKey() { return modelKey('geometric_data'); }
+    function geometricStandardsStorageKey() { return modelKey('geometric_standards'); }
     function parameterUnitsStorageKey() { return modelKey('parameter_units'); }
     function currentProjectKey() { return modelKey('current_project'); }
     function currentUserProjectIdKey() { return modelKey('current_user_project_id'); }
@@ -129,6 +130,7 @@
     function problemClearedKey() { return modelKey('problem_data_cleared'); }
     function lastSavedProblemKey() { return modelKey('last_saved_problem_data'); }
     function lastSavedGeomKey() { return modelKey('last_saved_geometric_data'); }
+    function lastSavedGeometricStandardsKey() { return modelKey('last_saved_geometric_standards'); }
     function lastSavedParameterUnitsKey() { return modelKey('last_saved_parameter_units'); }
     function lastSavedProjectKey() { return modelKey('last_saved_project_name'); }
     function lastSavedUserProjectIdKey() { return modelKey('last_saved_user_project_id'); }
@@ -457,6 +459,7 @@
     function saveSnapshot() {
         sessionStorage.setItem(lastSavedProblemKey(), sessionStorage.getItem(problemStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedGeomKey(), sessionStorage.getItem(geomStorageKey()) || '{}');
+        sessionStorage.setItem(lastSavedGeometricStandardsKey(), sessionStorage.getItem(geometricStandardsStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedParameterUnitsKey(), sessionStorage.getItem(parameterUnitsStorageKey()) || '{}');
         sessionStorage.setItem(lastSavedProjectKey(), getCurrentProject());
         sessionStorage.setItem(lastSavedUserProjectIdKey(), sessionStorage.getItem(currentUserProjectIdKey()) || '');
@@ -476,6 +479,7 @@
         }
         sessionStorage.setItem(problemStorageKey(), sessionStorage.getItem(lastSavedProblemKey()) || '{}');
         sessionStorage.setItem(geomStorageKey(), sessionStorage.getItem(lastSavedGeomKey()) || '{}');
+        sessionStorage.setItem(geometricStandardsStorageKey(), sessionStorage.getItem(lastSavedGeometricStandardsKey()) || '{}');
         sessionStorage.setItem(parameterUnitsStorageKey(), sessionStorage.getItem(lastSavedParameterUnitsKey()) || '{}');
         sessionStorage.setItem(currentProjectKey(), sessionStorage.getItem(lastSavedProjectKey()) || '');
         sessionStorage.setItem(currentUserProjectIdKey(), sessionStorage.getItem(lastSavedUserProjectIdKey()) || '');
@@ -515,6 +519,7 @@
             user_project_name: userProjectName !== undefined ? userProjectName : (sessionStorage.getItem(currentUserProjectNameKey()) || null),
             parameters: cleanParams,
             parameter_units: getParameterUnits(),
+            geometric_standards: getJson(geometricStandardsStorageKey(), {}),
             discrete_variables: discrete,
             selected_of: selectedOf,
             number_of_equipment: 1
@@ -660,6 +665,7 @@
         });
         setJson(problemStorageKey(), params);
         setJson(geomStorageKey(), geom);
+        setJson(geometricStandardsStorageKey(), project.geometric_standards || {});
         clearOptimizationState();
         setCurrentProject(project.name || 'LocalProject');
         if (project.user_project_id) sessionStorage.setItem(currentUserProjectIdKey(), project.user_project_id);
@@ -714,7 +720,7 @@
     }
 
     function clearModelSession() {
-        [problemStorageKey(), geomStorageKey(), parameterUnitsStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedParameterUnitsKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey(), lastOptimizationSignatureKey(), lastOptimizationResultKey(), lastOptimizationSessionDataKey(), optimizationDirtyKey()].forEach(function(key) {
+        [problemStorageKey(), geomStorageKey(), geometricStandardsStorageKey(), parameterUnitsStorageKey(), currentProjectKey(), currentUserProjectIdKey(), currentUserProjectNameKey(), dirtyKey(), originKey(), problemClearedKey(), lastSavedProblemKey(), lastSavedGeomKey(), lastSavedGeometricStandardsKey(), lastSavedParameterUnitsKey(), lastSavedProjectKey(), lastSavedUserProjectIdKey(), lastSavedUserProjectNameKey(), lastSavedOriginKey(), lastSavedProblemClearedKey(), lastOptimizationSignatureKey(), lastOptimizationResultKey(), lastOptimizationSessionDataKey(), optimizationDirtyKey()].forEach(function(key) {
             sessionStorage.removeItem(key);
         });
         [modelKey('project_temporal_local'), modelKey('project_saved_local'), modelKey('last_saved_temporal_local')].forEach(function(key) {

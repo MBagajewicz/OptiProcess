@@ -24,6 +24,7 @@
 # region Import Library
 from Common_Equations_HEX import Calculations_HEX_Consistency
 from GPHE.Model.Model_Def_GPHE import Model_GPHE
+from standard_values import flatten_standard_values
 # endregion
 ##################################################################################################################
 
@@ -55,7 +56,7 @@ def consistency(m_d, m_p, save_result):
         out_of_limit = {}
 
         for name, values in zip(variables, discrete_values):
-            standard_values_verif = standard_values.get(name, [])
+            standard_values_verif = flatten_standard_values(standard_values.get(name, []))
             if not standard_values_verif:
                 continue
             min_val = min(standard_values_verif)
@@ -87,7 +88,7 @@ def consistency(m_d, m_p, save_result):
         tol = 0.001
         out = {}
         for name, values in zip(variables, discrete_values):
-            standard_values_verif = standard_values.get(name, [])
+            standard_values_verif = flatten_standard_values(standard_values.get(name, []))
             for v in values:
                 value_c = False
                 for std_val in standard_values_verif:

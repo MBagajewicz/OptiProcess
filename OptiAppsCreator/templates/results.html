@@ -204,6 +204,7 @@ const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') 
 const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
 const STORAGE_KEY_GEOM = 'optihex_' + MODEL + '_geometric_data';
+const STORAGE_KEY_GEOMETRIC_STANDARDS = 'optihex_' + MODEL + '_geometric_standards';
 const STORAGE_KEY_PARAMETER_UNITS = 'optihex_' + MODEL + '_parameter_units';
 const STORAGE_KEY_PROJECT = 'optihex_' + MODEL + '_current_project';
 const STORAGE_KEY_USER_PROJECT_ID = 'optihex_' + MODEL + '_current_user_project_id';
@@ -213,6 +214,7 @@ const STORAGE_KEY_ORIGIN = 'optihex_' + MODEL + '_project_origin';
 const STORAGE_KEY_PROBLEM_CLEARED = 'optihex_' + MODEL + '_problem_data_cleared';
 const STORAGE_KEY_LAST_SAVED_PROBLEM = 'optihex_' + MODEL + '_last_saved_problem_data';
 const STORAGE_KEY_LAST_SAVED_GEOM = 'optihex_' + MODEL + '_last_saved_geometric_data';
+const STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS = 'optihex_' + MODEL + '_last_saved_geometric_standards';
 const STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS = 'optihex_' + MODEL + '_last_saved_parameter_units';
 const STORAGE_KEY_LAST_SAVED_PROJECT = 'optihex_' + MODEL + '_last_saved_project_name';
 const STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID = 'optihex_' + MODEL + '_last_saved_user_project_id';
@@ -323,6 +325,7 @@ function loadUserProjects() {
 function saveSnapshot() {
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROBLEM, sessionStorage.getItem(STORAGE_KEY_PROBLEM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_GEOM, sessionStorage.getItem(STORAGE_KEY_GEOM) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS, sessionStorage.getItem(STORAGE_KEY_GEOMETRIC_STANDARDS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS, sessionStorage.getItem(STORAGE_KEY_PARAMETER_UNITS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_PROJECT, getCurrentProject());
     sessionStorage.setItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) || '');
@@ -342,6 +345,7 @@ function resetProjectState() {
     }
     sessionStorage.setItem(STORAGE_KEY_PROBLEM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROBLEM) || '{}');
     sessionStorage.setItem(STORAGE_KEY_GEOM, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOM) || '{}');
+    sessionStorage.setItem(STORAGE_KEY_GEOMETRIC_STANDARDS, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_PARAMETER_UNITS, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS) || '{}');
     sessionStorage.setItem(STORAGE_KEY_PROJECT, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_PROJECT) || '');
     sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, sessionStorage.getItem(STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID) || '');
@@ -455,6 +459,7 @@ function buildProjectPayload(name, userProjectId, userProjectName) {
         user_project_name: userProjectName !== undefined ? userProjectName : (sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || null),
         parameters: solverPayload.parameters,
         parameter_units: solverPayload.parameter_units,
+        geometric_standards: JSON.parse(sessionStorage.getItem(STORAGE_KEY_GEOMETRIC_STANDARDS) || '{}'),
         discrete_variables: solverPayload.discrete_variables,
         selected_of: solverPayload.selected_of,
         number_of_equipment: solverPayload.number_of_equipment
@@ -570,6 +575,7 @@ function applyProjectPayload(project, source) {
     });
     sessionStorage.setItem(STORAGE_KEY_PROBLEM, JSON.stringify(params));
     sessionStorage.setItem(STORAGE_KEY_GEOM, JSON.stringify(geom));
+    sessionStorage.setItem(STORAGE_KEY_GEOMETRIC_STANDARDS, JSON.stringify(project.geometric_standards || {}));
     sessionStorage.setItem(STORAGE_KEY_PARAMETER_UNITS, JSON.stringify(project.parameter_units || {}));
     sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
     sessionStorage.removeItem(STORAGE_KEY_LAST_OPT_RESULT);
@@ -589,7 +595,7 @@ function applyProjectPayload(project, source) {
 function hideCloseSessionModal() { document.getElementById('close-session-modal').classList.add('hidden'); }
 function showCloseSessionModal() { document.getElementById('close-session-modal').classList.remove('hidden'); }
 function clearModelSession() {
-    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_PARAMETER_UNITS, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, STORAGE_KEY_LAST_OPT_SIGNATURE, STORAGE_KEY_LAST_OPT_RESULT, STORAGE_KEY_LAST_OPT_SESSION_DATA, STORAGE_KEY_OPT_DIRTY].forEach(function(key) {
+    [STORAGE_KEY_PROBLEM, STORAGE_KEY_GEOM, STORAGE_KEY_GEOMETRIC_STANDARDS, STORAGE_KEY_PARAMETER_UNITS, STORAGE_KEY_PROJECT, STORAGE_KEY_USER_PROJECT_ID, STORAGE_KEY_USER_PROJECT_NAME, STORAGE_KEY_DIRTY, STORAGE_KEY_ORIGIN, STORAGE_KEY_PROBLEM_CLEARED, STORAGE_KEY_LAST_SAVED_PROBLEM, STORAGE_KEY_LAST_SAVED_GEOM, STORAGE_KEY_LAST_SAVED_GEOMETRIC_STANDARDS, STORAGE_KEY_LAST_SAVED_PARAMETER_UNITS, STORAGE_KEY_LAST_SAVED_PROJECT, STORAGE_KEY_LAST_SAVED_USER_PROJECT_ID, STORAGE_KEY_LAST_SAVED_USER_PROJECT_NAME, STORAGE_KEY_LAST_SAVED_ORIGIN, STORAGE_KEY_LAST_SAVED_PROBLEM_CLEARED, STORAGE_KEY_LAST_OPT_SIGNATURE, STORAGE_KEY_LAST_OPT_RESULT, STORAGE_KEY_LAST_OPT_SESSION_DATA, STORAGE_KEY_OPT_DIRTY].forEach(function(key) {
         sessionStorage.removeItem(key);
     });
     ['optihex_' + MODEL + '_project_temporal_local', 'optihex_' + MODEL + '_project_saved_local', 'optihex_' + MODEL + '_last_saved_temporal_local'].forEach(function(key) {

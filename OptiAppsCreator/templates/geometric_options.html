@@ -33,9 +33,19 @@
         <h3 class="text-xs font-bold {{ 'mt-5' if not section.static else '' }} mb-3 leading-tight flex-shrink-0">
             {{ section.title_nobreak|safe }}{% if section.show_unit_in_title %} <span class="whitespace-nowrap">[<span data-unit-label-for="{{ section.variable }}" data-default-unit="{{ section.display_unit }}">{{ section.display_unit }}</span>]</span>{% endif %}{% if section.static %} <span class="block mt-1 text-gray-700 text-[9px] font-bold whitespace-nowrap">Not Available Yet</span>{% endif %}
         </h3>
+        {% if section.standards is defined and section.standards %}
+        <label class="mb-2 text-[10px] font-semibold flex items-center gap-2">
+            <span>Standard</span>
+            <select class="geometric-standard-select flex-1 rounded-md border border-white/40 bg-white/25 px-2 py-1 text-[10px] font-bold outline-none" data-standard-for="{{ section.variable }}" data-default-standard="{{ section.default_standard }}">
+                {% for standard in section.standards %}
+                <option value="{{ standard }}" {{ 'selected' if standard == section.default_standard else '' }}>{{ standard }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        {% endif %}
         <div class="checkbox-scroll flex-1 min-h-0 overflow-y-auto space-y-2 pr-8">
             {% for item in section.grid_items %}
-            <div class="flex items-center justify-between">
+            <div class="standard-option flex items-center justify-between{% if item.standard and section.default_standard and item.standard != section.default_standard %} hidden{% endif %}"{% if item.standard %} data-standard="{{ item.standard }}"{% endif %}>
                 <div class="checkbox-grid-input min-w-0 {{ '!text-black !border-black/20' if section.color.text_class == 'text-black' }}">{% if section.base_unit is defined and item.convert_label %}<span data-option-label-for="{{ section.variable }}" data-base-value="{{ item.value }}">{{ item.label }}</span>{% else %}{{ item.label }}{% endif %}</div>
                 <div class="checkbox-item ml-2 mr-3 flex-shrink-0 {{ 'checked' if item.checked else '' }} {{ 'cursor-not-allowed opacity-90' if section.static else '' }}" data-value="{{ item.value }}" data-static="{{ 'true' if section.static else 'false' }}"><i class="fas {{ 'fa-check' if item.checked else '' }}"></i></div>
             </div>
@@ -87,12 +97,36 @@ function applyCheckboxGridSelection(button, mode) {
     if (!panel) return;
     panel.querySelectorAll('.checkbox-item').forEach(function(item) {
         if (item.dataset.static === 'true') return;
+        const row = item.closest('.standard-option');
+        if (row && row.classList.contains('hidden')) return;
         const checked = mode === 'all';
         item.classList.toggle('checked', checked);
         const icon = item.querySelector('i');
         if (icon) icon.classList.toggle('fa-check', checked);
     });
     collectGeometricData(true);
+}
+
+function activeStandardForPanel(panel) {
+    const select = panel ? panel.querySelector('.geometric-standard-select') : null;
+    return select ? select.value : null;
+}
+
+function applyGeometricStandard(panel, standard) {
+    if (!panel || !standard) return;
+    panel.querySelectorAll('.standard-option[data-standard]').forEach(function(row) {
+        row.classList.toggle('hidden', row.dataset.standard !== standard);
+    });
+}
+
+function collectGeometricStandards(markDirty) {
+    var standards = getJson(geometricStandardsStorageKey(), {});
+    document.querySelectorAll('.geometric-standard-select[data-standard-for]').forEach(function(select) {
+        standards[select.dataset.standardFor] = select.value;
+    });
+    setJson(geometricStandardsStorageKey(), standards);
+    if (markDirty !== false) setProjectMetadataDirty(true);
+    return standards;
 }
 
 function collectGeometricData(markDirty) {
@@ -102,8 +136,11 @@ function collectGeometricData(markDirty) {
     document.querySelectorAll('[data-var]').forEach(function(panel) {
         var varName = panel.dataset.var;
         if (!varName) return;
+        var activeStandard = activeStandardForPanel(panel);
         var checked = [];
         panel.querySelectorAll('.checkbox-item.checked').forEach(function(item) {
+            var row = item.closest('.standard-option');
+            if (activeStandard && row && row.dataset.standard !== activeStandard) return;
             var val = item.dataset.value;
             checked.push(isNaN(val) ? val : parseFloat(val));
         });
@@ -125,6 +162,7 @@ function collectGeometricData(markDirty) {
     });
 
     setJson(geomStorageKey(), discrete);
+    collectGeometricStandards(false);
     setJson(problemStorageKey(), problemData);
     if (markDirty !== false) setDirty(true);
     return discrete;
@@ -134,10 +172,16 @@ window.collectGeometricData = collectGeometricData;
 
 function restoreGeometricData() {
     const discrete = getJson(geomStorageKey(), null);
-    if (!discrete) return;
+    const standards = getJson(geometricStandardsStorageKey(), {});
 
     document.querySelectorAll('[data-var]').forEach(function(panel) {
         var varName = panel.dataset.var;
+        var select = panel.querySelector('.geometric-standard-select');
+        if (select) {
+            select.value = standards[varName] || select.dataset.defaultStandard || select.value;
+            applyGeometricStandard(panel, select.value);
+        }
+        if (!discrete) return;
         var selected = discrete[varName] || [];
         panel.querySelectorAll('.checkbox-item').forEach(function(item) {
             var val = item.dataset.value;
@@ -151,7 +195,7 @@ function restoreGeometricData() {
 
     document.querySelectorAll('.tube-options-input').forEach(function(input) {
         var key = input.dataset.key;
-        if (key && discrete[key] !== undefined) setNumericInputFromBase(input, discrete[key]);
+        if (key && discrete && discrete[key] !== undefined) setNumericInputFromBase(input, discrete[key]);
         updateRecommendedLimitWarning(input);
     });
 }
@@ -159,6 +203,14 @@ function restoreGeometricData() {
 document.addEventListener('DOMContentLoaded', function() {
     attachUnitSelectors();
     restoreGeometricData();
+    document.querySelectorAll('.geometric-standard-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const panel = select.closest('[data-var]');
+            applyGeometricStandard(panel, select.value);
+            collectGeometricStandards(true);
+            collectGeometricData(true);
+        });
+    });
     attachNumericFiltering('.tube-options-input[data-numeric="true"]');
     attachEnterToAdvance('.tube-options-input[data-key]', 'collectGeometricData');
     updateRecommendedLimitWarnings('input[data-recommended-min][data-recommended-max]');
