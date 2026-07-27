@@ -141,6 +141,49 @@ Model_STHE = {
             },
         },
 
+        'Input_Unit_Groups': {
+            'temperatures': {
+                'label': 'Temperatures',
+                'keys': ['Thi', 'Tho', 'Tci', 'Tco'],
+                'default_unit': 'degC',
+            },
+            'flow_rates': {
+                'label': 'Flow rates',
+                'keys': ['mh', 'mc'],
+                'default_unit': 'kg/s',
+            },
+            'available_pressure_drops': {
+                'label': 'Available pressure drops',
+                'keys': ['DPhdisp', 'DPcdisp'],
+                'default_unit': 'kPa',
+            },
+            'densities': {
+                'label': 'Densities',
+                'keys': ['roh', 'roc'],
+                'default_unit': 'kg/m3',
+            },
+            'viscosities': {
+                'label': 'Viscosities',
+                'keys': ['mih', 'mic'],
+                'default_unit': 'cP',
+            },
+            'heat_capacities': {
+                'label': 'Heat capacities',
+                'keys': ['Cph', 'Cpc'],
+                'default_unit': 'J/kg/K',
+            },
+            'diameters': {
+                'label': 'Diameters and thicknesses',
+                'keys': ['Ds', 'dte', 'thk'],
+                'default_unit': 'mm',
+            },
+            'tube_length': {
+                'label': 'Tube length',
+                'keys': ['L'],
+                'default_unit': 'm',
+            },
+        },
+
         # Functions that checks if Example Data provided by user has any consistency problems (e.g. negative flows or compositions)
         # These functions must be provided on Parameters_Update_{Model}.py file
         

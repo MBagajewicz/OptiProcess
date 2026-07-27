@@ -28,15 +28,19 @@ def verify_model_definitions() -> None:
     unit_options = build_unit_options(common_units)
     require(unit_options["kg/s"] == ["kg/s", "kg/h", "lb/h"], "Mass flow unit options must be available.")
 
-    sthe_units = load_model_def("STHE")["Model_Info"]["Base_Units"]
-    sthe_standard_values = load_model_def("STHE")["Model_Info"]["Standard_Variables_Values"]
-    gphe_units = load_model_def("GPHE")["Model_Info"]["Base_Units"]
+    sthe_model_info = load_model_def("STHE")["Model_Info"]
+    gphe_model_info = load_model_def("GPHE")["Model_Info"]
+    sthe_units = sthe_model_info["Base_Units"]
+    sthe_standard_values = sthe_model_info["Standard_Variables_Values"]
+    gphe_units = gphe_model_info["Base_Units"]
     require(sthe_units["Model_Parameters"]["mh"] == "kg/s", "STHE mh base unit must be kg/s.")
     require(sthe_units["Discrete_Variables"]["Ds"] == "m", "STHE Ds base unit must be m.")
     require(gphe_units["Model_Parameters"]["bp"] == "m", "GPHE bp base unit must be m.")
     require("TEMA" in grouped_standard_options(sthe_standard_values["Ds"]), "STHE Ds standards must include TEMA.")
     require(0.2032 in flatten_standard_values(sthe_standard_values["Ds"]), "Grouped STHE Ds values must flatten for validation.")
     require(grouped_standard_options(sthe_standard_values["dte"]) is None, "STHE dte must remain a flat standard list.")
+    require("temperatures" in sthe_model_info.get("Input_Unit_Groups", {}), "STHE input unit groups must be defined in Model_Def.")
+    require("plate_dimensions" in gphe_model_info.get("Input_Unit_Groups", {}), "GPHE input unit groups must be defined in Model_Def.")
 
 
 def verify_generated_html() -> None:
@@ -45,6 +49,8 @@ def verify_generated_html() -> None:
     sthe_results = read_text(ROOT / "output" / "STHE" / "results.html")
     sthe_units = read_text(ROOT / "output" / "STHE" / "units.html")
     sthe_result_units = read_text(ROOT / "output" / "STHE" / "result_units.html")
+    sthe_yaml = read_text(ROOT / "STHE" / "STHE_ui.yaml")
+    gphe_yaml = read_text(ROOT / "GPHE" / "GPHE_ui.yaml")
 
     require('data-key="mh"' in sthe_problem and 'data-base-unit="kg/s"' in sthe_problem, "STHE mh input must expose base unit metadata.")
     require('data-unit-label-for="mh"' in sthe_problem, "STHE mh label must expose dynamic unit metadata.")
@@ -64,6 +70,8 @@ def verify_generated_html() -> None:
     require('data-unit-config-key="Thi"' not in sthe_units, "Grouped STHE temperatures must not be duplicated as individual unit rows.")
     require('data-unit-config-key="Ds"' not in sthe_units, "Grouped STHE diameters must not be duplicated as individual unit rows.")
     require('data-unit-config-key="plbmax2"' in sthe_units, "Ungrouped STHE length parameters must remain individually configurable.")
+    require("input_unit_groups" not in sthe_yaml, "STHE input unit groups must not be defined in YAML.")
+    require("input_unit_groups" not in gphe_yaml, "GPHE input unit groups must not be defined in YAML.")
     require('data-var="Ds" data-base-unit="m"' in sthe_geometric, "STHE Ds checkbox grid must expose base unit metadata.")
     require('data-option-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox options must expose convertible display labels.")
     require('data-unit-label-for="Ds"' in sthe_geometric, "STHE Ds checkbox title must expose dynamic unit metadata.")

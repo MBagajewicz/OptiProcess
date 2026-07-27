@@ -6,35 +6,6 @@ model:
   display_name: "Plate Exchanger"
   icon: "fa-industry"
   sync_scalar_keys: []
-  input_unit_groups:
-    temperatures:
-      label: "Temperatures"
-      keys: [Thi, Tho, Tci, Tco]
-      default_unit: degC
-    flow_rates:
-      label: "Flow rates"
-      keys: [mh, mc]
-      default_unit: kg/s
-    available_pressure_drops:
-      label: "Available pressure drops"
-      keys: [DPhdisp, DPcdisp]
-      default_unit: kPa
-    densities:
-      label: "Densities"
-      keys: [roh, roc]
-      default_unit: kg/m3
-    viscosities:
-      label: "Viscosities"
-      keys: [mih, mic]
-      default_unit: cP
-    heat_capacities:
-      label: "Heat capacities"
-      keys: [Cph, Cpc]
-      default_unit: J/kg/K
-    plate_dimensions:
-      label: "Plate dimensions"
-      keys: [thk, bp]
-      default_unit: mm
 
 pages:
   # ============================================================

@@ -8,39 +8,6 @@ model:
   sync_scalar_keys:
     - LBLD
     - UBLD
-  input_unit_groups:
-    temperatures:
-      label: "Temperatures"
-      keys: [Thi, Tho, Tci, Tco]
-      default_unit: degC
-    flow_rates:
-      label: "Flow rates"
-      keys: [mh, mc]
-      default_unit: kg/s
-    available_pressure_drops:
-      label: "Available pressure drops"
-      keys: [DPhdisp, DPcdisp]
-      default_unit: kPa
-    densities:
-      label: "Densities"
-      keys: [roh, roc]
-      default_unit: kg/m3
-    viscosities:
-      label: "Viscosities"
-      keys: [mih, mic]
-      default_unit: cP
-    heat_capacities:
-      label: "Heat capacities"
-      keys: [Cph, Cpc]
-      default_unit: J/kg/K
-    diameters:
-      label: "Diameters and thicknesses"
-      keys: [Ds, dte, thk]
-      default_unit: mm
-    tube_length:
-      label: "Tube length"
-      keys: [L]
-      default_unit: m
 
 pages:
   # ============================================================

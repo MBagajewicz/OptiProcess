@@ -698,30 +698,33 @@ Esta opción abre `{MODEL}/units.html`, una página de configuración generada a
 `Results Units Configuration` abre `{MODEL}/result_units.html`, una página equivalente para las filas de Results. La tabla se arma a partir de `Model_Info.Base_Units.Results`, `{MODEL}_ui.yaml → pages.results` y `common_units.yaml`.
 
 ```text
-Model_Def_{MODEL}.py → Model_Info.Base_Units
+Model_Def_{MODEL}.py → Model_Info.Base_Units + Model_Info.Input_Unit_Groups
 {MODEL}_ui.yaml      → labels, secciones y orden visual
 common_units.yaml    → unidades disponibles y factores de conversión
 ```
 
-La página también puede mostrar grupos de unidades definidos en `{MODEL}_ui.yaml → model.input_unit_groups`. Esto permite que varias variables de entrada compartan una unidad visual, por ejemplo todas las temperaturas en `K` o todos los caudales en `kg/h`, sin cambiar las unidades base del modelo.
+La página también puede mostrar grupos de unidades definidos en `{MODEL}/Model/Model_Def_{MODEL}.py → Model_Info.Input_Unit_Groups`. Esto permite que varias variables de entrada compartan una unidad visual, por ejemplo todas las temperaturas en `K` o todos los caudales en `kg/h`, sin cambiar las unidades base del modelo.
 
 Ejemplo:
 
-```yaml
-model:
-  input_unit_groups:
-    temperatures:
-      label: "Temperatures"
-      keys: [Thi, Tho, Tci, Tco]
-      default_unit: degC
-    diameters:
-      label: "Diameters and thicknesses"
-      keys: [Ds, dte, thk]
-      default_unit: mm
-    tube_length:
-      label: "Tube length"
-      keys: [L]
-      default_unit: m
+```python
+'Input_Unit_Groups': {
+    'temperatures': {
+        'label': 'Temperatures',
+        'keys': ['Thi', 'Tho', 'Tci', 'Tco'],
+        'default_unit': 'degC',
+    },
+    'diameters': {
+        'label': 'Diameters and thicknesses',
+        'keys': ['Ds', 'dte', 'thk'],
+        'default_unit': 'mm',
+    },
+    'tube_length': {
+        'label': 'Tube length',
+        'keys': ['L'],
+        'default_unit': 'm',
+    },
+}
 ```
 
 Los grupos son explícitos. No se agrupa automáticamente por dimensión física, porque algunas variables con la misma dimensión pueden necesitar unidades visuales distintas. Por ejemplo, el largo de tubo puede mantenerse en `m` mientras los diámetros se muestran en `mm` o `inch`.

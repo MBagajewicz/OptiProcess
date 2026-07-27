@@ -617,7 +617,7 @@ def build_units_context(yaml_data, model_def, common_units=None):
     discrete_base_units = get_model_base_units(model_def, "Discrete_Variables")
     all_input_base_units = {**base_units, **discrete_base_units}
     model_unit_defaults = yaml_data.get("model", {}).get("default_parameter_units", {}) or {}
-    unit_groups = yaml_data.get("model", {}).get("input_unit_groups", {}) or {}
+    unit_groups = model_def.get("Model_Info", {}).get("Input_Unit_Groups", {}) or {}
     grouped_keys = set()
     group_rows = []
     rows = []
@@ -628,11 +628,11 @@ def build_units_context(yaml_data, model_def, common_units=None):
             continue
         missing = [key for key in keys if key not in all_input_base_units]
         if missing:
-            raise ValueError(f"input_unit_groups.{group_id} references unknown unit keys: {missing}")
+            raise ValueError(f"Model_Info.Input_Unit_Groups.{group_id} references unknown unit keys: {missing}")
         base_unit = all_input_base_units[keys[0]]
         mismatched = [key for key in keys if all_input_base_units[key] != base_unit]
         if mismatched:
-            raise ValueError(f"input_unit_groups.{group_id} mixes base units: {mismatched}")
+            raise ValueError(f"Model_Info.Input_Unit_Groups.{group_id} mixes base units: {mismatched}")
         unit_options = unit_options_by_base.get(base_unit, [base_unit])
         if len(unit_options) <= 1:
             grouped_keys.update(keys)
