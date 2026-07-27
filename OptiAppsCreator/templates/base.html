@@ -589,9 +589,14 @@
         return true;
     }
 
+    function apiDesignsUrl(projectId) {
+        return '/api/user-projects/' + projectId + '/designs?model=' + encodeURIComponent(MODEL);
+    }
+
     async function saveAsCloud() {
         document.getElementById('save-menu').classList.add('hidden');
         const previousUserProjectId = sessionStorage.getItem(currentUserProjectIdKey()) || '';
+        const currentDesignName = getCurrentProject() || 'NewDesign';
         let projects = [];
         try {
             const resp = await fetch('/api/user-projects');
@@ -609,11 +614,11 @@
         overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
 
         const modal = document.createElement('div');
-        modal.style.cssText = 'background:white;border-radius:12px;padding:24px;width:400px;max-width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+        modal.style.cssText = 'background:white;border-radius:12px;padding:24px;width:420px;max-width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
 
         modal.innerHTML = '<h3 style="margin:0 0 16px;font-size:18px;font-weight:700;">Save Design As</h3>' +
             '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Project:</label>' +
-            '<select id="save-as-project-select" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:16px;">' +
+            '<select id="save-as-project-select" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:12px;">' +
             (projects.length > 0 ? projects.map(function(p) {
                 var id = String(p.id);
                 var sel = (id === previousUserProjectId || (!previousUserProjectId && p.name === 'My_Designs')) ? ' selected' : '';
@@ -621,7 +626,10 @@
             }).join('') : '<option value="" disabled selected>No user projects available</option>') +
             '</select>' +
             '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Design name:</label>' +
-            '<input id="save-as-design-input" type="text" value="' + (getCurrentProject() || 'NewDesign').replace(/"/g,'&quot;') + '" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:20px;">' +
+            '<select id="save-as-design-select" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:6px;">' +
+            '<option value="__new__" selected>+ New Design...</option>' +
+            '</select>' +
+            '<input id="save-as-design-input" type="text" value="' + currentDesignName.replace(/"/g,'&quot;') + '" placeholder="New design name" style="width:calc(100% - 16px);padding:8px;border:1px solid #3b82f6;border-radius:6px;font-size:14px;margin-bottom:20px;outline:none;">' +
             '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
             '<button id="save-as-cancel-btn" style="padding:8px 20px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:14px;">Cancel</button>' +
             '<button id="save-as-confirm-btn" style="padding:8px 20px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;">Save</button>' +
@@ -629,6 +637,60 @@
 
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
+
+        // Helper to populate designs dropdown
+        async function loadDesignsDropdown(projectId, selectedDesign) {
+            const designSelect = document.getElementById('save-as-design-select');
+            const designInput = document.getElementById('save-as-design-input');
+            try {
+                const resp = await fetch(apiDesignsUrl(projectId));
+                if (!resp.ok) throw new Error(await resp.text());
+                const data = await resp.json();
+                const designs = Array.isArray(data.designs) ? data.designs : [];
+                var html = '<option value="__new__">+ New Design...</option>';
+                var found = false;
+                designs.forEach(function(d) {
+                    var sel = (d.name === selectedDesign) ? ' selected' : '';
+                    if (d.name === selectedDesign) found = true;
+                    html += '<option value="' + String(d.name).replace(/"/g,'&quot;') + '"' + sel + '>' + String(d.name).replace(/</g,'&lt;') + '</option>';
+                });
+                designSelect.innerHTML = html;
+                if (found) {
+                    designInput.value = selectedDesign;
+                } else {
+                    designSelect.value = '__new__';
+                }
+            } catch(e) {
+                designSelect.innerHTML = '<option value="__new__" selected>+ New Design...</option>';
+            }
+        }
+
+        // Load designs for the initially selected project
+        var initialProjectId = null;
+        var initialProjectSelect = document.getElementById('save-as-project-select');
+        if (initialProjectSelect && initialProjectSelect.value) {
+            initialProjectId = parseInt(initialProjectSelect.value, 10);
+        }
+        if (initialProjectId) {
+            loadDesignsDropdown(initialProjectId, currentDesignName);
+        }
+
+        // When user project changes, reload designs dropdown
+        document.getElementById('save-as-project-select').addEventListener('change', function() {
+            var pid = parseInt(this.value, 10);
+            if (pid) {
+                var curName = document.getElementById('save-as-design-input').value.trim();
+                loadDesignsDropdown(pid, curName);
+            }
+        });
+
+        // When design dropdown changes, fill the text input
+        document.getElementById('save-as-design-select').addEventListener('change', function() {
+            var val = this.value;
+            if (val !== '__new__') {
+                document.getElementById('save-as-design-input').value = val;
+            }
+        });
 
         return new Promise(function(resolve) {
             document.getElementById('save-as-cancel-btn').onclick = function() { overlay.remove(); resolve(false); };
