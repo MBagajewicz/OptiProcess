@@ -23,7 +23,7 @@ def SPHE_DeltaP(L, roh, roc, mh, mc, H, dh, dc, mih, mic):
     mih_cp=mih * 1000
     mic_cp=mic * 1000
     dh_in=dh / 0.0254
-    dc_in=dc / 0.0254
+    dc_in=dh / 0.0254
     H_in=H / 0.0254
     mh_m_klbhr= mh / 0.125998 # (3600*2.2046244202/1000)
     mc_m_klbhr= mc / 0.125998 # (3600*2.2046244202/1000)
@@ -48,7 +48,7 @@ def SPHE_DeltaP_lb(L, romax, mh, mc, H, dh, dc, mimin):
     mh_m_klbhr= mh / 0.125998 # (3600*2.2046244202/1000)
     mc_m_klbhr= mc / 0.125998 # (3600*2.2046244202/1000)
     dh_in=dh / 0.0254
-    dc_in=dc / 0.0254
+    dc_in=dh / 0.0254
 
     dltphlb = (0.001 * (L_pies / (romax / 998.2063)) * (((mh_m_klbhr) / (H_in * (dh_in))) ** 2) *
              (((1.3 * ((mimin*1000 ) ** (1 / 3))) / ((dh_in) + 0.125)) * (

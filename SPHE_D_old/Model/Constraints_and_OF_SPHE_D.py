@@ -6,7 +6,9 @@
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
 #   0.0          2024            Diego Oliva               Original
-#   
+#   0.2          01-Dec-2024     Mariana Mello             Add constraints
+#   0.3          28-Feb-2025     Alice Peccini             Relocating folders 
+#   0.4          07-Jun-2025     Qiqi Zhang                Adaptation from original STHE
 ###################################################################################################################
 # INPUT: Define Constraints as def and return + or - values depending the > or < inequality
 ##################################################################################################################
@@ -37,7 +39,7 @@ from Common_Equations_HEX import Calculations_HEX_LMTD, Calculations_HEX_heatloa
 ##################################################################################################################
 # region Example 1
 
-def LH_lb(L, H, ds, dh, dc, m_p):
+def LH_lb(L, H, ds, dh, dc,m_p):
     # Lower bound on L/H
     fun_val = m_p['LBLH'] - L / H
     return fun_val
@@ -49,25 +51,25 @@ def LH_ub(L, H, ds, dh, dc, m_p):
 
 def vh_lb(L, H, ds, dh, dc, m_p):
     # Lower bound on vh
-    vh = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], H, dh, m_p['roh'])
+    vh, _ = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
     fun_val = m_p['vhmin'] - vh
     return fun_val
 
 def vh_ub(L, H, ds, dh, dc, m_p):
     # Upper bound on vh
-    vh = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], H, dh, m_p['roh'])
+    vh, _ = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
     fun_val = vh - m_p['vhmax']
     return fun_val
 
 def vc_lb(L, H, ds, dh, dc, m_p):
     # Lower bound on vt
-    vc = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mc'], H, dc, m_p['roc'])
+    _, vc = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
     fun_val = m_p['vcmin'] - vc
     return fun_val
 
 def vc_ub(L, H, ds, dh, dc, m_p):
     # Upper bound on vt
-    vc = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mc'], H, dc, m_p['roc'])
+    _, vc = Calculations_SPHE_LMTD_velocity.SPHE_velocity(m_p['mh'], m_p['mc'], H, dh, dc, m_p['roh'], m_p['roc'])
     fun_val = vc - m_p['vcmax']
     return fun_val
 
@@ -108,8 +110,8 @@ def Areq(L, H, ds, dh, dc, m_p):
                                                                    m_p['mih'], m_p['mic'], m_p['Cph'], m_p['Cpc'], m_p['kh'],
                                                                    m_p['kc'], m_p['Rfh'], m_p['Rfc'], m_p['kplate'])
     A = Calculations_SPHE_LMTD_area.SPHE_area(L, H)
-    Areq = Q / (U * LMTD * F)
-    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A
+    Areq = (Q * 3.412152) / (U*1.8 * LMTD * F)
+    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A/(0.3048**2)
     return fun_val
 
 def SPHE_OF(L, H, ds, dh, dc, m_p):

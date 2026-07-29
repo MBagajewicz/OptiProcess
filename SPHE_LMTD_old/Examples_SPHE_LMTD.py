@@ -4,8 +4,10 @@
 # Methodology: Dictionary
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
-#   0.0         01-Jul-2023     Javier Francesconi         SPHE Examples Repository   
-#   
+#   0.0         17-Feb-2025     Diego Oliva                STHE Examples Repository
+#   0.2         28-Feb-2025     Alice Peccini              Relocating folders
+#   0.3         26-Mar-2025     Mariana Mello              Update STHE examples
+#   0.4         23-Apr-2025     Mariana Mello              Update STHE Model Parameters
 ##################################################################################################################
 # INPUT: Setting of examples
 ##################################################################################################################

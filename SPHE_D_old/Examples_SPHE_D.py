@@ -4,8 +4,10 @@
 # Methodology: Dictionary
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
-#   0.0         01-Jul-2023     Javier Francesconi         SPHE Examples Repository   
-#   
+#   0.0         17-Feb-2025     Diego Oliva                STHE Examples Repository
+#   0.2         28-Feb-2025     Alice Peccini              Relocating folders
+#   0.3         26-Mar-2025     Mariana Mello              Update STHE examples
+#   0.4         23-Apr-2025     Mariana Mello              Update STHE Model Parameters
 ##################################################################################################################
 # INPUT: Setting of examples
 ##################################################################################################################
@@ -30,7 +32,7 @@ Example1 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'SPHE_LMTD',
+            'Type_Equipment': 'SPHE_D',
 
             # Discretized_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
@@ -124,7 +126,7 @@ Example2 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'SPHE_LMTD',
+            'Type_Equipment': 'SPHE_D',
 
             # Discretized_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
@@ -218,7 +220,7 @@ Example3 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'SPHE_LMTD',
+            'Type_Equipment': 'SPHE_D',
 
             # Discretized_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
@@ -312,7 +314,7 @@ Example4 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'SPHE_LMTD',
+            'Type_Equipment': 'SPHE_D',
 
             # Discretized_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
@@ -406,7 +408,7 @@ Example5 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'SPHE_LMTD',
+            'Type_Equipment': 'SPHE_D',
 
             # Discretized_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
@@ -500,7 +502,7 @@ Example6 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'SPHE_LMTD',
+            'Type_Equipment': 'SPHE_D',
 
             # Discretized_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)

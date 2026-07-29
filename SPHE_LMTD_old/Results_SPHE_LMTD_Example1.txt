@@ -1,0 +1,24 @@
+********** Normal Set Trimming running **********
+SPHE_LMTD parameter from par_calc was not generated at this stage. Skipping
+Set Trimming successful - The candidates solution set is not empty
+Building initial set time:  0.00099 seconds
+
+Primordial Set Trimming time:  0.00204 seconds
+
+
+************ Initial Set generated from Primordial Set ************
+
+Candidate set cardinality after each trimming [25600, 17152, 5248]
+
+******************** Starting Execution for SPHE_LMTD_Example1 ********************
+
+The solution of Equipment1 "SPHE_LMTD" is presented below:
+NO Enumeration mode was activated. Performing Set Trimming ONLY
+Set Trimming successful - The candidates solution set is not empty
+Candidate set cardinality after each trimming [5248, 1008, 1008, 458, 458, 434, 326, 326, 326, 326]
+{'SPHE_OF': {'OF_Solution': np.float64(26580.0408789518), 'Number_of_solutions': 10}, 'L': np.float64(6.6599), 'H': np.float64(0.3048), 'ds': np.float64(0.2032), 'dh': np.float64(0.0127), 'dc': np.float64(0.0048)}
+Elapsed time for Equipment1 "SPHE_LMTD": 0.00 seconds 
+
+OF Solution total ($/year) 26580.0408789518
+Total time elapsed: 0.00831 seconds
+

@@ -1,0 +1,342 @@
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' opti_clean/opti/SPHE_D/Model/Model_Def_SPHE_D.py opti_work/opti/SPHE_D/Model/Model_Def_SPHE_D.py
+--- opti_clean/opti/SPHE_D/Model/Model_Def_SPHE_D.py	2026-07-05 00:24:30.000000000 +0000
++++ opti_work/opti/SPHE_D/Model/Model_Def_SPHE_D.py	2026-07-05 17:25:29.961313477 +0000
+@@ -79,7 +79,7 @@
+         # This entry is optional, if the list is empty, or if the entry is completly skipped, the Initial Set 
+         # will be the same as the Primordial Set
+ 
+-        'Set_Trimming_Constraints_List': ['vh_lb', 'vh_ub', 'vc_lb', 'vc_ub', 'Reh_lb', 'Rec_lb', 'dltph_ub', 'dltpc_ub', 'Tho_ub'],
++        'Set_Trimming_Constraints_List': ['vh_lb', 'vh_ub', 'vc_lb', 'vc_ub', 'Reh_lb', 'Rec_lb', 'dltph_ub', 'dltpc_ub'],
+         # These are the Set Set Trimming Constraints to be applied to Initial Set when Solver is called
+         # They also must be defined in Constraints_and_OF.py file
+ 
+@@ -92,13 +92,13 @@
+ 
+     'Enumeration_Info': {
+ 
+-        'Enumeration_Constraint_List': ['Fw_ub_SE', 'vt_ub_SE', 'Ret_ub_SE', 'DPt_ub_SE'],
++        'Enumeration_Constraint_List': ['Tho_ub'],
+         # These are feasibility constraints that may be required to check candidate feasibility during enumeration
+         # Listed functions must be defined in Constraints_and_OF.py file
+         # This entry is optional, if the list is empty, or if the entry is completely skipped, feasibility
+         # will not be checked by Enumeration routine, it will be assumed as true
+ 
+-        'Lower_Bound_Equation': ['LB_WC_STHE'],
++        'Lower_Bound_Equation': ['SPHE_OF'],
+         # These are the lower bound generation functions required for smart and segmental enumerations
+         # If two different functions are to be used for each type of enumeration, the list must have two positions
+         # ['fun_LB_Smart','fun_LB_Segmental']. If the same function is to be used programmer may either leave it
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' opti_clean/opti/SPHE_D_N/Examples_SPHE_D_N.py opti_work/opti/SPHE_D_N/Examples_SPHE_D_N.py
+--- opti_clean/opti/SPHE_D_N/Examples_SPHE_D_N.py	1970-01-01 00:00:00.000000000 +0000
++++ opti_work/opti/SPHE_D_N/Examples_SPHE_D_N.py	2026-07-05 17:26:15.571605378 +0000
+@@ -0,0 +1,41 @@
++##################################################################################################################
++# region Titles and Header
++# Nature: Repository
++# Methodology: Dictionary
++##################################################################################################################
++# VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
++#   0.0         05-Jul-2026      ChatGPT                   Add SPHE_D_N examples with N as variable
++##################################################################################################################
++# INPUT: Setting of examples
++##################################################################################################################
++
++import copy
++from SPHE_D import Examples_SPHE_D as _SPHE_D_examples
++
++
++def _convert_to_turn_based_example(base_example):
++    """Return a SPHE_D example converted to the turn-based SPHE_D_N model."""
++    example = copy.deepcopy(base_example)
++    equipment = example['Equipment1']
++
++    # Select the turn-based model. The variable order is now [N, H, ds, dh, dc].
++    equipment['Model_Declarations']['Type_Equipment'] = 'SPHE_D_N'
++
++    old_values = equipment['Model_Declarations']['Discrete_Values_of_Variables']
++    equipment['Model_Declarations']['Discrete_Values_of_Variables'] = [
++        list(range(2, 20 + 1)),  # N - number of spiral turns
++        old_values[1],  # H
++        old_values[2],  # ds
++        old_values[3],  # dh
++        old_values[4],  # dc
++    ]
++
++    return example
++
++
++Example1 = _convert_to_turn_based_example(_SPHE_D_examples.Example1)
++Example2 = _convert_to_turn_based_example(_SPHE_D_examples.Example2)
++Example3 = _convert_to_turn_based_example(_SPHE_D_examples.Example3)
++Example4 = _convert_to_turn_based_example(_SPHE_D_examples.Example4)
++Example5 = _convert_to_turn_based_example(_SPHE_D_examples.Example5)
++Example6 = _convert_to_turn_based_example(_SPHE_D_examples.Example6)
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' opti_clean/opti/SPHE_D_N/Model/Constraints_and_OF_SPHE_D_N.py opti_work/opti/SPHE_D_N/Model/Constraints_and_OF_SPHE_D_N.py
+--- opti_clean/opti/SPHE_D_N/Model/Constraints_and_OF_SPHE_D_N.py	1970-01-01 00:00:00.000000000 +0000
++++ opti_work/opti/SPHE_D_N/Model/Constraints_and_OF_SPHE_D_N.py	2026-07-05 17:25:29.961922808 +0000
+@@ -0,0 +1,130 @@
++##################################################################################################################
++# region Titles and Header
++# Nature: Constraints and objective function for the turn-based SPHE_D_N model
++# Methodology: Set trimming and enumeration
++##################################################################################################################
++# VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
++#   0.0         05-Jul-2026      ChatGPT                   Add N-based wrapper around SPHE_D model
++##################################################################################################################
++# INPUT: Define constraints and objective function using N as optimization variable
++##################################################################################################################
++
++# region Import Library
++import numpy as np
++
++from SPHE_D.Model import Constraints_and_OF_SPHE_D as SPHE_D_base
++# endregion
++
++
++def _length_from_turns(N, ds, dh, dc, m_p):
++    """Return the spiral channel length corresponding to N turns.
++
++    The original SPHE_D model uses L as the first optimization variable.
++    SPHE_D_N exposes N as the first optimization variable and converts N to
++    L before reusing the validated SPHE_D constraints and objective function.
++    The implementation is vectorized because the Set Trimming engine may pass
++    either scalar candidates or NumPy arrays of candidates.
++    """
++    thk = m_p['thk']
++    N_arr, ds_arr, dh_arr, dc_arr = np.broadcast_arrays(N, ds, dh, dc)
++
++    a = ds_arr / 2.0 + thk + dh_arr + thk / 2.0
++    b = (dh_arr + dc_arr + 2.0 * thk) / (2.0 * np.pi)
++    theta = N_arr * 2.0 * np.pi
++
++    u0 = a
++    u1 = a + b * theta
++
++    def primitive(u):
++        return (
++            u * np.sqrt(u**2 + b**2)
++            + b**2 * np.log(u + np.sqrt(u**2 + b**2))
++        )
++
++    L = (primitive(u1) - primitive(u0)) / (2.0 * b)
++
++    if np.ndim(L) == 0:
++        return float(L)
++
++    return L
++
++
++def _as_length_arguments(N, H, ds, dh, dc, m_p):
++    """Return the length-based argument tuple expected by SPHE_D."""
++    L = _length_from_turns(N, ds, dh, dc, m_p)
++    return L, H, ds, dh, dc, m_p
++
++
++def LH_lb(N, H, ds, dh, dc, m_p):
++    """Lower bound on L/H, with L calculated from N."""
++    return SPHE_D_base.LH_lb(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def LH_ub(N, H, ds, dh, dc, m_p):
++    """Upper bound on L/H, with L calculated from N."""
++    return SPHE_D_base.LH_ub(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def vh_lb(N, H, ds, dh, dc, m_p):
++    """Lower bound on hot-channel velocity."""
++    return SPHE_D_base.vh_lb(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def vh_ub(N, H, ds, dh, dc, m_p):
++    """Upper bound on hot-channel velocity."""
++    return SPHE_D_base.vh_ub(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def vc_lb(N, H, ds, dh, dc, m_p):
++    """Lower bound on cold-channel velocity."""
++    return SPHE_D_base.vc_lb(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def vc_ub(N, H, ds, dh, dc, m_p):
++    """Upper bound on cold-channel velocity."""
++    return SPHE_D_base.vc_ub(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def Reh_lb(N, H, ds, dh, dc, m_p):
++    """Lower bound on hot-channel Reynolds number."""
++    return SPHE_D_base.Reh_lb(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def Rec_lb(N, H, ds, dh, dc, m_p):
++    """Lower bound on cold-channel Reynolds number."""
++    return SPHE_D_base.Rec_lb(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def dltph_ub(N, H, ds, dh, dc, m_p):
++    """Upper bound on hot-channel pressure drop."""
++    return SPHE_D_base.dltph_ub(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def dltpc_ub(N, H, ds, dh, dc, m_p):
++    """Upper bound on cold-channel pressure drop."""
++    return SPHE_D_base.dltpc_ub(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def Areq(N, H, ds, dh, dc, m_p):
++    """Required heat-transfer-area constraint, with L calculated from N."""
++    return SPHE_D_base.Areq(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def Tho_ub(N, H, ds, dh, dc, m_p):
++    """Upper bound on calculated hot-stream outlet temperature."""
++    return SPHE_D_base.Tho_ub(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def Tco_lb(N, H, ds, dh, dc, m_p):
++    """Lower bound on calculated cold-stream outlet temperature."""
++    return SPHE_D_base.Tco_lb(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def SPHE_OF(N, H, ds, dh, dc, m_p):
++    """Objective function, with L calculated from N."""
++    return SPHE_D_base.SPHE_OF(*_as_length_arguments(N, H, ds, dh, dc, m_p))
++
++
++def SPHE_length(N, H, ds, dh, dc, m_p):
++    """Auxiliary output: calculated spiral length from N."""
++    return _length_from_turns(N, ds, dh, dc, m_p)
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' opti_clean/opti/SPHE_D_N/Model/Model_Def_SPHE_D_N.py opti_work/opti/SPHE_D_N/Model/Model_Def_SPHE_D_N.py
+--- opti_clean/opti/SPHE_D_N/Model/Model_Def_SPHE_D_N.py	1970-01-01 00:00:00.000000000 +0000
++++ opti_work/opti/SPHE_D_N/Model/Model_Def_SPHE_D_N.py	2026-07-05 17:25:29.961789766 +0000
+@@ -0,0 +1,111 @@
++##################################################################################################################
++# region Titles and Header
++# Nature: Repository
++# Methodology: Dictionary
++##################################################################################################################
++# VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
++#   0.0         17-Feb-2025     Diego Oliva                STHE Examples Repository
++#   0.1         28-Feb-2025     Alice Peccini              Relocating folders 
++#   0.2         07-Jun-2025     Qiqi Zhang                  Adaptation from original STHE
++##################################################################################################################
++# INPUT: Setting of examples
++##################################################################################################################
++# INSTRUCTIONS
++# Add Examples of STHE in this file
++##################################################################################################################
++
++# region Import Library
++# endregion
++
++
++####################################################################################################################
++####################################################################################################################
++
++# region INPUT EXAMPLE 1 - STHE + STHE
++
++Model_SPHE_D_N = {
++
++    # =========================================== General Information ============================================
++    # The first entries are General (True or False) Information regarding the Model Operation Mode.
++    # These entries are required for all models
++
++    'Global_Optimizer': False,      # Set to True if model requires an external global solver. False otherwise
++
++    'Next_Level': False,            # Set to True if model involves a bilevel optimization. False otherwise
++
++    'Set_Trimming_Mode': True,      # Set to True Set Trimming Mode is selected. False otherwise
++
++    'Sorting_Mode': False,           # Set to True if Sorting is required after Trimming. False otherwise
++
++    'Enumeration_Mode': True,      # Set to True if an Enumeration Mode is to be activated (Enumeration type will 
++                                    # be selected by user within Example Data if this is set to True)
++
++    # ============================================= Model Information ============================================
++    # This entry is required for all models
++
++    'Model_Info': {
++
++        'Parameters_Calculations_List': ['Parameter_Bounds'],
++        # This is a list of functions used to generated model calculated parameters and they must be defined 
++        # in Model.Parameters_Update_(Model).py file 
++        # These parameters are generated before Intial Set generation by Calculations_Initial_Set_Up.py
++        # For bilevel optimization models (e.g. Kettle Model used in next_level of DC_ST_HE model), some of the 
++        # functions of the list may be skipped and should be called by model programmer inside Next_Level_Set_Up function
++
++        'List_of_Variables': ['N', 'H', 'ds', 'dh', 'dc'],
++        # List of discrete design variables. User will give discrete options in example file in the same order as 
++        # defined here, and this is also the same order that must be used in Constraints_and_OF.py functions
++
++        'Objective_Function': {'Equation_Name': ['SPHE_OF'], 
++                               'Optimization_Variables_Names': ['OF_Solution'],
++                               'Unit_OF': ['$/year']},
++
++        # Objetive Function to be minimized and its corresponding variable and measurement unit
++        # Equation_Name must be a function defined in "Constraints_and_FO.py" where Optimization_Variables_Names is 
++        # its return variable. 
++
++    },
++
++    # ========================================= Set Trimming Information =========================================
++    # Set Trimming Information section only needs to be filled if Set_Trimming_Mode is set to True. If not, 
++    # model programmer may either leave an empty dictionary or completly skip the entry definition
++
++    'Set_Trimming_Info': {
++
++        'Primordial_Set_Trimming_Constraints_List': ['LH_lb', 'LH_ub'],
++        # These are the Set_Trimming functions used for Initial Set Generation (they are applied to Primordial Set before
++        # solver is called (e.g. Geometric Constraints, that do not depend on problem data)
++        # Listed functions must be defined in Constraints_and_OF.py file
++        # This entry is optional, if the list is empty, or if the entry is completly skipped, the Initial Set 
++        # will be the same as the Primordial Set
++
++        'Set_Trimming_Constraints_List': ['vh_lb', 'vh_ub', 'vc_lb', 'vc_ub', 'Reh_lb', 'Rec_lb', 'dltph_ub', 'dltpc_ub'],
++        # These are the Set Set Trimming Constraints to be applied to Initial Set when Solver is called
++        # They also must be defined in Constraints_and_OF.py file
++
++    },
++
++    # ========================================= Enumeration Information =========================================
++    # Enumeration Information section only needs to be filled if Enumeration_Mode is set to True. If not,
++    # model programmer may either leave an empty dictionary or completely skip the entry definition
++    # To see an example go to DC model
++
++    'Enumeration_Info': {
++
++        'Enumeration_Constraint_List': ['Tho_ub'],
++        # These are feasibility constraints that may be required to check candidate feasibility during enumeration
++        # Listed functions must be defined in Constraints_and_OF.py file
++        # This entry is optional, if the list is empty, or if the entry is completely skipped, feasibility
++        # will not be checked by Enumeration routine, it will be assumed as true
++
++        'Lower_Bound_Equation': ['SPHE_OF'],
++        # These are the lower bound generation functions required for smart and segmental enumerations
++        # If two different functions are to be used for each type of enumeration, the list must have two positions
++        # ['fun_LB_Smart','fun_LB_Segmental']. If the same function is to be used programmer may either leave it
++        # with a single position, or repeat the function name
++
++        'Fobj_within_LB': False,
++        # This must be set to True if candidate's Objective Function are evaluated within LB generation function
++    }
++
++}
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' opti_clean/opti/SPHE_D_N/Model/Parameters_Update_SPHE_D_N.py opti_work/opti/SPHE_D_N/Model/Parameters_Update_SPHE_D_N.py
+--- opti_clean/opti/SPHE_D_N/Model/Parameters_Update_SPHE_D_N.py	1970-01-01 00:00:00.000000000 +0000
++++ opti_work/opti/SPHE_D_N/Model/Parameters_Update_SPHE_D_N.py	2026-07-05 17:25:29.961854535 +0000
+@@ -0,0 +1,16 @@
++##################################################################################################################
++# region Titles and Header
++# Nature: Repository
++# Methodology: Dictionary
++##################################################################################################################
++# VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
++#   0.0         05-Jul-2026      ChatGPT                   Turn-based wrapper for SPHE_D parameters
++##################################################################################################################
++# INPUT: Parameters update functions for SPHE_D_N
++##################################################################################################################
++
++# The turn-based SPHE_D_N model uses the same model parameters as SPHE_D.
++# Parameter update functions are re-exported to keep the dynamic import
++# convention: SPHE_D_N.Model.Parameters_Update_SPHE_D_N.
++
++from SPHE_D.Model.Parameters_Update_SPHE_D import *  # noqa: F401,F403

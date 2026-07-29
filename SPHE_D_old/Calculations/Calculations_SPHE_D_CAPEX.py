@@ -11,14 +11,14 @@
 
 
 #region Import Library
-from SPHE_LMTD.Calculations import Calculations_SPHE_LMTD_area
+from STHE.Calculations import Calculations_STHE_area
 #endregion
 
 #region Calculations
 
-def SPHE_LMTD_CAPEX(par_a, par_b, L, H):
+def STHE_CAPEX(par_a, par_b, Ds, dte, Npt, rp, lay, L, m_p):
     # Area
-    Atot = Calculations_SPHE_LMTD_area.SPHE_LMTD_area(L, H)
+    Atot = Calculations_STHE_area.STHE_area(Ds, dte, Npt, rp, lay, L, m_p)
     # Capital cost
     Cap = par_a*(Atot**par_b)
     return Cap

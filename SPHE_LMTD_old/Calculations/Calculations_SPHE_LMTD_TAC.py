@@ -24,7 +24,7 @@ def SPHE_TAC(int_rate, n, par_a, par_b, H, L, pc, eta, mh, mc, roh, roc, dh, dc,
 
     dltph, _ = Calculations_SPHE_LMTD_DeltaP.SPHE_DeltaP(L, roh, roc, mh, mc, H, dh, dc, mih, mic)
     _, dltpc = Calculations_SPHE_LMTD_DeltaP.SPHE_DeltaP(L, roh, roc, mh, mc, H, dh, dc, mih, mic)
-    Costope = Nop * (pc / 1000) * (1 / eta) * ((mh * dltph) / roh + (mc * dltpc) / roc)
+    Costope = Nop * (pc / 1000) * (1 / eta) * ((mh * dltph * 6895) / roh + (mc * dltpc * 6895) / roc)
 
     TAC = r * Costcap + Costope
 
@@ -43,7 +43,7 @@ def SPHE_TAC_distributed(int_rate, n, par_a, par_b, H, L, pc, eta, mh, mc, roh, 
     dltph = 1
     dltpc = 1
 
-    Costope = Nop * (pc / 1000) * (1 / eta) * ((mh * dltph) / roh + (mc * dltpc) / roc)
+    Costope = Nop * (pc / 1000) * (1 / eta) * ((mh * dltph * 6895) / roh + (mc * dltpc * 6895) / roc)
 
     TAC_distributed = r * Costcap + Costope
 

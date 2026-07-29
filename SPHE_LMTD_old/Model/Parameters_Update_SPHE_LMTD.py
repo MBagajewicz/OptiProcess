@@ -36,6 +36,7 @@ from SPHE_LMTD.Model.Model_Def_SPHE_LMTD import Model_SPHE_LMTD
 # Adjustment of the data
 
 def Parameter_Bounds(m_p):
+    save_result('\n******* Testing consistency *******\n')
     m_p['romax']= -0.0031 * m_p['Tci'] * m_p['Tci'] -0.1354*m_p['Tci'] + 1002.4 
     m_p['romin']= -0.0031 * m_p['Thi'] * m_p['Thi'] -0.1354*m_p['Thi'] + 1002.4 
     m_p['kmax'] =  0.0012 * m_p['Thi'] + 0.5804

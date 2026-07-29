@@ -1,8 +1,8 @@
 ********** Normal Set Trimming running **********
 Set Trimming successful - The candidates solution set is not empty
-Building initial set time:  0.00229 seconds
+Building initial set time:  0.00149 seconds
 
-Primordial Set Trimming time:  0.00498 seconds
+Primordial Set Trimming time:  0.00609 seconds
 
 
 ************ Initial Set generated from Primordial Set ************
@@ -24,7 +24,7 @@ Set Trimming Solution {'trimmed_candidates': array([[2.000e+00, 2.000e+00, 2.000
         4.800e-03],
        [2.540e-02, 1.590e-02, 1.910e-02, ..., 4.800e-03, 4.800e-03,
         4.800e-03]], shape=(5, 647)), 'candidate_set_cardinality_after_each_trimming': [5394, 1180, 1180, 775, 775, 748, 647, 647, 647]}
-Elapsed time Set Trimming: 0.006323337554931641
+Elapsed time Set Trimming: 0.005012989044189453
 Performing Smart Enumeration now
 Lower bound values [ 3132.4436055   3098.03956577  3133.2727688   3202.58816119
   3144.57178345  3146.81843446  3157.07396649  3171.24080154
@@ -673,8 +673,8 @@ New Incumbent: 12150.186693949603
 Exit at candidate: 475
 Lower Bound: 12150.186693949603 Candidate: 475
 Solution after Smart Enumeration {'SPHE_OF': {'OF_Solution': array(12150.18669395)}, 'N': array([7.]), 'H': array([0.3048]), 'ds': array([0.2032]), 'dh': array([0.0048]), 'dc': array([0.0048])}
-Elapsed time for Equipment1 "SPHE_D_N": 4.95 seconds 
+Elapsed time for Equipment1 "SPHE_D_N": 5.75 seconds 
 
 OF Solution total ($/year) 12150.186693949603
-Total time elapsed: 4.96783 seconds
+Total time elapsed: 5.76845 seconds
 

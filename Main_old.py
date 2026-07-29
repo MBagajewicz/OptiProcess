@@ -1,4 +1,3 @@
-
 ##################################################################################################################
 #region Titles and Header
 # Nature: Optimization
@@ -28,9 +27,11 @@
 # !! Do not modify any other aspect of the file !!
 ##################################################################################################################
 
-Selected_Model = 'HFM'             # The same as defined in Models_List (CASE SENSITIVE)
-Selected_Example = 'Example1'      # The same as defined in Examples_{Model} in Model folder (CASE SENSITIVE)
-Create_Results_txt = True          # True or False
+
+Selected_Model = 'SPHE_D'          # The same as defined in Models_List (CASE SENSITIVE)
+Selected_Example = 'Example1'   # The same as defined in Examples_{Model} in Model folder (CASE SENSITIVE)
+Create_Results_txt = True       # True or False
+
 
 ##################################################################################################################
 #endregion
@@ -150,23 +151,6 @@ save_result(f'\n******************** Starting Execution for {Selected_Model}_{Se
 
 # Call calculations
 Solution = Calculations_Solver_Selection.Solver_Selection(Active_Example, Active_Models, Selected_Model, Selected_Example, save_result)
-# # Tomazim
-# # Display total number of LPC simulations executed 
-# from Double_Effect.Model.Constraints_and_OF_Double_Effect import TAC_OF
-# print(f"\n\033[92m>>> Total number of LPC simulations executed: {TAC_OF.count_LPC}\033[0m")
-# from DC_Q_Condenser.Model.Constraints_and_OF_DC_Q_Condenser import TAC_OF
-# print(f"\n\033[92m>>> Total number of HPC simulations executed: {TAC_OF.count_HPC}\033[0m")
-# from Commom_Equations_DC.Calculations_DC_Aspen import fun_run_Aspen
-# print(f"\n\033[92m>>> Total simulations executed: {fun_run_Aspen.count}\033[0m")
-# # Show total simulations executed in Lower Bound Generation
-# from Double_Effect.Model.Constraints_and_OF_Double_Effect import LB_Gen
-# print(f"\033[92m[Total LB_LPC Run #{LB_Gen.count_LB_LPC}]\033[0m")
-# from Double_Effect.Model.Parameters_Update_Double_Effect import TAC_LB_Gen_HPCol
-# print(f"\033[92m[Total LB_LPC(HPCol) Run #{TAC_LB_Gen_HPCol.count_LB_LPC_HPCol}]\033[0m")
-# from DC_Q_Condenser.Model.Constraints_and_OF_DC_Q_Condenser import TAC_LB_Gen
-# print(f"\033[92m[Total LB_HPC Run #{TAC_LB_Gen.count_LB_HPC}]\033[0m")
-#from DC_Q_Condenser.Model.Parameters_Update_DC_Q_Condenser import Set_Up_HPCOL
-#print(f"\033[92m[Total LB_HPC_x_top Run #{Set_Up_HPCOL.count_LB_HPC_x_top}]\033[0m")
 
 # Record end time
 end_time = time.time()
@@ -180,3 +164,4 @@ save_result(f'Total time elapsed: {elapsed_total_time:.5f} seconds\n')
 ##################################################################################################################
 #endregion
 ##################################################################################################################
+

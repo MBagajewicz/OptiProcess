@@ -4,43 +4,35 @@
 # Methodology: Set trimming
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
-#   0.0          01-Dec-2024     Mariana Mello               Original
-#   0.1          07-Jun-2025     Qiqi Zhang                  Adaptation from original STHE
+#   0.0          01-07-2025     Javier Francesconi         Original
+#   
 ##################################################################################################################
 #endregion
 
 #region Calculations
-def SPHE_velocity(mh, mc, H, dh, dc, roh, roc):
-    # Shell-side velocity
+def SPHE_velocity(m, H, d, ro):
+    # Channel velocity
     
-    Ah = H  * dh 
-    vh = (mh ) / (roh  * Ah)
-
-    Ac = H  * dc 
-    vc = (mc ) / (roc  * Ac)
-    
-    return vh, vc
+    A = H  * d 
+    v = (m ) / (ro  * A)
+   
+    return v
 
 
-def SPHE_velocity_lb(mh, mc, H, dh, dc, romax, romin):
-    # Shell-side velocity
+def SPHE_velocity_lb(m, H, d, romax):
+    # Lower bound Channel velocity
 
-    Ah = H * dh 
-    vhlb = (mh ) / (romax  * Ah)
+    A = H * d
+    vlb = (m ) / (romax  * A)
 
-    Ac = H  * dc 
-    vclb = (mc ) / (romax  * Ac)
+    return vlb
 
-    return vhlb, vclb
+def SPHE_velocity_ub(m, H, d, romin):
+    # Upper bound Channel velocity
 
-def SPHE_velocity_ub(mh, mc, H, dh, dc, romax, romin):
-    # Shell-side velocity
+    A = H  * d 
+    vub = (m ) / (romin  * A)
+   
 
-    Ah = H  * dh 
-    vhub = (mh ) / (romin  * Ah)
-
-    Ac = H  * dc 
-    vcub = (mc ) / (romin  * Ac)
-
-    return vhub, vcub
+    return vub
 #endregion

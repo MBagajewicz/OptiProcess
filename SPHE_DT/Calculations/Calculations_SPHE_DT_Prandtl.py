@@ -4,23 +4,18 @@
 # Methodology: Set trimming
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
-#   0.0          24-Mar-2024     Mariana Mello             Proposed
-#   0.2          12-May-2025     Mariana Mello             Changed name from 'pd' to 'm_p'
+#   0.0          01-Dec-2024     Mariana Mello               Original
+#   0.1          07-Jun-2025     Qiqi Zhang                  Adaptation from original STHE
 ##################################################################################################################
 #endregion
 
 
 #region Import Library
-from SPHE_LMTD.Calculations import Calculations_SPHE_LMTD_area
+
 #endregion
 
 #region Calculations
-
-def SPHE_LMTD_CAPEX(par_a, par_b, L, H):
-    # Area
-    Atot = Calculations_SPHE_LMTD_area.SPHE_LMTD_area(L, H)
-    # Capital cost
-    Cap = par_a*(Atot**par_b)
-    return Cap
-
-#endregion
+def SPHE_Prandtl(cp,mu,k):
+    Prandtl=cp*mu/k
+    
+    return Prandtl
