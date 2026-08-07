@@ -824,10 +824,8 @@ def generate():
     (output_dir / "login.html").write_text(html, encoding="utf-8")
     print(f"  ✓ output/login.html")
 
-    template = env.get_template("reset_password.html")
-    html = template.render(header=header_data)
-    (output_dir / "reset_password.html").write_text(html, encoding="utf-8")
-    print(f"  ✓ output/reset_password.html")
+    # Password recovery is disabled until email delivery is configured.
+    (output_dir / "reset_password.html").unlink(missing_ok=True)
 
     # --- Main Menu page (once, in output/) ---
     models_raw = common_ui.get("available_models", [])

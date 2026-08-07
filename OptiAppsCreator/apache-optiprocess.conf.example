@@ -1,0 +1,15 @@
+<VirtualHost *:443>
+    ServerName opti.example.com
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/opti.example.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/opti.example.com/privkey.pem
+
+    ProxyPreserveHost On
+    RequestHeader set X-Forwarded-Proto "https"
+    ProxyPass / http://127.0.0.1:10000/ connectiontimeout=5 timeout=180
+    ProxyPassReverse / http://127.0.0.1:10000/
+
+    ErrorLog ${APACHE_LOG_DIR}/optiprocess-error.log
+    CustomLog ${APACHE_LOG_DIR}/optiprocess-access.log combined
+</VirtualHost>

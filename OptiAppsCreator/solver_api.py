@@ -52,19 +52,14 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from auth_db import (
-    create_reset_token,
     create_session,
     get_session_user,
-    get_user_by_email,
     get_user_by_username,
     init_db,
     record_login,
-    reset_password_with_token,
     revoke_session,
-    validate_reset_token,
     verify_password,
 )
-from email_service import send_password_reset_email
 
 from project_store import (
     ProjectError,
@@ -85,6 +80,7 @@ from project_store import (
 SCRIPT_DIR = Path(__file__).resolve().parent
 SESSION_COOKIE_NAME = os.getenv("SESSION_COOKIE_NAME", "optihex_session")
 SESSION_HOURS = int(os.getenv("SESSION_HOURS", "8"))
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "false").lower() in {"1", "true", "yes", "on"}
 
 # --- Pydantic models ---
 
@@ -173,16 +169,6 @@ class LoginRequest(BaseModel):
     password: str
 
 
-class ForgotPasswordRequest(BaseModel):
-    email: str
-
-
-class ResetPasswordRequest(BaseModel):
-    token: str
-    new_password: str
-    confirm_password: str
-
-
 # --- App setup ---
 
 @asynccontextmanager
@@ -207,7 +193,7 @@ app.add_middleware(
 @app.middleware("http")
 async def protect_ui_pages(request: Request, call_next):
     path = request.url.path
-    public_ui = {"/ui/login.html", "/ui/reset_password.html"}
+    public_ui = {"/ui/login.html"}
     protected = path == "/ui/main_menu.html" or path.startswith("/ui/STHE/") or path.startswith("/ui/GPHE/")
     if protected and path not in public_ui and not get_session_user(request.cookies.get(SESSION_COOKIE_NAME)):
         return RedirectResponse(url="/ui/login.html", status_code=303)
@@ -356,11 +342,6 @@ async def auth_login(req: LoginRequest, request: Request, response: Response):
 
     record_login(user["id"], username, ip_address, True, None)
 
-    if user.get("must_change_password") and verify_password(req.password, user.get("initial_password_hash")):
-        token = create_reset_token(user["id"], "first_login_password_change", 24, request_ip=ip_address)
-        send_password_reset_email(user["email"], token, first_login=True)
-        return {"status": "must_change_password", "message": "A password update link was sent to your email."}
-
     session_token = create_session(
         user["id"], ip_address, request.headers.get("user-agent"), SESSION_HOURS
     )
@@ -368,6 +349,7 @@ async def auth_login(req: LoginRequest, request: Request, response: Response):
         SESSION_COOKIE_NAME,
         session_token,
         httponly=True,
+        secure=SESSION_COOKIE_SECURE,
         samesite="lax",
         max_age=SESSION_HOURS * 3600,
     )
@@ -377,42 +359,13 @@ async def auth_login(req: LoginRequest, request: Request, response: Response):
 @app.post("/api/auth/logout")
 async def auth_logout(request: Request, response: Response):
     revoke_session(request.cookies.get(SESSION_COOKIE_NAME))
-    response.delete_cookie(SESSION_COOKIE_NAME)
+    response.delete_cookie(SESSION_COOKIE_NAME, secure=SESSION_COOKIE_SECURE, samesite="lax")
     return {"status": "ok"}
 
 
 @app.get("/api/auth/me")
 async def auth_me(user: dict = Depends(require_session)):
     return {"status": "ok", "username": user["username"], "email": user["email"]}
-
-
-@app.post("/api/auth/forgot-password")
-async def auth_forgot_password(req: ForgotPasswordRequest, request: Request):
-    email = req.email.strip().lower()
-    user = get_user_by_email(email)
-    if user and user.get("is_active"):
-        token = create_reset_token(user["id"], "forgot_password", 1, request_ip=client_ip(request))
-        send_password_reset_email(user["email"], token, first_login=False)
-    return {"status": "ok", "message": "If the email exists, a reset link was sent."}
-
-
-@app.get("/api/auth/validate-reset-token")
-async def auth_validate_reset_token(token: str):
-    token_data = validate_reset_token(token)
-    if not token_data:
-        raise HTTPException(status_code=400, detail="Invalid or expired token")
-    return {"status": "ok", "username": token_data["username"], "email": token_data["email"]}
-
-
-@app.post("/api/auth/reset-password")
-async def auth_reset_password(req: ResetPasswordRequest):
-    if req.new_password != req.confirm_password:
-        raise HTTPException(status_code=400, detail="Passwords do not match")
-    if len(req.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Password must contain at least 8 characters")
-    if not reset_password_with_token(req.token, req.new_password):
-        raise HTTPException(status_code=400, detail="Invalid or expired token")
-    return {"status": "ok"}
 
 
 @app.get("/api/user-projects")

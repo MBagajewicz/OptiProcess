@@ -46,7 +46,6 @@
             </button>
         </div>
         <button type="submit" class="mt-4 border border-[#d0d7de] rounded-full px-5 py-1.5 text-[#4a78a6] text-xs bg-white hover:bg-gray-50 transition-colors">Login</button>
-        <button type="button" onclick="forgotPassword()" class="block mt-3 text-[11px] text-[#4a78a6] underline">I forgot my password</button>
         <div id="login-message" class="mt-3 text-xs text-center font-semibold"></div>
     </form>
 
@@ -70,28 +69,7 @@
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || 'Login failed');
-            if (data.status === 'must_change_password') {
-                setMessage(data.message || 'Check your email to update your password.', false);
-                return;
-            }
             window.location.href = '/ui/main_menu.html';
-        } catch(e) {
-            setMessage(e.message, true);
-        }
-    }
-
-    async function forgotPassword() {
-        const email = prompt('Enter your email:');
-        if (!email) return;
-        try {
-            const response = await fetch('/api/auth/forgot-password', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: email})
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || 'Request failed');
-            setMessage(data.message || 'If the email exists, a reset link was sent.', false);
         } catch(e) {
             setMessage(e.message, true);
         }

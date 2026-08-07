@@ -186,20 +186,20 @@ def upsert_user(username: str, email: str, password: str, db_path: str | Path | 
             conn.execute(
                 """
                 UPDATE users
-                SET username = ?, email = ?, password_hash = ?, initial_password_hash = ?,
-                    must_change_password = 1, is_active = 1, updated_at = ?
+                SET username = ?, email = ?, password_hash = ?, initial_password_hash = NULL,
+                    must_change_password = 0, is_active = 1, updated_at = ?
                 WHERE id = ?
                 """,
-                (username, email, pwd_hash, pwd_hash, now, existing["id"]),
+                (username, email, pwd_hash, now, existing["id"]),
             )
         else:
             conn.execute(
                 """
                 INSERT INTO users (username, email, password_hash, initial_password_hash,
                                    must_change_password, is_active, created_at, updated_at)
-                VALUES (?, ?, ?, ?, 1, 1, ?, ?)
+                VALUES (?, ?, ?, NULL, 0, 1, ?, ?)
                 """,
-                (username, email, pwd_hash, pwd_hash, now, now),
+                (username, email, pwd_hash, now, now),
             )
 
 

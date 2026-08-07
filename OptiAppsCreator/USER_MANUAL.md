@@ -146,58 +146,11 @@ Abrir **http://127.0.0.1:8000/ui/main_menu.html** en el navegador.
 3. **Geometric Options** → marcar/desmarcar rangos de variables discretas → **Run Optimization →**
 4. **Results** → la página llama al API y llena todas las tablas automáticamente
 
-### 3.5 Configuración SMTP para correos de usuarios
+### 3.5 Usuarios y contraseñas
 
-El sistema de usuarios envía correos para:
+La recuperación y el cambio de contraseña por correo están temporalmente desactivados. Los usuarios acceden directamente con la contraseña definida por el administrador en el archivo Excel.
 
-- Primer login con contraseña inicial importada desde Excel.
-- Recuperación de contraseña mediante **I forgot my password**.
-- Enlaces de actualización de password de un solo uso.
-
-La configuración SMTP se realiza mediante un archivo local `.env` dentro de `OptiAppsCreator/`.
-
-1. Copiar el archivo de ejemplo:
-
-```bash
-cd OptiAppsCreator
-cp .env.example .env
-```
-
-2. Editar `.env` con los datos reales del servidor SMTP:
-
-```env
-AUTH_DB_PATH=data/users.db
-
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASSWORD=change_me
-SMTP_FROM=user@example.com
-SMTP_USE_TLS=true
-SMTP_TIMEOUT=10
-
-APP_BASE_URL=http://127.0.0.1:8000
-SESSION_COOKIE_NAME=optihex_session
-SESSION_HOURS=8
-```
-
-| Variable | Descripción |
-|----------|-------------|
-| `AUTH_DB_PATH` | Ruta de la base SQLite de usuarios. Default recomendado: `data/users.db` |
-| `SMTP_HOST` | Host SMTP. Ejemplo: `smtp.gmail.com`, `smtp.office365.com` |
-| `SMTP_PORT` | Puerto SMTP. Usualmente `587` para STARTTLS |
-| `SMTP_USER` | Usuario de autenticación SMTP |
-| `SMTP_PASSWORD` | Password o app-password del servidor SMTP |
-| `SMTP_FROM` | Remitente que verá el usuario |
-| `SMTP_USE_TLS` | `true` para STARTTLS |
-| `SMTP_TIMEOUT` | Timeout de conexión SMTP en segundos |
-| `APP_BASE_URL` | URL pública/base de la app. Se usa para generar links de reset |
-| `SESSION_COOKIE_NAME` | Nombre de la cookie de sesión |
-| `SESSION_HOURS` | Duración de sesión activa en horas |
-
-> Para Gmail, normalmente se debe usar una **App Password**, no la contraseña normal de la cuenta.
-
-3. Inicializar usuarios desde Excel:
+El archivo Excel debe contener exactamente estas columnas:
 
 El archivo Excel debe contener exactamente estas columnas:
 
@@ -211,40 +164,17 @@ Ejecutar:
 python init_users_from_excel.py --file data/users_import.xlsx
 ```
 
-Esto crea/actualiza la base de datos `data/users.db`, hashea los passwords y marca a los usuarios para cambio obligatorio de contraseña en el primer login.
+Esto crea o actualiza la base de datos `data/users.db` y almacena cada contraseña mediante un hash seguro. No se exige cambiarla en el primer acceso.
 
-4. Probar envío de correos:
+Con `--skip-existing`, los usuarios existentes conservan su contraseña actual y solo se elimina una posible marca antigua de cambio obligatorio:
 
-- Iniciar el servidor con `uvicorn solver_api:app --host 127.0.0.1 --port 8000`.
-- Abrir `http://127.0.0.1:8000/ui/login.html`.
-- Ingresar con usuario y password inicial.
-- El sistema registra el IP, genera un token válido por 24 horas y envía un correo con el enlace:
-
-```text
-{APP_BASE_URL}/ui/reset_password.html?token=...
+```bash
+python init_users_from_excel.py --file data/users_import.xlsx --skip-existing
 ```
 
-5. Recuperación de contraseña:
+Si un usuario olvida su contraseña, el administrador debe actualizarla ejecutando el importador sin `--skip-existing` con la nueva contraseña en el Excel.
 
-- En `login.html`, usar **I forgot my password**.
-- Ingresar el email del usuario.
-- Si el email existe en la base, se envía un enlace válido por 1 hora.
-- Por seguridad, si el email no existe, la respuesta visible es la misma.
-
-6. Modo desarrollo sin SMTP:
-
-Si `SMTP_HOST` no está configurado, el sistema no falla: imprime el contenido del email en la consola del servidor. Esto permite probar el flujo completo sin servidor SMTP real.
-
-Si `SMTP_HOST` está configurado pero el servidor no responde, rechaza la conexión o expira el timeout, el sistema registra el error en consola y también imprime el email como fallback. En ese caso revisar:
-
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USE_TLS`
-- firewall/red
-- credenciales SMTP
-- si el proveedor requiere app-password
-
-7. Seguridad de archivos:
+Seguridad de archivos:
 
 Los siguientes archivos no deben versionarse:
 
