@@ -17,6 +17,20 @@ EXAMPLE:
     CASE_STUDY = "hfm_config_with_mixer"          # uses Simulator_Case_Studies/hfm_config_with_mixer.py
 """
 
+# =============================================================================
+# REQUIRED LOCAL LIBRARIES
+# =============================================================================
+
+from Local_Libraries_Check import ensure_local_libraries
+
+REQUIRED_LOCAL_LIBRARIES = [
+    "Common",
+    "Simulator_HFM",
+    "Simulator_STHE",
+]
+
+ensure_local_libraries(REQUIRED_LOCAL_LIBRARIES)
+
 import importlib
 import sys
 import os
@@ -41,7 +55,7 @@ from Common.Unit_Operation.Mixer import Mixer
 # USER INPUT — change ONLY this line to switch configurations
 # =============================================================================
 
-CASE_STUDY = "HFM_Case_Study_1"   # <-- Write Case Study file name (without .py)
+CASE_STUDY = "STHE_Case_Study_1"   # <-- Write Case Study file name (without .py)
 
 
 # =============================================================================
