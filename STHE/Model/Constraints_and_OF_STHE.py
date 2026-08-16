@@ -24,7 +24,20 @@
 
 ##################################################################################################################
 # region Import Library
-from STHE.Calculations import (
+# from STHE.Calculations import (
+#     Calculations_STHE_Reynolds_tubeside,
+#     Calculations_STHE_velocity_tubeside,
+#     Calculations_STHE_Reynolds_shellside,
+#     Calculations_STHE_correction_factor,
+#     Calculations_STHE_velocity_shellside,
+#     Calculations_STHE_DeltaPshellside,
+#     Calculations_STHE_DeltaPtubeside,
+#     Calculations_STHE_area,
+#     Calculations_STHE_TAC,
+#     Calculations_STHE_CAPEX,
+# #     Calculations_STHE_U
+# )
+from Simulator_STHE.Calculations_STHE import (
     Calculations_STHE_Reynolds_tubeside,
     Calculations_STHE_velocity_tubeside,
     Calculations_STHE_Reynolds_shellside,
