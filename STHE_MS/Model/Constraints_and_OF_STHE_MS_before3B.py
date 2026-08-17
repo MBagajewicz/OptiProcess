@@ -75,15 +75,54 @@ def lbmax(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     fun_val = lbc - lbmax
     return fun_val
 
-def vs_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+def _shell_mass_flowrate(m_p, NSS, algn):
+    """
+    Return the mass flow rate through one shell for the selected
+    multi-shell structure.
+
+    algn = 0 -> S  : shell flow remains in series
+    algn = 1 -> P  : shell flow is split among NSS shells
+    algn = 2 -> SP : hot stream in series, cold stream in parallel
+    algn = 3 -> PS : cold stream in series, hot stream in parallel
+    """
+    if NSS < 1:
+        raise ValueError("NSS must be greater than or equal to 1.")
+
+    yfluid = m_p['yfluid']
+
+    if algn == 0:
+        shell_is_parallel = False
+    elif algn == 1:
+        shell_is_parallel = True
+    elif algn == 2:
+        # SP: hot in series, cold in parallel.
+        shell_is_parallel = (yfluid == 'hot_stream')
+    elif algn == 3:
+        # PS: cold in series, hot in parallel.
+        shell_is_parallel = (yfluid == 'cold_stream')
+    else:
+        raise ValueError(
+            f"Invalid algn value: {algn}. Expected 0, 1, 2, or 3."
+        )
+
+    return m_p['ms'] / NSS if shell_is_parallel else m_p['ms']
+
+
+def vs_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     # Lower bound on vs
-    vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(m_p['ms'], m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p)
+    ms_shell = _shell_mass_flowrate(m_p, NSS, algn)
+    vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(
+        ms_shell, m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p
+    )
     fun_val = m_p['vsmin'] - vs
     return fun_val
 
-def vs_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+def vs_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     # Upper bound on vs
-    vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(m_p['ms'], m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p)
+    ms_shell = _shell_mass_flowrate(m_p, NSS, algn)
+    vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(
+        ms_shell, m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p
+    )
     fun_val = vs - m_p['vsmax']
     return fun_val
 
