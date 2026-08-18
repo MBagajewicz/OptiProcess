@@ -147,7 +147,7 @@ Example1 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'STHE',
+            'Type_Equipment': 'STHE_MS',
 
             # Discrete_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)
@@ -170,11 +170,11 @@ Example1 = {
                 [0.25] # Bc
 
             ,
-                #  [1, 2, 3, 4],  # NSS
-                #  [0, 1, 2, 3]     # algn: 0=S, 1=P, 2=SP, 3=PS
+                 [1,2,4,6,8],  # NSS
+                 [0,1,2,3]     # algn: 0=S, 1=P, 2=SP, 3=PS
 
-                 [1],  # NSS
-                 [0]     # algn: 0=S, 1=P, 2=SP, 3=PS
+                #  [2],  # NSS
+                #  [2]     # algn: 0=S, 1=P, 2=SP, 3=PS
 
 ],
 

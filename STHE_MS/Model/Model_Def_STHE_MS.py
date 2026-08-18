@@ -16,6 +16,7 @@
 ####################################################################################################################
 # region
 
+
 Model_STHE_MS = {
 
     # =========================================== General Information ============================================
@@ -134,18 +135,32 @@ Model_STHE_MS = {
         'Set_Trimming_Constraints_List': ['vs_lb', 'vs_ub', 'vt_lb', 'vt_ub', 'Ret_lb', 'Ret_ub', 'Res_lb',
                                           'Res_ub', 'DPs_ub', 'DPt_ub', 'F_min', 'Areq'],
 
-        'Variables_Used_In_Incremental_For_Each_Set_Trimming_Constraint': [['Ds', 'dte', 'rp', 'lay', 'L', 'Nb'],
-                                                                           ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc', 'NSS', 'algn'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'NSS', 'algn'],
-                                                                           ['Npt'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc', 'NSS', 'algn']],
+        'Variables_Used_In_Incremental_For_Each_Set_Trimming_Constraint': [
+                                                                            # vs_lb
+                                                                            ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb', 'NSS', 'algn'],
+                                                                            # vs_ub
+                                                                            ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb', 'NSS', 'algn'],
+                                                                            # vt_lb
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
+                                                                            # vt_ub
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
+                                                                            # Ret_lb
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
+                                                                            # Ret_ub
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'NSS', 'algn'],
+                                                                            # Res_lb
+                                                                            ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb', 'NSS', 'algn'],
+                                                                            # Res_ub
+                                                                            ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb', 'NSS', 'algn'],
+                                                                            # DPs_ub
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc', 'NSS', 'algn'],
+                                                                            # DPt_ub
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'NSS', 'algn'],
+                                                                            # F_min
+                                                                            ['Npt'],
+                                                                            # Areq
+                                                                            ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc', 'NSS', 'algn']
+                                                                        ],
         # This is valid if 'Incremental_Set_Trimming' option is set in True
         # Here you need to add the active variables used in each Set_Trimming_Constraint
         # The order used in 'Set_Trimming_Constraints_List' is the order

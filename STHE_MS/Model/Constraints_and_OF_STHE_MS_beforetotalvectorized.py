@@ -266,7 +266,7 @@ def F_min(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     fun_val = m_p['F_min'] - F
     return fun_val
 
-def _F_total_scalar(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
+def _F_total(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
     """
     Calculate the global LMTD correction factor for the complete
     multi-STHE configuration.
@@ -562,55 +562,9 @@ def _F_total_scalar(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
     )
 
 
-
-def _F_total(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
-    """
-    Vectorized interface for the global LMTD correction factor.
-
-    Each Set Trimming candidate is evaluated independently using the
-    corresponding Npt, NSS and algn values. The scalar formulation below
-    preserves the equations translated from ApproachSelection.F_calc.
-
-    Scalar inputs return a scalar float. Array inputs return an array with
-    the same broadcasted shape.
-    """
-    Npt_arr, NSS_arr, algn_arr = np.broadcast_arrays(
-        np.asarray(Npt),
-        np.asarray(NSS),
-        np.asarray(algn),
-    )
-
-    # Xp and temperature data are normally scalar model parameters. They are
-    # intentionally passed unchanged to the scalar formulation.
-    flat_npt = Npt_arr.ravel()
-    flat_nss = NSS_arr.ravel()
-    flat_algn = algn_arr.ravel()
-
-    values = np.empty(flat_npt.size, dtype=float)
-
-    for i, (npt_i, nss_i, algn_i) in enumerate(
-        zip(flat_npt, flat_nss, flat_algn)
-    ):
-        values[i] = _F_total_scalar(
-            Thi,
-            Tho,
-            Tci,
-            Tco,
-            npt_i,
-            nss_i,
-            algn_i,
-            Xp,
-        )
-
-    result = values.reshape(Npt_arr.shape)
-
-    if result.ndim == 0:
-        return float(result)
-
-    return result
-
 def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     # Required area constraint
+    print(">>> Areq", NSS, algn)
     Q = Calculations_HEX_heatload.HEX_heat_load(
         m_p['mh'], m_p['Cph'], m_p['Thi'], m_p['Tho']
     )
@@ -644,44 +598,22 @@ def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
         Ds, dte, Npt, rp, lay, L, m_p
     )
 
-    print(">>> DEBUG Areq")
-    print("NSS:", NSS)
-    print("algn:", algn)
-    print("Npt:", Npt)
-    print("U:", U)
-    print("F:", F)
-    print("LMTD:", LMTD)
-    print("Q:", Q)
-    print("A:", A)
-    print("Areq:", Q / (U * LMTD * F))
-    print("Areq/A:", (Q / (U * LMTD * F)) / A)
-
-
     Areq = Q / (U * LMTD * F)
-
-    # Total installed area of the multi-STHE configuration
-    A_total = NSS * A
-
-    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A_total
-
+    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A
     return fun_val
 
-    # Areq = Q / (U * LMTD * F)
-    # fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A
-    # return fun_val
-
-def TAC_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
+def TAC_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     # Objective function
     TAC = Calculations_STHE_TAC.STHE_TAC(m_p['int_rate'], m_p['n'], m_p['par_a'], m_p['par_b'], m_p['Nop'], m_p['pc'],
                                          m_p['eta'], Ds, dte, Npt, rp, lay, L, m_p['ms'], m_p['mt'], m_p['ros'],
                                          m_p['rot'], m_p['mis'], m_p['mit'], m_p['thk'], Nb, Bc, m_p)
     return TAC
 
-def AREA_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
+def AREA_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     Area = Calculations_STHE_area.STHE_area(Ds, dte, Npt, rp, lay, L, m_p)
     return Area
     
-def CAPEX_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
+def CAPEX_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     CAPEX = Calculations_STHE_CAPEX.STHE_CAPEX(m_p['par_a'], m_p['par_b'], Ds, dte, Npt, rp, lay, L, m_p)
     return CAPEX
 

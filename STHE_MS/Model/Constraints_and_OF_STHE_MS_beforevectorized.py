@@ -38,7 +38,6 @@ from Simulator_STHE.Calculations_STHE import (
     Calculations_STHE_U
 )
 from Common.HEX_Calculations import Calculations_HEX_LMTD, Calculations_HEX_heatload
-import numpy as np
 # endregion
 ##################################################################################################################
 
@@ -77,24 +76,36 @@ def lbmax(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     return fun_val
 
 def _shell_mass_flowrate(m_p, NSS, algn):
-    """Return shell-side mass flow through one STHE unit.
-
-    NSS and algn may be scalars or arrays of Set Trimming candidates.
     """
-    NSS = np.asarray(NSS)
-    algn = np.asarray(algn)
-    if np.any(NSS < 1):
+    Return the mass flow rate through one shell for the selected
+    multi-shell structure.
+
+    algn = 0 -> S  : shell flow remains in series
+    algn = 1 -> P  : shell flow is split among NSS shells
+    algn = 2 -> SP : hot stream in series, cold stream in parallel
+    algn = 3 -> PS : cold stream in series, hot stream in parallel
+    """
+    if NSS < 1:
         raise ValueError("NSS must be greater than or equal to 1.")
-    if np.any(~np.isin(algn, [0, 1, 2, 3])):
-        raise ValueError("algn must contain only 0, 1, 2, or 3.")
 
     yfluid = m_p['yfluid']
-    shell_is_parallel = (
-        (algn == 1)
-        | ((algn == 2) & (yfluid == 'hot_stream'))
-        | ((algn == 3) & (yfluid == 'cold_stream'))
-    )
-    return np.where(shell_is_parallel, m_p['ms'] / NSS, m_p['ms'])
+
+    if algn == 0:
+        shell_is_parallel = False
+    elif algn == 1:
+        shell_is_parallel = True
+    elif algn == 2:
+        # SP: hot in series, cold in parallel.
+        shell_is_parallel = (yfluid == 'hot_stream')
+    elif algn == 3:
+        # PS: cold in series, hot in parallel.
+        shell_is_parallel = (yfluid == 'cold_stream')
+    else:
+        raise ValueError(
+            f"Invalid algn value: {algn}. Expected 0, 1, 2, or 3."
+        )
+
+    return m_p['ms'] / NSS if shell_is_parallel else m_p['ms']
 
 
 def vs_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
@@ -116,24 +127,40 @@ def vs_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     return fun_val
 
 def _tube_mass_flowrate(m_p, NSS, algn):
-    """Return tube-side mass flow through one STHE unit.
-
-    NSS and algn may be scalars or arrays of Set Trimming candidates.
     """
-    NSS = np.asarray(NSS)
-    algn = np.asarray(algn)
-    if np.any(NSS < 1):
+    Return the mass flow rate through one shell's tube side.
+
+    algn = 0 -> S  : tube flow remains in series
+    algn = 1 -> P  : tube flow is split among NSS shells
+    algn = 2 -> SP : hot stream in series, cold stream in parallel
+    algn = 3 -> PS : cold stream in series, hot stream in parallel
+
+    The tube-side flow is therefore split for:
+        P  -> always
+        SP -> when cold_stream is in the tubes
+        PS -> when hot_stream is in the tubes
+    """
+    if NSS < 1:
         raise ValueError("NSS must be greater than or equal to 1.")
-    if np.any(~np.isin(algn, [0, 1, 2, 3])):
-        raise ValueError("algn must contain only 0, 1, 2, or 3.")
 
     yfluid = m_p['yfluid']
-    tube_is_parallel = (
-        (algn == 1)
-        | ((algn == 2) & (yfluid == 'cold_stream'))
-        | ((algn == 3) & (yfluid == 'hot_stream'))
-    )
-    return np.where(tube_is_parallel, m_p['mt'] / NSS, m_p['mt'])
+
+    if algn == 0:
+        tube_is_parallel = False
+    elif algn == 1:
+        tube_is_parallel = True
+    elif algn == 2:
+        # SP: hot in series, cold in parallel.
+        tube_is_parallel = (yfluid == 'cold_stream')
+    elif algn == 3:
+        # PS: cold in series, hot in parallel.
+        tube_is_parallel = (yfluid == 'hot_stream')
+    else:
+        raise ValueError(
+            f"Invalid algn value: {algn}. Expected 0, 1, 2, or 3."
+        )
+
+    return m_p['mt'] / NSS if tube_is_parallel else m_p['mt']
 
 
 def vt_lb(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
@@ -192,35 +219,63 @@ def Res_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     return fun_val
 
 def _shell_series_count(m_p, NSS, algn):
-    """Return number of shells crossed in series by shell-side stream."""
-    NSS = np.asarray(NSS)
-    algn = np.asarray(algn)
-    if np.any(NSS < 1):
+    """
+    Return the number of shells crossed in series by the shell-side stream.
+
+    This reproduces the series-selection logic used by the original
+    ApproachSelection.DPs_func without introducing the Flet-only Nps variable.
+    """
+    if NSS < 1:
         raise ValueError("NSS must be greater than or equal to 1.")
-    if np.any(~np.isin(algn, [0, 1, 2, 3])):
-        raise ValueError("algn must contain only 0, 1, 2, or 3.")
 
     yfluid = m_p['yfluid']
-    count = np.where(algn == 0, NSS, 1)
-    count = np.where((algn == 2) & (yfluid == 'hot_stream'), NSS, count)
-    count = np.where((algn == 3) & (yfluid == 'cold_stream'), NSS, count)
-    return count
+
+    if algn == 0:
+        return NSS
+    if algn == 1:
+        return 1
+    if algn == 2:
+        # SP: hot in series, cold in parallel.
+        # Shell is cold when hot is in the tubes.
+        return NSS if yfluid == 'hot_stream' else 1
+    if algn == 3:
+        # PS: cold in series, hot in parallel.
+        # Shell is hot when cold is in the tubes.
+        return NSS if yfluid == 'cold_stream' else 1
+
+    raise ValueError(
+        f"Invalid algn value: {algn}. Expected 0, 1, 2, or 3."
+    )
 
 
 def _tube_series_count(m_p, NSS, algn):
-    """Return number of shells crossed in series by tube-side stream."""
-    NSS = np.asarray(NSS)
-    algn = np.asarray(algn)
-    if np.any(NSS < 1):
+    """
+    Return the number of shells crossed in series by the tube-side stream.
+
+    This reproduces the series-selection logic used by the original
+    ApproachSelection.Dpt_func without introducing the Flet-only Nps variable.
+    """
+    if NSS < 1:
         raise ValueError("NSS must be greater than or equal to 1.")
-    if np.any(~np.isin(algn, [0, 1, 2, 3])):
-        raise ValueError("algn must contain only 0, 1, 2, or 3.")
 
     yfluid = m_p['yfluid']
-    count = np.where(algn == 0, NSS, 1)
-    count = np.where((algn == 2) & (yfluid == 'hot_stream'), NSS, count)
-    count = np.where((algn == 3) & (yfluid == 'cold_stream'), NSS, count)
-    return count
+
+    if algn == 0:
+        return NSS
+    if algn == 1:
+        return 1
+    if algn == 2:
+        # SP: hot in series, cold in parallel.
+        # Tube side is hot when hot_stream is in the tubes.
+        return NSS if yfluid == 'hot_stream' else 1
+    if algn == 3:
+        # PS: cold in series, hot in parallel.
+        # Tube side is cold when cold_stream is in the tubes.
+        return NSS if yfluid == 'cold_stream' else 1
+
+    raise ValueError(
+        f"Invalid algn value: {algn}. Expected 0, 1, 2, or 3."
+    )
 
 
 def DPs_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
@@ -253,20 +308,14 @@ def DPt_ub(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     fun_val = DPt - m_p['DPtdisp']
     return fun_val
 
-
-def F_min(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
-    F = Calculations_STHE_correction_factor.STHE_correction_factor(
-        m_p['Thi'],
-        m_p['Tho'],
-        m_p['Tci'],
-        m_p['Tco'],
-        Npt,
-        m_p['Xp']
-    )
+def F_min(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
+    F = Calculations_STHE_correction_factor.STHE_correction_factor(m_p['Thi'], m_p['Tho'], m_p['Tci'], m_p['Tco'], Npt,
+                                                                   m_p['Xp'])
     fun_val = m_p['F_min'] - F
     return fun_val
 
-def _F_total_scalar(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
+
+def _F_total(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
     """
     Calculate the global LMTD correction factor for the complete
     multi-STHE configuration.
@@ -562,55 +611,9 @@ def _F_total_scalar(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
     )
 
 
-
-def _F_total(Thi, Tho, Tci, Tco, Npt, NSS, algn, Xp):
-    """
-    Vectorized interface for the global LMTD correction factor.
-
-    Each Set Trimming candidate is evaluated independently using the
-    corresponding Npt, NSS and algn values. The scalar formulation below
-    preserves the equations translated from ApproachSelection.F_calc.
-
-    Scalar inputs return a scalar float. Array inputs return an array with
-    the same broadcasted shape.
-    """
-    Npt_arr, NSS_arr, algn_arr = np.broadcast_arrays(
-        np.asarray(Npt),
-        np.asarray(NSS),
-        np.asarray(algn),
-    )
-
-    # Xp and temperature data are normally scalar model parameters. They are
-    # intentionally passed unchanged to the scalar formulation.
-    flat_npt = Npt_arr.ravel()
-    flat_nss = NSS_arr.ravel()
-    flat_algn = algn_arr.ravel()
-
-    values = np.empty(flat_npt.size, dtype=float)
-
-    for i, (npt_i, nss_i, algn_i) in enumerate(
-        zip(flat_npt, flat_nss, flat_algn)
-    ):
-        values[i] = _F_total_scalar(
-            Thi,
-            Tho,
-            Tci,
-            Tco,
-            npt_i,
-            nss_i,
-            algn_i,
-            Xp,
-        )
-
-    result = values.reshape(Npt_arr.shape)
-
-    if result.ndim == 0:
-        return float(result)
-
-    return result
-
 def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     # Required area constraint
+    print(">>> Areq", NSS, algn)
     Q = Calculations_HEX_heatload.HEX_heat_load(
         m_p['mh'], m_p['Cph'], m_p['Thi'], m_p['Tho']
     )
@@ -644,44 +647,22 @@ def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
         Ds, dte, Npt, rp, lay, L, m_p
     )
 
-    print(">>> DEBUG Areq")
-    print("NSS:", NSS)
-    print("algn:", algn)
-    print("Npt:", Npt)
-    print("U:", U)
-    print("F:", F)
-    print("LMTD:", LMTD)
-    print("Q:", Q)
-    print("A:", A)
-    print("Areq:", Q / (U * LMTD * F))
-    print("Areq/A:", (Q / (U * LMTD * F)) / A)
-
-
     Areq = Q / (U * LMTD * F)
-
-    # Total installed area of the multi-STHE configuration
-    A_total = NSS * A
-
-    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A_total
-
+    fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A
     return fun_val
 
-    # Areq = Q / (U * LMTD * F)
-    # fun_val = (Areq * (1 + m_p['Aexc'] / 100)) - A
-    # return fun_val
-
-def TAC_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
+def TAC_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     # Objective function
     TAC = Calculations_STHE_TAC.STHE_TAC(m_p['int_rate'], m_p['n'], m_p['par_a'], m_p['par_b'], m_p['Nop'], m_p['pc'],
                                          m_p['eta'], Ds, dte, Npt, rp, lay, L, m_p['ms'], m_p['mt'], m_p['ros'],
                                          m_p['rot'], m_p['mis'], m_p['mit'], m_p['thk'], Nb, Bc, m_p)
     return TAC
 
-def AREA_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
+def AREA_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     Area = Calculations_STHE_area.STHE_area(Ds, dte, Npt, rp, lay, L, m_p)
     return Area
     
-def CAPEX_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
+def CAPEX_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, m_p):
     CAPEX = Calculations_STHE_CAPEX.STHE_CAPEX(m_p['par_a'], m_p['par_b'], Ds, dte, Npt, rp, lay, L, m_p)
     return CAPEX
 
