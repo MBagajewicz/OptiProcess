@@ -143,3 +143,5 @@ def STHE_overall_coefficient(
     )
 
     return U
+
+

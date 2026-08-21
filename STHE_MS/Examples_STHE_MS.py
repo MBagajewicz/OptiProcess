@@ -170,8 +170,8 @@ Example1 = {
                 [0.25] # Bc
 
             ,
-                 [1,2,4,6,8],  # NSS
-                 [0,1,2,3]     # algn: 0=S, 1=P, 2=SP, 3=PS
+                 [2],  # NSS
+                 [0]     # algn: 0=S, 1=P, 2=SP, 3=PS
 
                 #  [2],  # NSS
                 #  [2]     # algn: 0=S, 1=P, 2=SP, 3=PS

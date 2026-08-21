@@ -138,6 +138,7 @@ class IterativeSolver(SequentialSolver):
     DEFAULT_STATE_VARIABLES = (
         "T",
         "P",
+        "molar_flow",
         "mass_flow",
         "composition",
     )
@@ -150,7 +151,6 @@ class IterativeSolver(SequentialSolver):
         max_iterations: int = 100,
         relaxation: float = 1.0,
         state_variables: Dict[str, Tuple[str, ...]] | None = None,
-        initial_guesses: Dict[str, Dict[str, Any]] | None = None,
     ):
         super().__init__(flowsheet)
 
@@ -171,7 +171,6 @@ class IterativeSolver(SequentialSolver):
         self.max_iterations = int(max_iterations)
         self.relaxation = float(relaxation)
         self.state_variables = state_variables or {}
-        self.initial_guesses = initial_guesses or {}
 
         self.iterations = 0
         self.converged = False
@@ -244,21 +243,10 @@ class IterativeSolver(SequentialSolver):
         return snapshot
 
     def _restore(self, state: Dict[str, Dict[str, Any]]) -> None:
-        """Restore tear-stream state using Stream's public API.
-
-        Stream state properties such as ``T`` and ``P`` are read-only.
-        Therefore, the solver must restore the state through ``Stream.update()``
-        rather than assigning directly to the properties.
-        """
         for name, values in state.items():
             stream = self.fs.streams[name]
-
-            update_values = {
-                variable: self._copy(value)
-                for variable, value in values.items()
-            }
-
-            stream.update(**update_values)
+            for variable, value in values.items():
+                setattr(stream, variable, self._copy(value))
 
     @classmethod
     def _residual_value(cls, old: Any, new: Any) -> float:
@@ -330,22 +318,6 @@ class IterativeSolver(SequentialSolver):
         self._validate_tear_streams()
         order = self._build_iteration_order()
         current = self._snapshot()
-
-        # Apply optional user-defined initial guesses to the tear states.
-        for name, values in self.initial_guesses.items():
-            if name not in self.tear_streams:
-                raise ValueError(
-                    f"Initial guess provided for non-tear stream '{name}'."
-                )
-            if not isinstance(values, dict):
-                raise TypeError(
-                    f"Initial guess for tear stream '{name}' must be a dictionary."
-                )
-            current[name].update(self._copy(values))
-
-        # Make the initial guess effective on the actual Stream objects before
-        # the first unit operation is solved.
-        self._restore(current)
 
         self.iterations = 0
         self.converged = False

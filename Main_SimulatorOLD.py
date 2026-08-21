@@ -55,8 +55,7 @@ from Common.Unit_Operation.Mixer import Mixer
 # USER INPUT — change ONLY this line to switch configurations
 # =============================================================================
 
-CASE_STUDY = "STHE_Case_Study_2_Series_CounterCurrent_Aex_11"   # <-- Write Case Study file name (without .py)
-# CASE_STUDY = "STHE_Case_Study_1"   # <-- Write Case Study file name (without .py)
+CASE_STUDY = "STHE_Case_Study_2_Series_CounterCurrent"   # <-- Write Case Study file name (without .py)
 
 
 # =============================================================================
@@ -85,13 +84,12 @@ def load_config(module_name: str):
         module.COMMON_PARAMS,
         module.EQUIPMENT_CONFIG,
         module.CONNECTIONS,
-        getattr(module, "ITERATIVE_SOLVER_CONFIG", None),
     )
 
 
 print(f"📄 Loading configuration from: {CASE_STUDY}.py")
 CASE_STUDY_RELATIVE = "Simulator_Case_Studies." + CASE_STUDY
-STREAM_CONFIGS, COMMON_PARAMS, EQUIPMENT_CONFIG, CONNECTIONS, ITERATIVE_SOLVER_CONFIG = load_config(CASE_STUDY_RELATIVE)
+STREAM_CONFIGS, COMMON_PARAMS, EQUIPMENT_CONFIG, CONNECTIONS = load_config(CASE_STUDY_RELATIVE)
 
 
 # =============================================================================
@@ -340,32 +338,12 @@ def build_flowsheet() -> Flowsheet:
         if inlet_port is None:
             # For an unsupported output port, use the first connected inlet
             # only as an initialization fallback.
-
-
-            if eq_type == "STHE":
-                if port_name == "hot_out":
-                    inlet_ports = ["hot_in"]
-                elif port_name == "cold_out":
-                    inlet_ports = ["cold_in"]
-                else:
-                    raise ValueError(
-                        f"Unsupported STHE output port '{port_name}' "
-                        f"for unit '{unit_name}'."
-                    )
-            else:
-                inlet_ports = {
-                    "HFM": ["feed"],
-                    "COMPRESSOR": ["inlet"],
-                    "MIXER": ["inlet_1"],
-                }.get(eq_type, [])
-
-        
-            # inlet_ports = {
-            #     "HFM": ["feed"],
-            #     "COMPRESSOR": ["inlet"],
-            #     "MIXER": ["inlet_1"],
-            #     "STHE": ["hot_in", "cold_in"],
-            # }.get(eq_type, [])
+            inlet_ports = {
+                "HFM": ["feed"],
+                "COMPRESSOR": ["inlet"],
+                "MIXER": ["inlet_1"],
+                "STHE": ["hot_in", "cold_in"],
+            }.get(eq_type, [])
         else:
             inlet_ports = [inlet_port]
 
@@ -381,7 +359,6 @@ def build_flowsheet() -> Flowsheet:
                 f"Unit '{unit_name}' has no connected inlet required to "
                 f"initialize output stream '{stream_name}'."
             )
-
 
         template_name, inlet_pressure = _initial_stream_info(
             inlet_stream_name, visited.copy()
@@ -491,14 +468,10 @@ def build_flowsheet() -> Flowsheet:
             continue
 
         template_name, init_P = _initial_stream_info(stream_name)
-
-
         stream = create_dummy_stream(
             pressure=init_P,
             template_name=template_name,
         )
-
-
         fs.add_stream(stream_name, stream)
         print(
             f"  Created stream: {stream_name} "
@@ -686,23 +659,15 @@ if __name__ == "__main__":
 
     fs = build_flowsheet()
 
-
     print("\nSolving...")
-
-    if ITERATIVE_SOLVER_CONFIG is not None:
-        solver_config = ITERATIVE_SOLVER_CONFIG
-
-        solver = IterativeSolver(
-            fs,
-            tear_streams=solver_config["tear_streams"],
-            tolerance=solver_config.get("tolerance", 1e-6),
-            max_iterations=solver_config.get("max_iterations", 100),
-            relaxation=solver_config.get("relaxation", 1.0),
-            initial_guesses=solver_config.get("initial_guesses"),
-        )
-    else:
-        solver = SequentialSolver(fs)
-
+    # solver = SequentialSolver(fs)
+    solver = IterativeSolver(
+        fs,
+        tear_streams="ColdTear",
+        tolerance=1e-6,
+        max_iterations=100,
+        relaxation=0.5,
+    )
     solver.solve()
 
     print("\n" + fs.report())

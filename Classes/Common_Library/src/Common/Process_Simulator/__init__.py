@@ -10,6 +10,7 @@ from .base_equipment import BaseEquipment
 from .unit_operation import UnitOperation
 from .flowsheet import Flowsheet
 from .solvers import SequentialSolver
+from .solvers import IterativeSolver
 
 __all__ = [
     "Port",
@@ -18,4 +19,5 @@ __all__ = [
     "UnitOperation",
     "Flowsheet",
     "SequentialSolver",
+    "IterativeSolver"
 ]

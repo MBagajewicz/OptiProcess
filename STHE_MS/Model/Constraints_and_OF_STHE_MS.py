@@ -644,19 +644,6 @@ def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
         Ds, dte, Npt, rp, lay, L, m_p
     )
 
-    print(">>> DEBUG Areq")
-    print("NSS:", NSS)
-    print("algn:", algn)
-    print("Npt:", Npt)
-    print("U:", U)
-    print("F:", F)
-    print("LMTD:", LMTD)
-    print("Q:", Q)
-    print("A:", A)
-    print("Areq:", Q / (U * LMTD * F))
-    print("Areq/A:", (Q / (U * LMTD * F)) / A)
-
-
     Areq = Q / (U * LMTD * F)
 
     # Total installed area of the multi-STHE configuration
@@ -671,18 +658,161 @@ def Areq(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
     # return fun_val
 
 def TAC_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
-    # Objective function
-    TAC = Calculations_STHE_TAC.STHE_TAC(m_p['int_rate'], m_p['n'], m_p['par_a'], m_p['par_b'], m_p['Nop'], m_p['pc'],
-                                         m_p['eta'], Ds, dte, Npt, rp, lay, L, m_p['ms'], m_p['mt'], m_p['ros'],
-                                         m_p['rot'], m_p['mis'], m_p['mit'], m_p['thk'], Nb, Bc, m_p)
+    """
+    Total Annualized Cost (TAC) for the multi-STHE configuration.
+
+    The physical calculation modules in Simulator_STHE are intentionally kept
+    unchanged. The multi-STHE-specific economic aggregation is performed here,
+    at the STHE_MS model level.
+
+    The formulation follows the FLET logic:
+        - CAPEX is calculated per STHE unit and multiplied by NSS.
+        - Pumping cost is calculated from the total pressure drop and total
+          mass flow on each side.
+        - Series/parallel configurations are accounted for through NSS and algn.
+    """
+
+    # ------------------------------------------------------------------
+    # 1. Geometry: area of one STHE unit
+    # ------------------------------------------------------------------
+    A_unit = Calculations_STHE_area.STHE_area(
+        Ds, dte, Npt, rp, lay, L, m_p
+    )
+
+    # ------------------------------------------------------------------
+    # 2. CAPEX
+    #
+    # For STHE_MS, NSS identical units are installed.
+    # The available economic correlation is applied to one unit and
+    # multiplied by the number of shells.
+    #
+    # This is the multi-STHE equivalent of:
+    #     CAPEX = NSS * par_a * A_unit**par_b
+    #
+    # (No additional fixed-cost parameter is present in Model_Parameters.)
+    # ------------------------------------------------------------------
+    CAPEX = NSS * m_p['par_a'] * np.power(A_unit, m_p['par_b'])
+
+    # ------------------------------------------------------------------
+    # 3. Mass flow through one STHE unit
+    # ------------------------------------------------------------------
+    mt_unit = _tube_mass_flowrate(m_p, NSS, algn)
+    ms_unit = _shell_mass_flowrate(m_p, NSS, algn)
+
+    # ------------------------------------------------------------------
+    # 4. Pressure drop of one STHE unit
+    # ------------------------------------------------------------------
+    DPt_unit = Calculations_STHE_DeltaPtubeside.STHE_tubeside_DeltaP(
+        mt_unit,
+        m_p['rot'],
+        m_p['mit'],
+        m_p['thk'],
+        Ds,
+        dte,
+        Npt,
+        rp,
+        lay,
+        L,
+        m_p
+    )
+
+    DPs_unit = Calculations_STHE_DeltaPshellside.STHE_shellside_DeltaP(
+        ms_unit,
+        m_p['ros'],
+        m_p['mis'],
+        Ds,
+        dte,
+        Npt,
+        rp,
+        lay,
+        L,
+        Nb,
+        Bc,
+        m_p
+    )
+
+    # ------------------------------------------------------------------
+    # 5. Total pressure drop seen by each stream
+    #
+    # For a parallel side, each unit sees only 1/NSS of the total flow
+    # and there is only one shell in series.
+    #
+    # For a series side, each unit sees the total flow and the pressure
+    # drops of all NSS units are accumulated.
+    # ------------------------------------------------------------------
+    DPt_total = DPt_unit * _tube_series_count(m_p, NSS, algn)
+    DPs_total = DPs_unit * _shell_series_count(m_p, NSS, algn)
+
+    # ------------------------------------------------------------------
+    # 6. Annual pumping cost
+    #
+    # Hydraulic power:
+    #     P = DeltaP * mass_flow / (rho * eta)   [W]
+    #
+    # Annual energy cost:
+    #     C = Nop * pc * P / 1000
+    #
+    # where pc is the energy price and the factor 1000 converts W to kW.
+    # ------------------------------------------------------------------
+    Copt = (
+        m_p['Nop']
+        * m_p['pc']
+        / 1000.0
+        * DPt_total
+        * m_p['mt']
+        / m_p['eta']
+        / m_p['rot']
+    )
+
+    Cops = (
+        m_p['Nop']
+        * m_p['pc']
+        / 1000.0
+        * DPs_total
+        * m_p['ms']
+        / m_p['eta']
+        / m_p['ros']
+    )
+
+    Cop = Copt + Cops
+
+    # ------------------------------------------------------------------
+    # 7. Capital recovery factor
+    # ------------------------------------------------------------------
+    i = m_p['int_rate']
+    n = m_p['n']
+
+    r_hat = (
+        i * np.power(1.0 + i, n)
+        / (np.power(1.0 + i, n) - 1.0)
+    )
+
+    TAC = r_hat * CAPEX + Cop
+
     return TAC
 
+
 def AREA_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
-    Area = Calculations_STHE_area.STHE_area(Ds, dte, Npt, rp, lay, L, m_p)
+
+    A_unit = Calculations_STHE_area.STHE_area(
+        Ds, dte, Npt, rp, lay, L, m_p
+    )
+
+    Area = NSS * A_unit
+
     return Area
     
 def CAPEX_OF(Ds, dte, Npt, rp, lay, L, Nb, Bc, NSS, algn, m_p):
-    CAPEX = Calculations_STHE_CAPEX.STHE_CAPEX(m_p['par_a'], m_p['par_b'], Ds, dte, Npt, rp, lay, L, m_p)
+
+    A_unit = Calculations_STHE_area.STHE_area(
+        Ds, dte, Npt, rp, lay, L, m_p
+    )
+
+    CAPEX = NSS * m_p['par_a'] * np.power(
+        A_unit,
+        m_p['par_b']
+    )
+
     return CAPEX
 
 # endregion

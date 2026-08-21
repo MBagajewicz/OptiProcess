@@ -519,6 +519,11 @@ def STHE_NoNTU_iteration(  # Define the main iterative solver function.
             print(f"Pmax      = {trial['Pmax']}")  # Resulting Pmax.
             print(f"Xp*Pmax   = {trial['Xp_Pmax']}")  # Scaled Pmax limit.
             print(f"Status    = {'VALID' if trial['admissible'] else 'OUTSIDE'}")  # Admissibility status.
+            # print(f"Xp*Pmax   = {trial['Xp_Pmax']}")
+            # print(f"F_calc    = {trial['F_calculated']}")
+            # print(f"g(F)      = {trial['g']}")
+            # print(f"Status    = {'VALID' if trial['admissible'] else 'OUTSIDE'}")
+
 
             # If this probe is not admissible, it cannot be used for bracketing.
             if not trial["admissible"]:

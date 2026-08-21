@@ -130,6 +130,7 @@ class STHEHeatExchanger(UnitOperation):
 
         self._sync_streams(hot, cold)
 
+
         # Internal solver: calculates U, installed area, NTU, duty,
         # outlet temperatures and both-side pressure drops.
         calc = self._sim.simulate()
@@ -153,6 +154,20 @@ class STHEHeatExchanger(UnitOperation):
         hot_T_out = self._scalar(self._sim.streams.hot.outlet.temperature)
         cold_T_out = self._scalar(self._sim.streams.cold.outlet.temperature)
         Q = self._scalar(self._sim.Q)
+
+        print()
+        print("=" * 70)
+        print("[STHE PRESSURE CHECK]")
+        print("=" * 70)
+        print(f"hot_P_in  = {hot.P:.2f} Pa")
+        print(f"hot_P_out = {hot_P_out:.2f} Pa")
+        print(f"cold_P_in  = {cold.P:.2f} Pa")
+        print(f"cold_P_out = {cold_P_out:.2f} Pa")
+        print(f"hot_deltaP  = {dp_hot:.2f} Pa")
+        print(f"cold_deltaP = {dp_cold:.2f} Pa")   
+        print("=" * 70)
+
+
 
         # Preserve composition and mass flow. The Common.Stream recomputes all
         # dependent properties after each update.
