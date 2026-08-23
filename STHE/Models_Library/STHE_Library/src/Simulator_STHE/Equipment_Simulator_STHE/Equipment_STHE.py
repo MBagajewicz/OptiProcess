@@ -155,24 +155,48 @@ class STHEHeatExchanger(UnitOperation):
         cold_T_out = self._scalar(self._sim.streams.cold.outlet.temperature)
         Q = self._scalar(self._sim.Q)
 
-        print()
-        print("=" * 70)
-        print("[STHE PRESSURE CHECK]")
-        print("=" * 70)
-        print(f"hot_P_in  = {hot.P:.2f} Pa")
-        print(f"hot_P_out = {hot_P_out:.2f} Pa")
-        print(f"cold_P_in  = {cold.P:.2f} Pa")
-        print(f"cold_P_out = {cold_P_out:.2f} Pa")
-        print(f"hot_deltaP  = {dp_hot:.2f} Pa")
-        print(f"cold_deltaP = {dp_cold:.2f} Pa")   
-        print("=" * 70)
-
-
 
         # Preserve composition and mass flow. The Common.Stream recomputes all
         # dependent properties after each update.
         hot_out.update(P=hot_P_out, T=hot_T_out, mass_flow=float(hot.mass_flow))
         cold_out.update(P=cold_P_out, T=cold_T_out, mass_flow=float(cold.mass_flow))
+
+
+
+        # ------------------------------------------------------------
+        # ENERGY CONSISTENCY CHECK
+        # ------------------------------------------------------------
+
+        Q_hot_h = (
+            float(hot.mass_flow)
+            * (
+                float(hot.enthalpy_mass)
+                - float(hot_out.enthalpy_mass)
+            )
+        )
+
+        Q_cold_h = (
+            float(cold.mass_flow)
+            * (
+                float(cold_out.enthalpy_mass)
+                - float(cold.enthalpy_mass)
+            )
+        )
+
+        print("=" * 70)
+        print(f"[ENERGY CHECK AFTER UPDATE] {self.name}")
+        print(f"Q_STHE      = {Q:.6f} W")
+        print(f"Q_hot(h)    = {Q_hot_h:.6f} W")
+        print(f"Q_cold(h)   = {Q_cold_h:.6f} W")
+        print(f"Q_hot-Q     = {Q_hot_h - Q:.6f} W")
+        print(f"Q_cold-Q    = {Q_cold_h - Q:.6f} W")
+        print("=" * 70)
+
+
+
+
+
+
 
         self.results.update({
             "heat_duty_W": Q,

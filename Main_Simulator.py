@@ -55,7 +55,7 @@ from Common.Unit_Operation.Mixer import Mixer
 # USER INPUT — change ONLY this line to switch configurations
 # =============================================================================
 
-CASE_STUDY = "STHE_Case_Study_2_Series_CounterCurrent_Aex_11"   # <-- Write Case Study file name (without .py)
+CASE_STUDY = "STHE_Case_Study_2_Series_CounterCurrent_Aex_11_Ex14"   # <-- Write Case Study file name (without .py)
 # CASE_STUDY = "STHE_Case_Study_1"   # <-- Write Case Study file name (without .py)
 
 
