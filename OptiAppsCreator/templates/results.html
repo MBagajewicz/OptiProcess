@@ -539,6 +539,16 @@ async function saveAsCloud() {
     document.getElementById('save-menu').classList.add('hidden');
     const previousUserProjectId = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_ID) || '';
     const currentDesignName = getCurrentProject() || 'NewDesign';
+    function escapeAttr(value) {
+        return String(value).replace(/[&<>"]/g, function(ch) {
+            return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[ch];
+        });
+    }
+    function escapeText(value) {
+        return String(value).replace(/[&<>]/g, function(ch) {
+            return {'&': '&amp;', '<': '&lt;', '>': '&gt;'}[ch];
+        });
+    }
     let projects = [];
     try {
         const resp = await fetch('/api/user-projects');
@@ -564,14 +574,15 @@ async function saveAsCloud() {
         (projects.length > 0 ? projects.map(function(p) {
             var id = String(p.id);
             var sel = (id === previousUserProjectId || (!previousUserProjectId && p.name === 'My_Designs')) ? ' selected' : '';
-            return '<option value="' + id.replace(/"/g,'&quot;') + '" data-name="' + String(p.name || '').replace(/"/g,'&quot;') + '"' + sel + '>' + String(p.name || '').replace(/</g,'&lt;') + '</option>';
+            return '<option value="' + escapeAttr(id) + '" data-name="' + escapeAttr(p.name || '') + '"' + sel + '>' + escapeText(p.name || '') + '</option>';
         }).join('') : '<option value="" disabled selected>No user projects available</option>') +
         '</select>' +
+        '<div id="save-as-modal-error" style="display:none;margin:-4px 0 10px;padding:8px;border:1px solid #fecaca;border-radius:6px;background:#fef2f2;color:#b91c1c;font-size:12px;"></div>' +
         '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Design name:</label>' +
         '<select id="save-as-design-select" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:6px;">' +
         '<option value="__new__" selected>+ New Design...</option>' +
         '</select>' +
-        '<input id="save-as-design-input" type="text" value="' + currentDesignName.replace(/"/g,'&quot;') + '" placeholder="New design name" style="width:calc(100% - 16px);padding:8px;border:1px solid #3b82f6;border-radius:6px;font-size:14px;margin-bottom:20px;outline:none;">' +
+        '<input id="save-as-design-input" type="text" value="' + escapeAttr(currentDesignName) + '" placeholder="New design name" style="width:calc(100% - 16px);padding:8px;border:1px solid #3b82f6;border-radius:6px;font-size:14px;margin-bottom:20px;outline:none;">' +
         '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
         '<button id="save-as-cancel-btn" style="padding:8px 20px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:14px;">Cancel</button>' +
         '<button id="save-as-confirm-btn" style="padding:8px 20px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;">Save</button>' +
@@ -579,6 +590,20 @@ async function saveAsCloud() {
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
+
+    function showSaveAsError(message) {
+        const errorBox = document.getElementById('save-as-modal-error');
+        if (!errorBox) return;
+        errorBox.textContent = message;
+        errorBox.style.display = 'block';
+    }
+
+    function clearSaveAsError() {
+        const errorBox = document.getElementById('save-as-modal-error');
+        if (!errorBox) return;
+        errorBox.textContent = '';
+        errorBox.style.display = 'none';
+    }
 
     // Helper to populate designs dropdown
     async function loadDesignsDropdown(projectId, selectedDesign) {
@@ -594,7 +619,7 @@ async function saveAsCloud() {
             designs.forEach(function(d) {
                 var sel = (d.name === selectedDesign) ? ' selected' : '';
                 if (d.name === selectedDesign) found = true;
-                html += '<option value="' + String(d.name).replace(/"/g,'&quot;') + '"' + sel + '>' + String(d.name).replace(/</g,'&lt;') + '</option>';
+                html += '<option value="' + escapeAttr(d.name) + '"' + sel + '>' + escapeText(d.name) + '</option>';
             });
             designSelect.innerHTML = html;
             if (found) {
@@ -604,6 +629,7 @@ async function saveAsCloud() {
             }
         } catch(e) {
             designSelect.innerHTML = '<option value="__new__" selected>+ New Design...</option>';
+            showSaveAsError('Could not load designs for this project: ' + (e.message || e));
         }
     }
 
@@ -619,6 +645,7 @@ async function saveAsCloud() {
 
     // When user project changes, reload designs dropdown
     document.getElementById('save-as-project-select').addEventListener('change', function() {
+        clearSaveAsError();
         var pid = parseInt(this.value, 10);
         if (pid) {
             var curName = document.getElementById('save-as-design-input').value.trim();
@@ -631,40 +658,50 @@ async function saveAsCloud() {
         var val = this.value;
         if (val !== '__new__') {
             document.getElementById('save-as-design-input').value = val;
+        } else {
+            document.getElementById('save-as-design-input').value = '';
         }
     });
 
     return new Promise(function(resolve) {
         document.getElementById('save-as-cancel-btn').onclick = function() { overlay.remove(); resolve(false); };
         document.getElementById('save-as-confirm-btn').onclick = async function() {
+            clearSaveAsError();
+            const confirmButton = document.getElementById('save-as-confirm-btn');
             const sel = document.getElementById('save-as-project-select');
+            const designSelect = document.getElementById('save-as-design-select');
             const selectedOption = sel && sel.selectedOptions.length ? sel.selectedOptions[0] : null;
             const userProjectId = sel && sel.value ? parseInt(sel.value, 10) : null;
             const userProjectName = selectedOption ? selectedOption.getAttribute('data-name') || selectedOption.textContent : null;
-            if (!userProjectId) { alert('Please select a user project.'); return; }
+            if (!userProjectId) { showSaveAsError('Please select a user project.'); return; }
             const name = document.getElementById('save-as-design-input').value.trim();
-            if (!name) { alert('Please enter a design name.'); return; }
-            overlay.remove();
+            if (!name) { showSaveAsError('Please enter a design name.'); return; }
+            if (designSelect && designSelect.value !== '__new__' && designSelect.value === name && !confirm('This will overwrite the existing design "' + name + '". Continue?')) return;
             const payload = buildProjectPayload(name, userProjectId, userProjectName);
             if (!payload) { resolve(false); return; }
-            const response = await fetch(API_PROJECTS_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                alert('Could not save project: ' + await response.text());
-                resolve(false);
-                return;
+            confirmButton.disabled = true;
+            confirmButton.textContent = 'Saving...';
+            try {
+                const response = await fetch(API_PROJECTS_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(await response.text());
+                const data = await response.json();
+                overlay.remove();
+                setCurrentProject(data.name || name);
+                if (data.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, data.user_project_id);
+                if (data.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, data.user_project_name);
+                sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
+                setDirty(false);
+                saveSnapshot();
+                resolve(true);
+            } catch(e) {
+                showSaveAsError('Could not save project: ' + (e.message || e));
+                confirmButton.disabled = false;
+                confirmButton.textContent = 'Save';
             }
-            const data = await response.json();
-            setCurrentProject(data.name || name);
-            if (data.user_project_id) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_ID, data.user_project_id);
-            if (data.user_project_name) sessionStorage.setItem(STORAGE_KEY_USER_PROJECT_NAME, data.user_project_name);
-            sessionStorage.setItem(STORAGE_KEY_ORIGIN, 'cloud');
-            setDirty(false);
-            saveSnapshot();
-            resolve(true);
         };
     });
 }
