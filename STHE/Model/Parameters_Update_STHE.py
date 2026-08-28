@@ -25,7 +25,7 @@
 ##################################################################################################################
 # region Import Library
 import sys
-from Common_Equations_HEX import Calculations_HEX_Consistency
+from Common.HEX_Calculations import Calculations_HEX_Consistency
 from STHE.Model.Model_Def_STHE import Model_STHE
 # endregion
 ##################################################################################################################

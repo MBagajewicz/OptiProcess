@@ -11,6 +11,7 @@
 |------|----------|---------|
 | `Calculations_HEX_heatload.py` | `HEX_heat_load()` | Computes the heat duty exchanged by a single fluid stream. |
 | `Calculations_HEX_LMTD.py` | `HEX_lmtd()` | Computes the Log Mean Temperature Difference between two fluid streams. |
+| `Calculations_HEX_Consistency.py` | Consistency verification functions | Checks the consistency of HEX model parameters, temperatures, and heat-load data. |
 
 ---
 
@@ -134,9 +135,41 @@ print(f"LMTD = {lmtd:.2f} K")
 
 ---
 
-## 🔗 Relationship Between the Two Modules
 
-Together, these two functions provide the core of the **rating** and **sizing** workflow for a heat exchanger:
+## 3. `Calculations_HEX_Consistency.py` — Data Consistency Verification
+
+This module provides common consistency checks for heat-exchanger model parameters and operating data. It is intended to be shared by different HEX models so that basic data validation is handled in a common calculation layer.
+
+### Main functions
+
+| Function | Purpose |
+|----------|---------|
+| `verification_positive_variables(m_p, save_result)` | Verifies that numerical model parameters are non-negative. |
+| `verification_DeltaTmin(m_p, save_result)` | Verifies the presence of `DeltaT_min` and assigns a default value when it is not provided. |
+| `verification_Thi_Tho(m_p, save_result)` | Checks the hot-stream inlet/outlet temperature relationship. |
+| `verification_Tco_Tci(m_p, save_result)` | Checks the cold-stream inlet/outlet temperature relationship. |
+| `verification_Tco_Thi(m_p, save_result)` | Checks the minimum temperature approach between cold outlet and hot inlet. |
+| `verification_Tci_Tho(m_p, save_result)` | Checks the minimum temperature approach between cold inlet and hot outlet. |
+| `verification_heatload(m_p, save_result)` | Verifies consistency between the hot- and cold-side heat loads and updates the cold outlet temperature when the implemented consistency criterion requires it. |
+
+### Notes
+
+- The functions operate directly on the model-parameter dictionary `m_p`.
+- `save_result` is used to report warnings, corrections, and consistency errors.
+- Temperature consistency checks use `DeltaT_min` as the minimum allowed temperature approach.
+- This module is intended to centralize common HEX consistency logic and avoid duplicating these checks in individual equipment models.
+
+### Usage example
+
+```python
+from Common.HEX_Calculations.Calculations_HEX_Consistency import verification_heatload
+
+m_p = verification_heatload(m_p, save_result)
+```
+
+## 🔗 Relationship Between the Calculation Modules
+
+Together, these calculation modules provide the core of the **rating**, **sizing**, and **data-consistency** workflow for a heat exchanger. The heat-load and LMTD calculations provide the thermal quantities, while the consistency module validates the input data and temperature/energy relationships before the equipment calculations proceed:
 
 ```
 ┌─────────────────────┐     ┌─────────────────────┐
@@ -168,6 +201,7 @@ Together, these two functions provide the core of the **rating** and **sizing** 
 | LMTD — balanced case | When $\Delta T_1 = \Delta T_2$, LMTD should equal that common value. |
 | LMTD — error handling | `ValueError` raised for $\Delta T \leq 0$ (e.g. hot inlet colder than cold outlet in counter-current). |
 | LMTD — known values | Classic textbook examples (e.g. Kern, *Process Heat Transfer*). |
+| Consistency checks | Valid HEX temperature relationships, minimum temperature approach, positive parameters, and heat-load consistency. |
 
 ---
 

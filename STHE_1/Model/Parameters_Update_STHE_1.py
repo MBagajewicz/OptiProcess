@@ -25,7 +25,8 @@
 ##################################################################################################################
 # region Import Library
 import sys
-from Common_Equations_HEX import Calculations_HEX_Consistency
+# from Common_Equations_HEX import Calculations_HEX_Consistency
+from Common.HEX_Calculations import Calculations_HEX_Consistency
 from STHE.Model.Model_Def_STHE import Model_STHE
 # endregion
 ##################################################################################################################
@@ -150,15 +151,21 @@ def consistency(m_d, m_p, save_result):
                 sys.exit()
             return m_p
 
-    verif1 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
-    verif2 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
-    verif3 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
-    verif4 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
-    verif5 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
-    verif6 = verification_Tco_Thi_STHE(m_p, m_d)
-    verif7 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
-    verif8 = variables_bounds(m_d)
-    verif9 = variables_standard_values(m_d)
+    def holamundo(m_p, m_d):
+        print("########################### VERIFICANDO LO QUE YO QUIERO")
+
+    verif1 = holamundo(m_p, m_d)
+    verif2 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
+
+    # verif1 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
+    # verif2 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
+    # verif3 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
+    # verif4 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
+    # verif5 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
+    # verif6 = verification_Tco_Thi_STHE(m_p, m_d)
+    # verif7 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
+    # verif8 = variables_bounds(m_d)
+    # verif9 = variables_standard_values(m_d)
 
     return m_d, m_p
 
