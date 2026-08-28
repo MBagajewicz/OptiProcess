@@ -147,7 +147,7 @@ Example1 = {
         'Model_Declarations': {
 
             # Type of Equipment - Models_List
-            'Type_Equipment': 'STHE',
+            'Type_Equipment': 'STHE_1',
 
             # Discrete_Values_of_Variables
             # Values of the discrete variables (All variables declared in 'List_of_Variables' must be given values)

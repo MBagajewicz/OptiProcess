@@ -80,21 +80,75 @@ def verification_Tci_Tho(m_p, save_result):
             sys.exit()
         return m_p
 
+# def verification_heatload(m_p, save_result):
+#     try:
+#         Qh = m_p['mh']*m_p['Cph']*(m_p['Thi']-m_p['Tho'])
+#         Qc = m_p['mc']*m_p['Cpc']*(m_p['Tco']-m_p['Tci'])
+#         eps = 1e-4
+#         # 0.01% difference is tolerated
+#         if abs((Qh - Qc)/Qh) > eps:
+#             pass
+#         else:
+#             m_p['Tco'] = Qh/(m_p['mc']*m_p['Cpc']) + m_p['Tci']
+#             save_result(f"Error data consistency: heat load is inconsistent with the energy balance (within 0.01%). A new value for Tco = {m_p['Tco']} is used.\n")
+#             return m_p
+#     except:
+#         pass
+#     return m_p
+
+
 def verification_heatload(m_p, save_result):
     try:
-        Qh = m_p['mh']*m_p['Cph']*(m_p['Thi']-m_p['Tho'])
-        Qc = m_p['mc']*m_p['Cpc']*(m_p['Tco']-m_p['Tci'])
+        Qh = m_p['mh'] * m_p['Cph'] * (m_p['Thi'] - m_p['Tho'])
+        Qc = m_p['mc'] * m_p['Cpc'] * (m_p['Tco'] - m_p['Tci'])
+
         eps = 1e-4
-        # 0.01% difference is tolerated
-        if abs((Qh - Qc)/Qh) > eps:
-            pass
+        relative_error = abs((Qh - Qc) / Qh)
+
+        # Calculate the corrected Tco required to close the energy balance
+        Tco_old = m_p['Tco']
+        Tco_new = Qh / (m_p['mc'] * m_p['Cpc']) + m_p['Tci']
+
+        # Always update Tco so that Qh = Qc
+        m_p['Tco'] = Tco_new
+
+        if relative_error > eps:
+            save_result(
+                "\n"
+                "============================================================\n"
+                "WARNING: HEAT LOAD INCONSISTENCY DETECTED\n"
+                "============================================================\n"
+                f"Hot-side heat load  (Qh): {Qh:.6f} W\n"
+                f"Cold-side heat load (Qc): {Qc:.6f} W\n"
+                f"Relative difference       : {relative_error * 100:.6f} %\n"
+                "\n"
+                "The energy balance is outside the allowed tolerance.\n"
+                "\n"
+                f"Tco original: {Tco_old:.6f} °C\n"
+                f"Tco corrected: {Tco_new:.6f} °C\n"
+                "\n"
+                "Tco has been modified to close the energy balance.\n"
+                "The execution is paused for user verification.\n"
+                "============================================================\n"
+            )
+
+            input("Press ENTER to continue...")
+
         else:
-            m_p['Tco'] = Qh/(m_p['mc']*m_p['Cpc']) + m_p['Tci']
-            save_result(f"Error data consistency: heat load is inconsistent with the energy balance (within 0.01%). A new value for Tco = {m_p['Tco']} is used.\n")
-            return m_p
-    except:
-        pass
-    return m_p
+            save_result(
+                "Heat load consistency verified within tolerance.\n"
+                # f"Tco original: {Tco_old:.6f} °C\n"
+                # f"Tco corrected: {Tco_new:.6f} °C\n"
+            )
+
+        return m_p
+
+    except Exception as e:
+        save_result(
+            f"ERROR in verification_heatload: {e}\n"
+        )
+        return m_p
+
 
 
 #endregion
