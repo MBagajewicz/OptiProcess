@@ -142,9 +142,24 @@ Abrir **http://127.0.0.1:8000/ui/main_menu.html** en el navegador.
 ### 3.4 Flujo del usuario
 
 1. **Main Menu** → seleccionar tipo de intercambiador
-2. **Problem Data** → revisar/editar parámetros → **Next: Geometric Options →**
-3. **Geometric Options** → marcar/desmarcar rangos de variables discretas → **Run Optimization →**
-4. **Results** → la página llama al API y llena todas las tablas automáticamente
+2. Usar los botones **Problem Data**, **Geometric Options**, **Results** y **Projects** para acceder directamente a cada página.
+3. **Problem Data** → revisar o editar los parámetros.
+4. **Geometric Options** → marcar o desmarcar rangos de variables discretas.
+5. **Results** → al abrir esta página, la optimización se ejecuta automáticamente si los datos cambiaron. Si los cálculos están actualizados, se reutiliza el último resultado.
+
+Debajo del título del modelo se muestra una barra de contexto con el modelo activo, el User Project, el Design y el estado de los cálculos. Los estados posibles son `Not calculated`, `Pending`, `Calculating`, `Updated` y `Error`.
+
+La barra incluye un árbol `Model Configuration`, cerrado por defecto. Al desplegarlo presenta:
+
+- configuración interna del modelo y modos de optimización;
+- objetivos disponibles y variables de diseño;
+- selecciones actuales del Design;
+- cantidad y valores de alternativas geométricas seleccionadas;
+- estándares constructivos activos;
+- parámetros geométricos escalares;
+- unidades visuales de entrada y resultados.
+
+Las listas geométricas extensas se muestran dentro de áreas con scroll. El árbol es informativo: no modifica valores ni agrega datos al payload del solver.
 
 ### 3.5 Usuarios y contraseñas
 
@@ -659,7 +674,7 @@ Ejemplo:
 
 Los grupos son explícitos. No se agrupa automáticamente por dimensión física, porque algunas variables con la misma dimensión pueden necesitar unidades visuales distintas. Por ejemplo, el largo de tubo puede mantenerse en `m` mientras los diámetros se muestran en `mm` o `inch`.
 
-`Units Configuration` no forma parte del flujo `Back / Next`; es una configuración transversal disponible desde cualquier página del modelo.
+`Units Configuration` es una configuración transversal disponible desde cualquier página del modelo y no forma parte de los cuatro botones principales de navegación.
 
 Ejemplo de diseño guardado:
 
@@ -773,7 +788,8 @@ python generate_ui.py --all
 - modificar un parámetro dependiente;
 - presionar `ENTER` o cambiar de campo;
 - confirmar que el campo `(calculated)` se actualiza;
-- confirmar que `RUN` pasa a verde porque cambió el input del modelo.
+- confirmar que el estado de cálculo queda pendiente si ya existía un resultado;
+- abrir **Results** y confirmar que la optimización se ejecuta automáticamente.
 
 **Regla de arquitectura:** las variables `(calculated)` de entrada deben calcularse del lado servidor. El frontend no debe implementar fórmulas del modelo; solo debe enviar los parámetros actuales y aplicar la respuesta.
 
@@ -1218,7 +1234,7 @@ uvicorn solver_api:app --host 127.0.0.1 --port 8000
 | Problema | Causa probable | Solución |
 |----------|---------------|----------|
 | **Todas las celdas muestran "—"** | El API no responde | Verificar que el servidor esté corriendo: `curl http://127.0.0.1:8000/api/health`. No usar `file://` |
-| **"No input data found"** | Navegó directo a results.html | Ir al menú principal → modelo → Problem Data → Next → Geometric Options → Run |
+| **"No input data found"** | Navegó directo a results.html | Ir al menú principal → modelo → completar Problem Data y Geometric Options → abrir Results |
 | **"No feasible design found"** | Los rangos discretos son muy restrictivos | Ampliar rangos de Ds, L, Nb (STHE) o Ntp, Pl, Sa (GPHE) |
 | **"Missing required parameters"** | Parámetros internos no enviados por la UI | Regenerar HTML: `python generate_ui.py --all`. El merge con Example1 inyecta los faltantes |
 | **500 Internal Server Error** | Crash del solver | Revisar consola del servidor. Causas: parámetros faltantes, arrays vacíos, tipos inválidos |

@@ -179,6 +179,119 @@ def get_example_default(example, key_path, equipment=1):
     return ""
 
 
+def build_model_configuration_context(yaml_data, model_def, common_units=None):
+    """Build metadata used by the expandable model configuration tree."""
+    common_units = common_units or {}
+    model_info = model_def.get("Model_Info", {})
+    model_meta = yaml_data.get("model", {})
+    problem_sections = yaml_data.get("pages", {}).get("problem_data", {}).get("sections", {})
+    geometric_sections = yaml_data.get("pages", {}).get("geometric_options", {}).get("sections", {})
+    result_sections = yaml_data.get("pages", {}).get("results", {}).get("sections", {})
+    parameter_base_units = get_model_base_units(model_def, "Model_Parameters")
+    discrete_base_units = get_model_base_units(model_def, "Discrete_Variables")
+    result_base_units = get_model_base_units(model_def, "Results")
+    unit_options_by_base = build_unit_options(common_units)
+    model_unit_defaults = model_meta.get("default_parameter_units", {}) or {}
+
+    selections = []
+    parameter_labels = {}
+    for section in problem_sections.values():
+        element = section.get("element", "form_group")
+        if element == "radio_group":
+            selections.append({
+                "key": section["source_key"],
+                "label": section.get("title", section["source_key"]).title(),
+                "options": {str(option["value"]): option["label"] for option in section.get("options", [])},
+            })
+        elif element == "form_group":
+            for key, field in section.get("fields", {}).items():
+                parameter_labels[key] = field.get("label", key)
+                if field.get("element") == "select":
+                    selections.append({
+                        "key": key,
+                        "label": field.get("label", key),
+                        "options": {str(option): str(option) for option in field.get("options", [])},
+                    })
+        elif element == "limit_table":
+            for row in section.get("rows", []):
+                parameter_labels[row["lower"]] = f"{row['item']} lower limit"
+                parameter_labels[row["upper"]] = f"{row['item']} upper limit"
+
+    geometric_options = []
+    geometric_parameters = []
+    for section in geometric_sections.values():
+        element = section.get("element", "checkbox_grid")
+        if element == "checkbox_grid" and not section.get("static") and section.get("variable"):
+            variable = section["variable"]
+            unit_meta = resolve_unit_metadata(
+                variable, section, discrete_base_units, unit_options_by_base, model_unit_defaults
+            )
+            geometric_options.append({
+                "key": variable,
+                "label": section.get("title", variable),
+                "base_unit": unit_meta.get("base_unit"),
+                "default_unit": unit_meta.get("display_unit") or unit_meta.get("base_unit"),
+                "value_labels": {str(key): str(value) for key, value in (section.get("value_labels", {}) or {}).items()},
+            })
+        elif element == "form_group":
+            for key, field in section.get("fields", {}).items():
+                unit_meta = resolve_unit_metadata(
+                    key, field, parameter_base_units, unit_options_by_base, model_unit_defaults
+                )
+                label = field.get("label", key)
+                parameter_labels[key] = label
+                geometric_parameters.append({
+                    "key": key,
+                    "label": label,
+                    "base_unit": unit_meta.get("base_unit"),
+                    "default_unit": unit_meta.get("display_unit") or unit_meta.get("base_unit"),
+                })
+
+    result_labels = {}
+    for section in result_sections.values():
+        rows = list(section.get("rows", [])) + list(section.get("footer_rows", []))
+        for subsection in section.get("subsections", []) or []:
+            rows.extend(subsection.get("rows", []))
+        for row in rows:
+            if row.get("key"):
+                result_labels[row["key"]] = row.get("label", row["key"])
+
+    objective_info = model_info.get("Objective_Function", {})
+    objective_names = objective_info.get("Equation_Name", [])
+    objective_variables = objective_info.get("Optimization_Variables_Names", [])
+    objective_units = objective_info.get("Unit_OF", [])
+    objective_labels = next((item["options"] for item in selections if item["key"] == "Selected_OF"), {})
+    objectives = []
+    for index, name in enumerate(objective_names):
+        objectives.append({
+            "key": name,
+            "label": objective_labels.get(str(name), name),
+            "variable": objective_variables[index] if index < len(objective_variables) else "",
+            "unit": objective_units[index] if index < len(objective_units) else "",
+        })
+
+    mode_keys = [
+        ("Set Trimming", "Set_Trimming_Mode"),
+        ("Sorting", "Sorting_Mode"),
+        ("Enumeration", "Enumeration_Mode"),
+        ("Global Optimizer", "Global_Optimizer"),
+        ("Next Level", "Next_Level"),
+    ]
+    return {
+        "display_name": model_meta.get("display_name", ""),
+        "modes": [{"label": label, "enabled": bool(model_def.get(key, False))} for label, key in mode_keys],
+        "objectives": objectives,
+        "design_variables": list(model_info.get("List_of_Variables", [])),
+        "selections": selections,
+        "geometric_options": geometric_options,
+        "geometric_parameters": geometric_parameters,
+        "parameter_labels": parameter_labels,
+        "parameter_base_units": parameter_base_units,
+        "result_labels": result_labels,
+        "result_base_units": result_base_units,
+    }
+
+
 def build_problem_data_context(yaml_data, model_def, example, common_units=None):
     """Build resolved context for the problem_data page."""
     page_yaml = yaml_data["pages"]["problem_data"]
@@ -859,6 +972,7 @@ def generate():
         model_def = load_model_def(model_name)
         example = load_project_defaults(model_name, args.example)
         model_meta = model_ui.get("model", {})
+        model_configuration = build_model_configuration_context(model_ui, model_def, common_units)
         sync_scalar_keys = model_meta.get("sync_scalar_keys", [])
         geometric_scalar_keys = get_geometric_scalar_keys(model_ui)
 
@@ -882,6 +996,7 @@ def generate():
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
             unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
         )
         (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/problem_data.html")
@@ -903,6 +1018,7 @@ def generate():
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
             unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
         )
         (model_output_dir / "geometric_options.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/geometric_options.html")
@@ -921,6 +1037,7 @@ def generate():
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
             unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
         )
         (model_output_dir / "units.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/units.html")
@@ -937,6 +1054,7 @@ def generate():
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
             unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
         )
         (model_output_dir / "result_units.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/result_units.html")
@@ -964,6 +1082,7 @@ def generate():
             geometric_scalar_keys=geometric_scalar_keys,
             result_unit_fields=result_unit_config_fields,
             unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
         )
         (model_output_dir / "results.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/results.html")
@@ -979,6 +1098,7 @@ def generate():
             sync_scalar_keys=sync_scalar_keys,
             geometric_scalar_keys=geometric_scalar_keys,
             unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
         )
         (model_output_dir / "projects.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/projects.html")

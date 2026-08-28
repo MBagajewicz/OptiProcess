@@ -1,0 +1,123 @@
+const MODEL_CONFIGURATION = {{ model_configuration | default({}) | tojson }};
+
+function modelContextStorageKey(suffix) {
+    return 'optihex_' + MODEL + '_' + suffix;
+}
+
+function readModelContextJson(suffix) {
+    try {
+        const raw = sessionStorage.getItem(modelContextStorageKey(suffix));
+        return raw ? JSON.parse(raw) : {};
+    } catch(e) {
+        return {};
+    }
+}
+
+function escapeModelContext(value) {
+    return String(value).replace(/[&<>"]/g, function(ch) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[ch];
+    });
+}
+
+function modelContextValueLabel(options, value) {
+    const key = String(value === undefined || value === null ? '' : value);
+    return options && Object.prototype.hasOwnProperty.call(options, key) ? options[key] : key;
+}
+
+function modelContextUnitValue(value, item, parameterUnits) {
+    let displayValue = value;
+    const displayUnit = parameterUnits[item.key] || item.default_unit || item.base_unit || '';
+    if (typeof value === 'number' && item.base_unit && displayUnit && typeof convertBaseToDisplay === 'function') {
+        displayValue = convertBaseToDisplay(value, item.base_unit, displayUnit);
+    }
+    if (typeof displayValue === 'number') {
+        displayValue = Number.isInteger(displayValue) ? String(displayValue) : String(Number(displayValue.toPrecision(8)));
+    }
+    return String(displayValue) + (displayUnit ? ' ' + displayUnit : '');
+}
+
+function modelContextBranch(title, content, open) {
+    return '<details class="rounded-lg border border-slate-200 bg-white"' + (open ? ' open' : '') + '>'
+        + '<summary class="cursor-pointer px-3 py-2 font-bold text-slate-700 hover:bg-slate-50">' + escapeModelContext(title) + '</summary>'
+        + '<div class="border-t border-slate-100 px-3 py-2">' + content + '</div></details>';
+}
+
+function modelContextRows(rows, emptyMessage) {
+    if (!rows.length) return '<div class="text-slate-400">' + escapeModelContext(emptyMessage) + '</div>';
+    return '<dl class="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-[minmax(150px,auto)_1fr]">' + rows.map(function(row) {
+        return '<dt class="text-slate-500">' + escapeModelContext(row[0]) + '</dt><dd class="font-semibold text-slate-800">' + escapeModelContext(row[1]) + '</dd>';
+    }).join('') + '</dl>';
+}
+
+function renderModelConfigurationTree() {
+    const root = document.getElementById('model-configuration-tree-content');
+    if (!root) return;
+    const problem = readModelContextJson('problem_data');
+    const geometry = readModelContextJson('geometric_data');
+    const standards = readModelContextJson('geometric_standards');
+    const parameterUnits = readModelContextJson('parameter_units');
+    const resultUnits = readModelContextJson('result_units');
+
+    const setupRows = [["Display name", MODEL_CONFIGURATION.display_name || MODEL]];
+    (MODEL_CONFIGURATION.modes || []).forEach(function(mode) {
+        setupRows.push([mode.label, mode.enabled ? 'Enabled' : 'Disabled']);
+    });
+    setupRows.push(['Available objectives', (MODEL_CONFIGURATION.objectives || []).map(function(item) {
+        return item.label + (item.unit ? ' [' + item.unit + ']' : '');
+    }).join(', ') || 'None']);
+    setupRows.push(['Design variables', (MODEL_CONFIGURATION.design_variables || []).join(', ') || 'None']);
+
+    const selectionRows = [];
+    (MODEL_CONFIGURATION.selections || []).forEach(function(item) {
+        if (Object.prototype.hasOwnProperty.call(problem, item.key)) {
+            selectionRows.push([item.label, modelContextValueLabel(item.options, problem[item.key])]);
+        }
+    });
+
+    const geometryParts = [];
+    (MODEL_CONFIGURATION.geometric_options || []).forEach(function(item) {
+        const selected = Array.isArray(geometry[item.key]) ? geometry[item.key] : [];
+        const values = selected.map(function(value) {
+            const labeled = modelContextValueLabel(item.value_labels, value);
+            return labeled !== String(value) ? labeled : modelContextUnitValue(value, item, parameterUnits);
+        });
+        geometryParts.push('<details class="border-l-2 border-indigo-200 pl-3">'
+            + '<summary class="cursor-pointer py-1"><span class="font-semibold">' + escapeModelContext(item.label) + '</span>'
+            + '<span class="ml-2 text-slate-400">' + selected.length + ' selected</span></summary>'
+            + '<div class="mb-2 max-h-32 overflow-y-auto rounded bg-slate-50 px-2 py-1 font-mono text-[10px] text-slate-600">'
+            + (values.length ? values.map(escapeModelContext).join(', ') : 'No alternatives selected') + '</div></details>');
+    });
+
+    const standardRows = [];
+    Object.keys(standards).sort().forEach(function(key) {
+        const item = (MODEL_CONFIGURATION.geometric_options || []).find(function(option) { return option.key === key; });
+        standardRows.push([item ? item.label : key, standards[key]]);
+    });
+
+    const geometricParameterRows = [];
+    (MODEL_CONFIGURATION.geometric_parameters || []).forEach(function(item) {
+        if (Object.prototype.hasOwnProperty.call(geometry, item.key)) {
+            geometricParameterRows.push([item.label, modelContextUnitValue(geometry[item.key], item, parameterUnits)]);
+        }
+    });
+
+    const inputUnitRows = Object.keys(parameterUnits).sort().map(function(key) {
+        return [(MODEL_CONFIGURATION.parameter_labels || {})[key] || key, parameterUnits[key]];
+    });
+    const resultUnitRows = Object.keys(resultUnits).sort().map(function(key) {
+        return [(MODEL_CONFIGURATION.result_labels || {})[key] || key, resultUnits[key]];
+    });
+    const unitsContent = '<div class="mb-2 font-bold text-slate-600">Input display units</div>'
+        + modelContextRows(inputUnitRows, 'Using model default units')
+        + '<div class="mb-2 mt-3 font-bold text-slate-600">Result display units</div>'
+        + modelContextRows(resultUnitRows, 'Using model default units');
+
+    root.innerHTML = '<div class="grid grid-cols-1 gap-2 lg:grid-cols-2">'
+        + modelContextBranch('Model Setup', modelContextRows(setupRows, 'No model setup available'))
+        + modelContextBranch('Current Design', modelContextRows(selectionRows, 'No design selections available'))
+        + modelContextBranch('Geometric Options', geometryParts.join('') || '<div class="text-slate-400">No geometric options available</div>')
+        + modelContextBranch('Construction Standards', modelContextRows(standardRows, 'No configurable standards'))
+        + modelContextBranch('Geometric Parameters', modelContextRows(geometricParameterRows, 'No geometric parameters available'))
+        + modelContextBranch('Units', unitsContent)
+        + '</div>';
+}

@@ -34,26 +34,19 @@
         </div>
     </div>
 
+    <!-- Current model context -->
+    <div class="px-4 pb-3">
+        {% include "model_context.html" %}
+    </div>
+
     <!-- Navigation -->
-    <div class="px-6 border-b border-gray-300 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-4 text-sm text-gray-600">
-        <div class="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-1 md:gap-8">
+    <div class="flex flex-col gap-2 border-b border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-wrap justify-center gap-2 lg:justify-start">
             {% for nav in nav_pages %}
-            <a href="{{ nav.file }}" onclick="return navigateModelPage(event, '{{ nav.file }}')" class="py-2 {{ 'text-blue-600 border-b-2 border-blue-600 font-medium' if nav.active else 'hover:text-gray-900' }}">{{ nav.label }}</a>
+            <button type="button" onclick="navigateModelPage(event, '{{ nav.file }}')"{% if nav.active %} aria-current="page"{% endif %} class="rounded-full border px-4 py-1.5 text-xs font-bold transition-colors {{ 'border-blue-600 bg-blue-600 text-white shadow-sm' if nav.active else 'border-slate-300 bg-white text-slate-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700' }}">{{ nav.label }}</button>
             {% endfor %}
         </div>
-        <div class="flex items-center justify-center gap-2 py-1">
-            <button id="nav-back-btn" type="button" onclick="goNavStep(-1)" class="bg-gray-500 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                Back
-            </button>
-            <button id="nav-next-btn" type="button" onclick="goNavStep(1)" class="bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                Next
-            </button>
-            <button id="nav-run-btn" type="button" onclick="runFromNavbar()" class="bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed" disabled>
-                RUN
-            </button>
-        </div>
-        <div class="flex flex-wrap items-center justify-center md:justify-end gap-2 md:gap-3 py-1">
-            <span id="project-indicator" class="w-full md:w-auto text-center md:text-left text-xs text-gray-700">Current project: —</span>
+        <div class="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
             <div class="relative">
                 <button type="button" onclick="toggleLoadMenu()" class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-slate-800">
                     Load <i class="fas fa-caret-down ml-1"></i>
@@ -201,7 +194,6 @@
 const API_URL = window.location.origin + '/api/optimize';
 const MODEL = '{{ model_name }}';
 const GEOMETRIC_SCALAR_KEYS = {{ geometric_scalar_keys | default([]) | tojson }};
-const NAV_ORDER = {{ nav_pages | rejectattr('file', 'equalto', 'projects.html') | list | tojson }};
 const UNIT_CONVERSIONS = {{ unit_conversions | default({}) | tojson }};
 const API_PROJECTS_URL = window.location.origin + '/api/projects/' + MODEL;
 const STORAGE_KEY_PROBLEM = 'optihex_' + MODEL + '_problem_data';
@@ -229,6 +221,7 @@ const STORAGE_KEY_LAST_OPT_SIGNATURE = 'optihex_' + MODEL + '_last_optimization_
 const STORAGE_KEY_LAST_OPT_RESULT = 'optihex_' + MODEL + '_last_optimization_result';
 const STORAGE_KEY_LAST_OPT_SESSION_DATA = 'optihex_' + MODEL + '_last_optimization_session_data';
 const STORAGE_KEY_OPT_DIRTY = 'optihex_' + MODEL + '_optimization_dirty';
+{% include "model_context_script.html" %}
 
 function getCurrentProject() { return sessionStorage.getItem(STORAGE_KEY_PROJECT) || ''; }
 function setCurrentProject(name) { sessionStorage.setItem(STORAGE_KEY_PROJECT, name || ''); updateProjectIndicator(); }
@@ -237,18 +230,20 @@ function setDirty(value) {
     sessionStorage.setItem(STORAGE_KEY_DIRTY, value ? 'true' : 'false');
     if (value) sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'true');
     updateProjectIndicator();
-    updateRunButtonState();
 }
 async function requireAuth() {
     const response = await fetch('/api/auth/me', {credentials: 'include'});
     if (!response.ok) window.location.href = '/ui/login.html';
 }
 function updateProjectIndicator() {
-    const el = document.getElementById('project-indicator');
-    if (!el) return;
     const userProjectName = sessionStorage.getItem(STORAGE_KEY_USER_PROJECT_NAME) || 'No User Project';
     const name = getCurrentProject() || 'Unsaved Design';
-    el.innerHTML = 'Current project: ' + userProjectName + ' / Design: ' + name + (isDirty() ? '*' : '');
+    const projectEl = document.getElementById('context-project');
+    const designEl = document.getElementById('context-design');
+    if (projectEl) projectEl.textContent = userProjectName;
+    if (designEl) designEl.textContent = name + (isDirty() ? '*' : '');
+    updateCalculationStatus();
+    renderModelConfigurationTree();
 }
 function navigateModelPage(event, target) {
     if (event) event.preventDefault();
@@ -256,18 +251,6 @@ function navigateModelPage(event, target) {
     return false;
 }
 
-function currentPageFile() { return window.location.pathname.split('/').pop() || 'problem_data.html'; }
-function currentNavIndex() {
-    const file = currentPageFile();
-    return NAV_ORDER.findIndex(function(page) { return page.file === file; });
-}
-function goNavStep(step) {
-    const idx = currentNavIndex();
-    if (idx < 0) return;
-    const target = NAV_ORDER[idx + step];
-    if (!target) return;
-    window.location.href = target.file;
-}
 function stableStringify(value) {
     if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
     if (value && typeof value === 'object') {
@@ -288,28 +271,23 @@ function hasOptimizationChanges() {
     if (!signature) return false;
     return signature !== sessionStorage.getItem(STORAGE_KEY_LAST_OPT_SIGNATURE);
 }
-function updateRunButtonState() {
-    const runBtn = document.getElementById('nav-run-btn');
-    if (!runBtn) return;
-    const enabled = hasOptimizationChanges();
-    runBtn.disabled = !enabled;
-    runBtn.className = enabled
-        ? 'bg-green-600 text-white px-5 py-1 rounded-full text-xs font-bold hover:bg-green-700'
-        : 'bg-gray-400 text-white px-5 py-1 rounded-full text-xs font-bold cursor-not-allowed';
-}
-function updateNavButtons() {
-    const idx = currentNavIndex();
-    const backBtn = document.getElementById('nav-back-btn');
-    const nextBtn = document.getElementById('nav-next-btn');
-    if (backBtn) backBtn.disabled = idx <= 0;
-    if (nextBtn) nextBtn.disabled = idx < 0 || idx >= NAV_ORDER.length - 1;
-    updateRunButtonState();
-}
-function runFromNavbar() {
-    if (!hasOptimizationChanges()) return;
-    runOptimization().then(function(data) {
-        if (data) populateResults(data.result, data.sessionData);
-    });
+function updateCalculationStatus(status) {
+    const el = document.getElementById('context-calculation-status');
+    if (!el) return;
+    let currentStatus = status;
+    if (!currentStatus) {
+        if (!sessionStorage.getItem(STORAGE_KEY_LAST_OPT_RESULT)) currentStatus = 'Not calculated';
+        else currentStatus = hasOptimizationChanges() ? 'Pending' : 'Updated';
+    }
+    const styles = {
+        'Not calculated': 'bg-slate-100 text-slate-600',
+        'Pending': 'bg-amber-100 text-amber-700',
+        'Calculating': 'bg-blue-100 text-blue-700',
+        'Updated': 'bg-emerald-100 text-emerald-700',
+        'Error': 'bg-red-100 text-red-700'
+    };
+    el.textContent = currentStatus;
+    el.className = 'inline-block rounded-full px-2 py-0.5 text-[10px] ' + (styles[currentStatus] || styles['Not calculated']);
 }
 function toggleSaveMenu() { document.getElementById('save-menu').classList.toggle('hidden'); }
 function toggleLoadMenu() { document.getElementById('load-menu').classList.toggle('hidden'); }
@@ -770,12 +748,14 @@ async function runOptimization() {
     if (!sessionData) {
         errorBox.classList.remove('hidden');
         errorBox.innerHTML = '<p>No input data found. Please fill the <a href="problem_data.html" class="underline">Problem Data</a> page first.</p>';
+        updateCalculationStatus('Not calculated');
         return null;
     }
 
     overlay.classList.remove('hidden');
     errorBox.classList.add('hidden');
     consistencyBox.classList.add('hidden');
+    updateCalculationStatus('Calculating');
 
     try {
         const payload = buildPayload(sessionData);
@@ -800,6 +780,7 @@ async function runOptimization() {
             errorBox.classList.remove('hidden');
             errorBox.innerHTML = '<p class="text-xl font-bold leading-snug"><b>Optimization failed:</b> ' + escapeHtml(result.error || 'unknown error') + '</p>';
             overlay.classList.add('hidden');
+            updateCalculationStatus('Error');
             return null;
         }
 
@@ -811,6 +792,8 @@ async function runOptimization() {
             errorBox.classList.remove('hidden');
             errorBox.innerHTML = '<p><b>No complete optimization result was returned.</b></p><p class="text-xs mt-1">The solver did not return optimal variables or derived calculations. Review the consistency warnings and selected geometric options.</p>';
             overlay.classList.add('hidden');
+            updateCalculationStatus('Error');
+            return null;
         }
 
         const data = { result, sessionData };
@@ -818,12 +801,13 @@ async function runOptimization() {
         sessionStorage.setItem(STORAGE_KEY_LAST_OPT_RESULT, JSON.stringify(result));
         sessionStorage.setItem(STORAGE_KEY_LAST_OPT_SESSION_DATA, JSON.stringify(sessionData));
         sessionStorage.setItem(STORAGE_KEY_OPT_DIRTY, 'false');
-        updateRunButtonState();
+        updateCalculationStatus('Updated');
         return data;
 
     } catch(err) {
         errorBox.classList.remove('hidden');
         errorBox.innerHTML = `<p>Optimization failed: ${err.message}</p><p class="text-xs mt-1">Is the API server running? Run: uvicorn solver_api:app --host 0.0.0.0 --port 8000</p>`;
+        updateCalculationStatus('Error');
         return null;
     } finally {
         overlay.classList.add('hidden');
@@ -1011,9 +995,7 @@ function downloadResults() {
 // --- Init ---
 requireAuth();
 updateProjectIndicator();
-updateNavButtons();
-const shouldRun = new URLSearchParams(window.location.search).get('run') === '1';
-if (shouldRun && hasOptimizationChanges()) {
+if (hasOptimizationChanges()) {
     runOptimization().then(function(data) {
         if (data) populateResults(data.result, data.sessionData);
     });
@@ -1025,12 +1007,9 @@ if (shouldRun && hasOptimizationChanges()) {
     } else {
         const errorBox = document.getElementById('error-box');
         errorBox.classList.remove('hidden');
-        errorBox.innerHTML = '<p>No optimization results available. Press RUN to calculate.</p>';
+        errorBox.innerHTML = '<p>No optimization results available. Complete Problem Data and Geometric Options, then open Results again.</p>';
+        updateCalculationStatus('Not calculated');
     }
-    updateRunButtonState();
-}
-if (shouldRun && window.history.replaceState) {
-    window.history.replaceState({}, document.title, 'results.html');
 }
 </script>
 

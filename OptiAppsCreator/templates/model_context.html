@@ -1,0 +1,29 @@
+<div class="grid grid-cols-1 items-start gap-2 lg:grid-cols-[minmax(220px,1fr)_3fr]">
+    <div class="min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-slate-300 shadow-sm">
+        <div class="bg-white px-3 py-2 text-left">
+            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Model</span>
+            <strong id="context-model" class="block truncate text-xs text-slate-800">{{ model_name }}</strong>
+        </div>
+        <div class="mt-px bg-white px-3 py-2 text-left">
+            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Project</span>
+            <strong id="context-project" class="block truncate text-xs text-slate-800">No User Project</strong>
+        </div>
+        <div class="mt-px bg-white px-3 py-2 text-left">
+            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Design</span>
+            <strong id="context-design" class="block truncate text-xs text-slate-800">Unsaved Design</strong>
+        </div>
+        <div class="mt-px bg-white px-3 py-2 text-left">
+            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Calculation Status</span>
+            <strong id="context-calculation-status" class="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">Not calculated</strong>
+        </div>
+    </div>
+    <details id="model-configuration-tree" class="group min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-slate-50 shadow-sm">
+        <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100">
+            <span><i class="fas fa-sitemap mr-2 text-indigo-500"></i>Model Configuration</span>
+            <i class="fas fa-chevron-down text-[10px] text-slate-400 transition-transform group-open:rotate-180"></i>
+        </summary>
+        <div id="model-configuration-tree-content" class="border-t border-slate-200 p-3 text-xs text-slate-700">
+            <div class="text-slate-400">Loading configuration...</div>
+        </div>
+    </details>
+</div>
