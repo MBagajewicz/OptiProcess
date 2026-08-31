@@ -6,31 +6,49 @@
     <title>OptiHexx — Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
     <style>
-        .title-font { font-family: 'Lora', 'Georgia', serif; font-style: italic; }
-        .custom-shadow { box-shadow: 0 0 25px rgba(0, 0, 0, 0.25); }
+        {% include "optihexx_logo_styles.html" %}
+        .login-production-panel {
+            position: relative;
+            width: min(456px, calc(100vw - 32px));
+            margin-top: clamp(20px, 4vw, 32px);
+            overflow: hidden;
+            border: 3px solid #1a3a52;
+            border-radius: clamp(16px, 3vw, 25px);
+            background: linear-gradient(180deg, #d4f5e8 0%, #b8ede0 100%);
+            padding: clamp(14px, 3vw, 20px) clamp(10px, 2.5vw, 16px);
+            text-align: center;
+        }
+        .login-production-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(60% 90% at 50% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%);
+            pointer-events: none;
+        }
+        .login-production-text {
+            position: relative;
+            color: #e63946;
+            font-family: 'Amasis MT Pro', 'Amasis MT', Georgia, serif;
+            font-size: clamp(14px, 4.8vw, 26px);
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.15;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="bg-[#f4f7fa] min-h-screen flex flex-col items-center justify-center py-10 font-sans">
 
     <!-- Main Banner -->
-    <div class="w-[680px] bg-gradient-to-b from-[#fff400] to-[#e8a689] border-[3px] border-black rounded-xl custom-shadow text-center py-8 px-4 flex flex-col items-center">
-        <h1 class="title-font font-bold text-[85px] leading-none text-black tracking-wide">{{ header.title }}</h1>
-        <h2 class="title-font font-bold text-[34px] text-black mt-1">{{ header.subtitle }}</h2>
-        <p class="text-[#9c7a6c] font-bold text-[16px] mt-3">{{ header.prototype }}</p>
-    </div>
+    {% set logo = login.logo %}
+    {% set logo_compact = false %}
+    {% include "optihexx_logo.html" %}
 
-    <!-- Green Banner -->
-    <div class="w-[680px] bg-gradient-to-b from-[#dcf0d5] to-[#b5dcb3] border border-black rounded-lg custom-shadow mt-8 py-3.5">
-        <p class="text-[#f0544f] text-[22px] font-bold text-center">Guarantees global optimality (best possible answer)</p>
-    </div>
-
-    <!-- Pink Banner -->
-    <div class="w-[680px] bg-gradient-to-b from-[#fce4e4] to-[#f5caca] border border-black rounded-lg custom-shadow mt-5 py-3 px-6">
-        <p class="text-[#d90429] text-[13px] font-bold text-center">Web Production: Diego. G. Oliva (*) and Miguel. J. Bagajewicz (**)</p>
-        <p class="text-black text-[10px] text-center mt-1">(*) Instituto de Desarrollo y Diseño, Universidad Tecnológica Nacional, CONICET, FRSF, Santa Fe, Argentina</p>
-        <p class="text-black text-[10px] text-center">(**) Universidade Federal do Rio de Janeiro (UFRJ), Universidade Estadual do Rio de Janeiro (UERJ) &amp; University of Oklahoma (OU)</p>
+    <!-- Web Production -->
+    <div class="login-production-panel">
+        <p class="login-production-text">{{ login.production.text }}</p>
     </div>
 
     <!-- Login Form -->

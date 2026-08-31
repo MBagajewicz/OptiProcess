@@ -928,9 +928,10 @@ def generate():
     ]
 
     # --- Login page (once, in output/) ---
+    login_config = common_ui.get("login", {"default_user": ""})
     login_context = {
         "header": header_data,
-        "login": common_ui.get("login", {"default_user": "|"}),
+        "login": login_config,
     }
     template = env.get_template("login.html")
     html = template.render(**login_context)
@@ -956,6 +957,11 @@ def generate():
         })
     menu_context = {
         "header": header_data,
+        "logo": {
+            "name": login_config.get("logo", {}).get("name", "OptiHex"),
+            "suffix": login_config.get("logo", {}).get("suffix", "x"),
+        },
+        "calculation_modes": common_ui.get("calculation_modes", []),
         "models": models,
     }
     template = env.get_template("main_menu.html")

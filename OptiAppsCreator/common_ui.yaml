@@ -15,11 +15,24 @@ header:
 # ============================================================
 login:
   default_user: ""
+  logo:
+    name: "OptiHex"
+    suffix: "x"
+    subtitle: "Heat Exchanger Suite"
+    prototype: "Prototype 0.1"
+  production:
+    text: "Web Production: OK-Solutions"
 
 # ============================================================
 # MAIN MENU — list of all known model types
 # Active models link to their subdirectory; inactive ones are greyed out
 # ============================================================
+calculation_modes:
+  - {id: "optimal-design", label: "Optimal Design", selected: true}
+  - {id: "simulation", label: "Simulation"}
+  - {id: "rating", label: "Rating"}
+  - {id: "retrofit", label: "Retrofit"}
+
 available_models:
   - {id: "STHE", label: "Shell & Tube", active: true, link: "STHE/problem_data.html"}
   - {id: "GPHE", label: "Plate Exchangers", active: true, link: "GPHE/problem_data.html"}

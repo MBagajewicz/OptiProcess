@@ -1,0 +1,12 @@
+<div class="optihexx-logo-frame{{ ' optihexx-logo-frame--compact' if logo_compact else '' }}" aria-label="{{ logo.name }}{{ logo.suffix }}{% if logo.subtitle %} {{ logo.subtitle }}{% endif %}{% if logo.prototype %} {{ logo.prototype }}{% endif %}">
+    <div class="optihexx-logo-panel">
+        <div class="optihexx-logo-content">
+            <div class="optihexx-logo-name">
+                <span class="optihexx-logo-script optihexx-logo-name-main">{{ logo.name }}</span>
+                <span class="optihexx-logo-name-suffix">{{ logo.suffix }}</span>
+            </div>
+            {% if logo.subtitle %}<div class="optihexx-logo-script optihexx-logo-subtitle">{{ logo.subtitle }}</div>{% endif %}
+            {% if logo.prototype %}<div class="optihexx-logo-script optihexx-logo-prototype">{{ logo.prototype }}</div>{% endif %}
+        </div>
+    </div>
+</div>
