@@ -27,7 +27,10 @@
 import sys
 # from Common_Equations_HEX import Calculations_HEX_Consistency
 from Common.HEX_Calculations import Calculations_HEX_Consistency
+from Common.HEX_Calculations import Calculations_HEX_Allocation
+from Common.HEX_Calculations import Calculations_HEX_Tho_Tco
 from STHE.Model.Model_Def_STHE import Model_STHE
+
 # endregion
 ##################################################################################################################
 
@@ -36,43 +39,10 @@ from STHE.Model.Model_Def_STHE import Model_STHE
 # region Parameters Calculation functions
 #
 # Adjustment of the data
-
 def allocation(m_p):
-    if m_p['yfluid'] == 'cold_stream':
-        m_p['mt'] = m_p['mc']
-        m_p['rot'] = m_p['roc']
-        m_p['Cpt'] = m_p['Cpc']
-        m_p['mit'] = m_p['mic']
-        m_p['kt'] = m_p['kc']
-        m_p['Rft'] = m_p['Rfc']
-        m_p['DPtdisp'] = m_p['DPcdisp']
+    allocator = Calculations_HEX_Allocation.HEX_Allocation()
+    return allocator.allocation(m_p)
 
-        m_p['ms'] = m_p['mh']
-        m_p['ros'] = m_p['roh']
-        m_p['Cps'] = m_p['Cph']
-        m_p['mis'] = m_p['mih']
-        m_p['ks'] = m_p['kh']
-        m_p['Rfs'] = m_p['Rfh']
-        m_p['DPsdisp'] = m_p['DPhdisp']
-
-    elif m_p['yfluid'] == 'hot_stream':
-        m_p['mt'] = m_p['mh']
-        m_p['rot'] = m_p['roh']
-        m_p['Cpt'] = m_p['Cph']
-        m_p['mit'] = m_p['mih']
-        m_p['kt'] = m_p['kh']
-        m_p['Rft'] = m_p['Rfh']
-        m_p['DPtdisp'] = m_p['DPhdisp']
-
-        m_p['ms'] = m_p['mc']
-        m_p['ros'] = m_p['roc']
-        m_p['Cps'] = m_p['Cpc']
-        m_p['mis'] = m_p['mic']
-        m_p['ks'] = m_p['kc']
-        m_p['Rfs'] = m_p['Rfc']
-        m_p['DPsdisp'] = m_p['DPcdisp']
-    
-    return m_p
 
 def consistency(m_d, m_p, save_result):
     save_result('\n******* Testing consistency *******\n')
@@ -151,21 +121,44 @@ def consistency(m_d, m_p, save_result):
                 sys.exit()
             return m_p
 
-    def holamundo(m_p, m_d):
-        print("########################### VERIFICANDO LO QUE YO QUIERO")
+    def verify_flag_inputs(m_p):
+        if m_p['Property_Source'] not in ('CoolProp', 'User'):
+            raise ValueError(
+                f"Invalid Property_Source '{m_p['Property_Source']}'. "
+                f"Expected 'CoolProp' or 'User'."
+            )
 
-    verif1 = holamundo(m_p, m_d)
-    verif2 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
+        if m_p['Outlet_Temperature_Spec'] not in ('cold', 'hot'):
+            raise ValueError(
+                f"Invalid Outlet_Temperature_Spec "
+                f"'{m_p['Outlet_Temperature_Spec']}'. "
+                f"Expected 'cold' or 'hot'."
+            )
 
-    # verif1 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
-    # verif2 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
-    # verif3 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
-    # verif4 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
-    # verif5 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
-    # verif6 = verification_Tco_Thi_STHE(m_p, m_d)
-    # verif7 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
-    # verif8 = variables_bounds(m_d)
-    # verif9 = variables_standard_values(m_d)
+        if 'Tho' not in m_p and m_p['Outlet_Temperature_Spec'] == 'hot':
+            raise ValueError(
+                f"You define 'Outlet_Temperature_Spec' as:  "
+                f"'{m_p['Outlet_Temperature_Spec']}'. "
+                f"You have to input 'Tho'."
+            )
+        if 'Tco' not in m_p and m_p['Outlet_Temperature_Spec'] == 'cold':
+            raise ValueError(
+                f"You define 'Outlet_Temperature_Spec' as:  "
+                f"'{m_p['Outlet_Temperature_Spec']}'. "
+                f"You have to input 'Tco'."
+            )
+        
+    verif0 = verify_flag_inputs(m_p)
+    verif1 = Calculations_HEX_Tho_Tco.HEX_Tho_Tco().HEX_Tho_Tco(m_p)
+    verif2 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
+    verif3 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
+    # verif4 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
+    verif5 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
+    verif6 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
+    verif7 = verification_Tco_Thi_STHE(m_p, m_d)
+    verif8 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
+    verif9 = variables_bounds(m_d)
+    verif10 = variables_standard_values(m_d)
 
     return m_d, m_p
 

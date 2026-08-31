@@ -924,3 +924,115 @@ class Stream:
     def list_fluids() -> List[str]:
         """Return every pure fluid available in the current CoolProp install."""
         return CP.get_global_param_string("FluidsList").split(",")
+
+
+    # ------------------------------------------------------------------
+    # Alternative constructor: P + H
+    # ------------------------------------------------------------------
+    @classmethod
+    def from_PH(
+        cls,
+        composition: Dict[str, float],
+        P: float,
+        H: float,
+        mass_flow: Optional[float] = None,
+        molar_flow: Optional[float] = None,
+        backend: ThermoBackend = ThermoBackend.HEOS,
+    ) -> "Stream":
+        """
+        Create a Stream from pressure and specific enthalpy.
+
+        The thermodynamic state is defined by:
+
+            P [Pa]
+            H [J/kg]
+
+        CoolProp is used to determine the corresponding temperature.
+        The normal Stream constructor is then called with that
+        temperature.
+
+        This method does NOT modify the behavior of Stream.__init__().
+        """
+
+        # --------------------------------------------------------------
+        # Validate flow specification
+        # --------------------------------------------------------------
+        if mass_flow is not None and molar_flow is not None:
+            raise FlowSpecificationError(
+                "Only one flow specification is allowed. Provide either "
+                "mass_flow or molar_flow, not both."
+            )
+
+        if mass_flow is None and molar_flow is None:
+            raise FlowSpecificationError(
+                "A flow specification is required. Provide either "
+                "mass_flow or molar_flow."
+            )
+
+        # --------------------------------------------------------------
+        # Resolve composition using the same logic as Stream
+        # --------------------------------------------------------------
+        dummy = cls.__new__(cls)
+
+        resolved_composition = dummy._validate_composition(composition)
+
+        components = list(resolved_composition.keys())
+        mole_fractions = list(resolved_composition.values())
+
+        # --------------------------------------------------------------
+        # Create CoolProp state
+        # --------------------------------------------------------------
+        fluid_string = "&".join(components)
+
+        try:
+            AS = CP.AbstractState(
+                backend.value,
+                fluid_string
+            )
+
+            AS.set_mole_fractions(mole_fractions)
+
+            # ----------------------------------------------------------
+            # Thermodynamic inversion:
+            #
+            #       P + H  -->  T
+            # ----------------------------------------------------------
+            AS.update(
+                CoolProp.HmassP_INPUTS,
+                H,
+                P
+            )
+
+            T = AS.T()
+
+        except Exception as exc:
+            raise BackendError(
+                "Failed to calculate temperature from pressure and "
+                "specific enthalpy using backend="
+                + backend.name
+                + ". "
+                + "P=" + str(P)
+                + " Pa, H=" + str(H)
+                + " J/kg. "
+                + "Original error: " + str(exc)
+            ) from exc
+
+        # --------------------------------------------------------------
+        # Create the Stream using the ORIGINAL constructor
+        # --------------------------------------------------------------
+        if mass_flow is not None:
+            return cls(
+                composition=composition,
+                P=P,
+                T=T,
+                mass_flow=mass_flow,
+                backend=backend,
+            )
+
+        return cls(
+            composition=composition,
+            P=P,
+            T=T,
+            molar_flow=molar_flow,
+            backend=backend,
+        )

@@ -179,23 +179,58 @@ Example1 = {
         #                                                                      in "Constraints_and_OF.py"
         'Model_Parameters': {
 
-            # Hot stream
+            # Hot stream common parameters
             'mh': 20,           # Flow rate (kg*s**-1)
-            'roh': 750,         # Density (kg*m**-3)
-            'Cph': 2840,        # Heat capacity (J*(kg*K)**-1)
-            'mih': 0.002,       # Viscosity (Pa*s)
-            'kh': 0.19,         # Thermal conductivity (W*(m*K)**-1)
             'Rfh': 0.0002,      # Fouling factor (m**2*oC*W**-1)
             'DPhdisp': 100e3,   # Available pressure drop (Pa)
 
-            # Cold stream
+            # Cold stream common parameters
             'mc': 60,           # Flow rate (kg*s**-1)
-            'roc': 995,         # Density (kg*m**-3)
-            'Cpc': 4187,        # Heat capacity (J*(kg*K)**-1)
-            'mic': 0.0005,      # Viscosity (Pa*s)
-            'kc': 0.6,          # Thermal conductivity (W*(m*K)**-1)
             'Rfc': 0.0007,      # Fouling factor (m**2*oC*W**-1)
             'DPcdisp': 100e3,   # Available pressure drop (Pa)
+
+            # Streams
+            'Property_Source': 'CoolProp', # Options 'User' or 'CoolProp'
+                # User            
+                    # Hot stream in
+                    'roh': 995,         # Density (kg*m**-3)
+                    'Cph': 4187,        # Heat capacity (J*(kg*K)**-1)
+                    'mih': 0.0005,       # Viscosity (Pa*s)
+                    'kh': 0.6,         # Thermal conductivity (W*(m*K)**-1)
+                    # Hot stream out
+                    'roh_out': 995,         # Density (kg*m**-3)
+                    'Cph_out': 4187,        # Heat capacity (J*(kg*K)**-1)
+                    'mih_out': 0.0005,       # Viscosity (Pa*s)
+                    'kh_out': 0.6,         # Thermal conductivity (W*(m*K)**-1)
+
+                    # Cold stream in
+                    'roc': 995,         # Density (kg*m**-3)
+                    'Cpc': 4187,        # Heat capacity (J*(kg*K)**-1)
+                    'mic': 0.0005,      # Viscosity (Pa*s)
+                    'kc': 0.6,          # Thermal conductivity (W*(m*K)**-1)
+                    # Cold stream out
+                    'roc_out': 995,         # Density (kg*m**-3)
+                    'Cpc_out': 4187,        # Heat capacity (J*(kg*K)**-1)
+                    'mic_out': 0.0005,      # Viscosity (Pa*s)
+                    'kc_out': 0.6,          # Thermal conductivity (W*(m*K)**-1)
+
+                # CoolProp
+                    # Hot stream            
+                    'hot_fluid': 'Water_Hot', # Name of the stream
+                    'hot_composition': {'Water': 1.0}, # 'Compound': Composition fraction, ...
+                    'hot_pressure': 300000.0, # Pressuer [Pa]
+
+                    # Cold stream
+                    'cold_fluid': 'Water_Cold',  # Name of the stream
+                    'cold_composition': {'Water': 1.0}, # 'Compound': Composition fraction, ...
+                    'cold_pressure': 300000.0, # Pressuer [Pa]
+
+            # Streams Temperatures
+            'Outlet_Temperature_Spec': 'cold', # if 'hot' you specify 'Tho' --- if 'cold' you specify 'Tco'
+                'Tci': 47,                    # Inlet temperature of the cold stream (oC)
+                'Tco': 56,                    # Outlet temperature of the cold stream (oC)
+                'Thi': 120,                   # Inlet temperature of the hot stream (oC)
+                # 'Tho': 80,                    # Outlet temperature of the hot stream (oC)
 
             # Heat exchanger
             'ktube': 50,                  # Tube wall thermal conductivity (W*(m*K)**-1)
@@ -208,10 +243,6 @@ Example1 = {
 
             # Problem
             'Aexc': 11,                   # Area excess (%)
-            'Tci': 47,                    # Inlet temperature of the cold stream (oC)
-            'Tco': 56,                    # Outlet temperature of the cold stream (oC)
-            'Thi': 120,                   # Inlet temperature of the hot stream (oC)
-            'Tho': 80,                    # Outlet temperature of the hot stream (oC)
             'vsmax': 2,                   # Upper bound on the shell-side velocity (m*s**(-1))
             'vsmin': 0.5,                 # Lower bound on the shell-side velocity (m*s**(-1))
             'vtmax': 3,                   # Upper bound on the tube-side velocity (m*s**(-1))
