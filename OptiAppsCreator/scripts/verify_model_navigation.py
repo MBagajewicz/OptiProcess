@@ -20,8 +20,7 @@ def read_text(path: Path) -> str:
 
 def verify_navigation(path: Path) -> None:
     text = read_text(path)
-    require('<button type="button" onclick="navigateModelPage' in text, f"{path.name} must use model-page buttons.")
-    require('aria-current="page"' in text, f"{path.name} must identify the active model-page button.")
+    require('{% include "model_navigation.html" %}' in text, f"{path.name} must use shared model navigation.")
     require('{% include "model_context.html" %}' in text, f"{path.name} must include the shared model context.")
     for removed_id in ("nav-back-btn", "nav-next-btn", "nav-run-btn", "project-indicator"):
         require(removed_id not in text, f"{path.name} must not include legacy {removed_id}.")
@@ -33,6 +32,10 @@ def main() -> None:
     results = ROOT / "templates" / "results.html"
     verify_navigation(base)
     verify_navigation(results)
+
+    navigation = read_text(ROOT / "templates" / "model_navigation.html")
+    require('<button type="button" onclick="navigateModelPage' in navigation, "Shared navigation must use model-page buttons.")
+    require('aria-current="page"' in navigation, "Shared navigation must identify the active model-page button.")
 
     context_text = read_text(ROOT / "templates" / "model_context.html")
     for context_id in ("context-model", "context-project", "context-design", "context-calculation-status"):
