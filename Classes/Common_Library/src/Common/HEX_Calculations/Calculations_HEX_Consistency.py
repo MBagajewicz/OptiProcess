@@ -1,11 +1,11 @@
 #
 #region Titles and Header
-# Nature: Optimization
-# Methodology: Set trimming
+# Nature: Consistency calculations
+# Methodology: Methods to verify HEX consistency
 ##################################################################################################################
 # VERSION        DATE            AUTHOR                    DESCRIPTION OF CHANGES MADE
 #   0.0          08-May-2025     Mariana Mello              Proposed
-
+#   0.1          31-Aug-2026     Diego Oliva                Verifications of HEX consistency
 ##################################################################################################################
 #endregion
 
@@ -132,6 +132,49 @@ def verification_heatload(m_p, save_result):
         )
         return m_p
 
+def verification_Tco_Thi_STHE(m_p, m_d, save_result):
+    if 'Tco' in m_p and 'Thi' in m_p and 'Tho' in m_p:
+        Thi = m_p['Thi']
+        Tco = m_p['Tco']
+        Tho = m_p['Tho']
+        deltaTmin = m_p['DeltaT_min']
+        if Tco < Thi - deltaTmin:
+            if Tco > Tho - deltaTmin:
+                save_result('Exchanger cannot be multipass (Tco > Tho - DeltaTmin). All passes > 1 are excluded.\n')
+                m_d['Discrete_Values_of_Variables'][2] = [1] # Npt = 1
+            else:
+                pass
+        else:
+            save_result('Error data consistency: Tco > Thi - DeltaTmin\n')
+            sys.exit()
+        return m_p
+
+def verify_flag_inputs(m_p):
+    if m_p['Property_Source'] not in ('CoolProp', 'User'):
+        raise ValueError(
+            f"Invalid Property_Source '{m_p['Property_Source']}'. "
+            f"Expected 'CoolProp' or 'User'."
+        )
+
+    if m_p['Outlet_Temperature_Spec'] not in ('cold', 'hot'):
+        raise ValueError(
+            f"Invalid Outlet_Temperature_Spec "
+            f"'{m_p['Outlet_Temperature_Spec']}'. "
+            f"Expected 'cold' or 'hot'."
+        )
+
+    if 'Tho' not in m_p and m_p['Outlet_Temperature_Spec'] == 'hot':
+        raise ValueError(
+            f"You define 'Outlet_Temperature_Spec' as:  "
+            f"'{m_p['Outlet_Temperature_Spec']}'. "
+            f"You have to input 'Tho'."
+        )
+    if 'Tco' not in m_p and m_p['Outlet_Temperature_Spec'] == 'cold':
+        raise ValueError(
+            f"You define 'Outlet_Temperature_Spec' as:  "
+            f"'{m_p['Outlet_Temperature_Spec']}'. "
+            f"You have to input 'Tco'."
+        )
 
 
 #endregion
