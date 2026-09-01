@@ -233,7 +233,7 @@ Example1 = {
                 # 'Tho': 80,                    # Outlet temperature of the hot stream (oC)
 
             # Heat exchanger
-            'ktube': 'CarbonSteel',                  # Tube wall thermal conductivity (W*(m*K)**-1), U
+            'ktube': 'CarbonSteel',       # Tube wall thermal conductivity (W*(m*K)**-1), U
                                           # - User defined: 'ktube': value. 
                                           # - Materials: 'ktube': 'Cooper' or 'CarbonSteel' or 'StainleesSteel304'
                                           # - If 'ktube' does not exists then default... 'ktube': 'CarbonSteel'
