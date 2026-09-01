@@ -38,7 +38,7 @@ Model_STHE_1 = {
 
     'Model_Info': {
 
-        'Parameters_Calculations_List': ['allocation'],
+        'Parameters_Calculations_List': ['wall_thermal_conducivity','allocation'],
         # This is a list of functions used to generated model calculated parameters and they must be defined 
         # in Model.Parameters_Update_(Model).py file 
         # These parameters are generated before Initial Set generation by Calculations_Initial_Set_Up.py

@@ -30,6 +30,7 @@ import sys
 from Common.HEX_Calculations import Calculations_HEX_Consistency
 from Common.HEX_Calculations import Calculations_HEX_Allocation
 from Common.HEX_Calculations import Calculations_HEX_Tho_Tco
+from Common.HEX_Calculations import Calculations_HEX_WallTherCond
 from Common.Common_Calculations import Calculations_Model_Consistency
 # endregion
 ##################################################################################################################
@@ -54,14 +55,15 @@ def model_consistency(m_d, m_p, save_result):
     save_result('\n******* Testing model consistency *******\n')
 
     verify1 = Calculations_HEX_Consistency.verify_flag_inputs(m_p)
-    verify2 = Calculations_HEX_Tho_Tco.HEX_Tho_Tco(m_p)
-    verify3 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
-    verify4 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
+    verify2 = Calculations_HEX_WallTherCond.tube_wall_thermal_conductivity(m_p, save_result)
+    verify3 = Calculations_HEX_Tho_Tco.HEX_Tho_Tco(m_p)
+    verify4 = Calculations_HEX_Consistency.verification_positive_variables(m_p, save_result)
+    verify5 = Calculations_HEX_Consistency.verification_DeltaTmin(m_p, save_result)
     # verify4 = Calculations_HEX_Consistency.verification_heatload(m_p, save_result)
-    verify5 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
-    verify6 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
-    verify7 = Calculations_HEX_Consistency.verification_Tco_Thi_STHE(m_p, m_d, save_result)
-    verify8 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
+    verify6 = Calculations_HEX_Consistency.verification_Thi_Tho(m_p, save_result)
+    verify7 = Calculations_HEX_Consistency.verification_Tco_Tci(m_p, save_result)
+    verify8 = Calculations_HEX_Consistency.verification_Tco_Thi_STHE(m_p, m_d, save_result)
+    verify9 = Calculations_HEX_Consistency.verification_Tci_Tho(m_p, save_result)
     return m_d, m_p
 
 
