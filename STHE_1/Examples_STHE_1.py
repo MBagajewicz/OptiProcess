@@ -9,6 +9,7 @@
 #   0.3         26-Mar-2025     Mariana Mello              Update STHE examples
 #   0.4         23-Apr-2025     Mariana Mello              Update STHE Model Parameters
 #   0.5         30-Jun-2025     Mariana Mello              Add examples with larger search space
+#   0.6         31-Aug-2026     Diego Oliva                New structure in Example1
 ##################################################################################################################
 # INPUT: Setting of examples
 ##################################################################################################################
@@ -33,94 +34,207 @@ ExampleX = {
 
 }
 
-For each 'STHE' Type_Equipment the following data are required:
+For each 'STHE_1' Type_Equipment the following data are required:
 
 'EquipmentN': {
 
     'Model_Declarations': {
 
-        'Type_Equipment': 'STHE',
+        # Type of Equipment - Models_List
+        'Type_Equipment': 'STHE_1',
 
+        # Discrete_Values_of_Variables
+        # Values of the discrete variables
+        # (All variables declared in 'List_of_Variables' must be given values)
         'Discrete_Values_of_Variables': [
+
                 [],  # Ds
-
                 [],  # dte
-
                 [],  # Npt
-
                 [],  # rp
-
-                [],  # lay    (1  = 90° ;  2 = 30° ; 3 = 45°)
-
+                [],  # lay  (1 = 90° ; 2 = 30° ; 3 = 45°)
                 [],  # L
-
                 [],  # Nb
+                []   # Bc
 
-                []  # Bc
+        ],
+
+        # Selected Objective Function(s)
+        'Selected_OF': []
+
     },
 
+    # These Model_Parameters are used for the computation of
+    # Constraint and Objective Function values
+    # in "Constraints_and_OF_STHE_1.py"
     'Model_Parameters': {
 
-           # Hot stream
-            'mh': ,         # Flow rate (kg*s**-1)
-            'roh': ,        # Density (kg*m**-3)
-            'Cph': ,        # Heat capacity (J*(kg*K)**-1)
-            'mih': ,        # Viscosity (Pa*s)
-            'kh': ,         # Thermal conductivity (W*(m*K)**-1)
-            'Rfh': ,        # Fouling factor (m**2*oC*W**-1)
-            'DPhdisp': ,    # Available pressure drop (Pa)
-
-            # Cold stream
-            'mc': ,        # Flow rate (kg*s**-1)
-            'roc': ,       # Density (kg*m**-3)
-            'Cpc': ,       # Heat capacity (J*(kg*K)**-1)
-            'mic': ,       # Viscosity (Pa*s)
-            'kc': ,        # Thermal conductivity (W*(m*K)**-1)
-            'Rfc': ,       # Fouling factor (m**2*oC*W**-1)
-            'DPcdisp': ,   # Available pressure drop (Pa)
-
-            # Heat exchanger
-            'ktube': ,            # Tube wall thermal conductivity (W*(m*K)**-1)
-            'thk': ,              # Tube thickness
-            'yfluid': ,           # Allocation of tube side: 'hot_stream' or 'cold_stream'. Entry is optional.
-                                  # If entry is given as '' or if entry is completly skipped, both options will be evaluated
-
-            # Correlations Tube and Shell Methods
-            'Shell_Method': '',      # Kern or Bell
-            'Tube_Method': '',       # Dittus_Boelter or Dewiit_Saunders or Gnielinski or Hausen or Sieder_Tate
-
-            # Problem
-            'Objective_Function': '',    # Objective Functions: 'TAC' or 'Area' or 'CAPEX'
-            'Aexc': ,                    # Area excess (%)
-            'Tci': ,                     # Inlet temperature of the cold stream (oC)
-            'Tco': ,                     # Outlet temperature of the cold stream (oC)
-            'Thi': ,                     # Inlet temperature of the hot stream (oC)
-            'Tho': ,                     # Outlet temperature of the hot stream (oC)
-            'vsmax': ,                   # Upper bound on the shell-side velocity (m*s**(-1))
-            'vsmin': ,                   # Lower bound on the shell-side velocity (m*s**(-1))
-            'vtmax': ,                   # Upper bound on the tube-side velocity (m*s**(-1))
-            'vtmin': ,                   # Lower bound on the tube-side velocity (m*s**(-1))
-            'Retmin': ,                  # Lower bound on the tube-side Reynolds number
-            'Resmin': ,                  # Lower bound on the shell-side Reynolds number
-            'Retmax': ,                  # Upper bound on the tube-side Reynolds number
-            'Resmax': ,                  # Upper bound on the shell-side Reynolds number
-            'LBLD': ,                    # Lower bound on L/D
-            'UBLD': ,                    # Upper bound on L/D
-
-            # Required parameters for Bell Method
-            'Nss': ,                   # Number of sealing strips
-            'plbmax1': ,               # maximum unsupported span of tubes -> 52 for steel and steel alloys and 46 for aluminum and copper alloys
-            'plbmax2': ,               # maximum unsupported span of tubes -> 0.532 for steel and steel alloys and 0.436 for aluminum and copper alloys
+        # --------------------------------------------------------------
+        # Hot stream common parameters
+        # --------------------------------------------------------------
+        'mh': ,             # Flow rate (kg*s**-1)
+        'Rfh': ,            # Fouling factor (m**2*oC*W**-1)
+        'DPhdisp': ,        # Available pressure drop (Pa)
 
 
-            # Economic data
-            'par_a': ,           # Cost model parameter
-            'par_b': ,           # Cost model parameter
-            'pc': ,              # Energy price ($)
-            'int_rate': ,        # Interest rate
-            'n': ,               # Project horizon (years)
-            'eta': ,             # Pump efficiency
-            'Nop':               # Number of hours of operation per year (h/y)
+        # --------------------------------------------------------------
+        # Cold stream common parameters
+        # --------------------------------------------------------------
+        'mc': ,             # Flow rate (kg*s**-1)
+        'Rfc': ,            # Fouling factor (m**2*oC*W**-1)
+        'DPcdisp': ,        # Available pressure drop (Pa)
+
+
+        # --------------------------------------------------------------
+        # Stream physical properties
+        #
+        # Property_Source options:
+        #     'User'     -> Physical properties are provided by the user
+        #     'CoolProp' -> Physical properties are calculated using CoolProp
+        # --------------------------------------------------------------
+        'Property_Source': '',
+
+
+        # ==============================================================
+        # User-defined physical properties
+        #
+        # These parameters are required when:
+        #     'Property_Source': 'User'
+        #
+        # --------------------------------------------------------------
+        # Hot stream - inlet
+        # --------------------------------------------------------------
+        'roh': ,            # Density (kg*m**-3)
+        'Cph': ,            # Heat capacity (J*(kg*K)**-1)
+        'mih': ,            # Viscosity (Pa*s)
+        'kh': ,             # Thermal conductivity (W*(m*K)**-1)
+
+        # Hot stream - outlet
+        'roh_out': ,        # Density (kg*m**-3)
+        'Cph_out': ,        # Heat capacity (J*(kg*K)**-1)
+        'mih_out': ,        # Viscosity (Pa*s)
+        'kh_out': ,         # Thermal conductivity (W*(m*K)**-1)
+
+        # Cold stream - inlet
+        'roc': ,            # Density (kg*m**-3)
+        'Cpc': ,            # Heat capacity (J*(kg*K)**-1)
+        'mic': ,            # Viscosity (Pa*s)
+        'kc': ,             # Thermal conductivity (W*(m*K)**-1)
+
+        # Cold stream - outlet
+        'roc_out': ,        # Density (kg*m**-3)
+        'Cpc_out': ,        # Heat capacity (J*(kg*K)**-1)
+        'mic_out': ,        # Viscosity (Pa*s)
+        'kc_out': ,         # Thermal conductivity (W*(m*K)**-1)
+
+
+        # ==============================================================
+        # CoolProp stream parameters
+        #
+        # These parameters are required when:
+        #     'Property_Source': 'CoolProp'
+        #
+        # --------------------------------------------------------------
+        # Hot stream
+        # --------------------------------------------------------------
+        'hot_fluid': ,              # Name of the hot stream
+        'hot_composition': {},      # 'Compound': Composition fraction, ...
+        'hot_pressure': ,           # Pressure (Pa)
+
+        # Cold stream
+        'cold_fluid': ,             # Name of the cold stream
+        'cold_composition': {},     # 'Compound': Composition fraction, ...
+        'cold_pressure': ,          # Pressure (Pa)
+
+
+        # --------------------------------------------------------------
+        # Stream temperatures
+        #
+        # Outlet_Temperature_Spec options:
+        #     'cold' -> Tco is specified and Tho is calculated
+        #     'hot'  -> Tho is specified and Tco is calculated
+        # --------------------------------------------------------------
+        'Outlet_Temperature_Spec': '',
+
+        'Tci': ,                    # Inlet temperature of cold stream (oC)
+        'Tco': ,                    # Outlet temperature of cold stream (oC)
+        'Thi': ,                    # Inlet temperature of hot stream (oC)
+        'Tho': ,                    # Outlet temperature of hot stream (oC)
+
+
+        # --------------------------------------------------------------
+        # Heat exchanger
+        # --------------------------------------------------------------
+        'ktube': ,                  # Tube wall thermal conductivity
+                                    # (W*(m*K)**-1)
+                                    #
+                                    # User-defined value:
+                                    #     'ktube': value
+                                    #
+                                    # Predefined materials:
+                                    #     'Copper'
+                                    #     'CarbonSteel'
+                                    #     'StainlessSteel304'
+                                    #
+                                    # If 'ktube' does not exist,
+                                    # CarbonSteel is adopted by default.
+
+        'thk': ,                    # Tube thickness (m)
+
+        'yfluid': ,                 # Allocation of tube side:
+                                    # 'hot_stream' or 'cold_stream'
+
+
+        # --------------------------------------------------------------
+        # Correlations - Tube and Shell Methods
+        # --------------------------------------------------------------
+        'Tube_Method': '',          # Dittus_Boelter or Dewiit_Saunders
+                                    # Gnielinski or Hausen or Sieder_Tate
+
+        'Shell_Method': '',         # Kern or Bell
+
+
+        # --------------------------------------------------------------
+        # Problem parameters
+        # --------------------------------------------------------------
+        'Aexc': ,                   # Area excess (%)
+
+        'vsmax': ,                  # Upper bound on shell-side velocity
+                                    # (m*s**-1)
+
+        'vsmin': ,                  # Lower bound on shell-side velocity
+                                    # (m*s**-1)
+
+        'vtmax': ,                  # Upper bound on tube-side velocity
+                                    # (m*s**-1)
+
+        'vtmin': ,                  # Lower bound on tube-side velocity
+                                    # (m*s**-1)
+
+        'Retmin': ,                 # Lower bound on tube-side Reynolds number
+        'Resmin': ,                 # Lower bound on shell-side Reynolds number
+
+        'Retmax': ,                 # Upper bound on tube-side Reynolds number
+        'Resmax': ,                 # Upper bound on shell-side Reynolds number
+
+        'LBLD': ,                   # Lower bound on L/D
+        'UBLD': ,                   # Upper bound on L/D
+
+        'Xp': ,                     # Parameter Xp (Smith, 2005)
+
+        'F_min': ,                  # Minimum LMTD correction factor
+
+
+        # --------------------------------------------------------------
+        # Economic data
+        # --------------------------------------------------------------
+        'par_a': ,                  # Cost model parameter
+        'par_b': ,                  # Cost model parameter
+        'pc': ,                     # Energy price ($)
+        'int_rate': ,               # Interest rate
+        'n': ,                      # Project horizon (years)
+        'eta': ,                    # Pump efficiency
+        'Nop':                       # Number of hours of operation per year (h/y)
 
     }
 }
