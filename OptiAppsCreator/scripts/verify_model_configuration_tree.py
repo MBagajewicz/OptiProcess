@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Verify generated model configuration trees and their metadata."""
+"""Verify generated model configuration summaries and their metadata."""
 
 from __future__ import annotations
 
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import yaml
@@ -27,16 +28,21 @@ def main() -> None:
 
     context_template = read_text(ROOT / "templates" / "model_context.html")
     context_script = read_text(ROOT / "templates" / "model_context_script.html")
-    require('class="flex min-w-0 flex-col gap-2"' in context_template, "Sidebar context blocks must be stacked vertically.")
-    require("lg:grid-cols-[minmax(220px,1fr)_3fr]" not in context_template, "Legacy horizontal context layout must be removed.")
-    require('id="model-configuration-tree"' in context_template, "Context must include the configuration tree.")
-    require('<details id="model-configuration-tree"' in context_template, "Configuration tree must be closed by default.")
-    require('<details id="model-configuration-tree" class=' in context_template, "Configuration tree must not declare the open attribute.")
-    for branch in ("Model Setup", "Current Design", "Geometric Options", "Construction Standards", "Geometric Parameters", "Units"):
-        require(branch in context_script, f"Configuration tree must render {branch}.")
-    require("selected.length + ' selected'" in context_script, "Geometric selections must be summarized by count.")
+    require('id="model-context-panel"' in context_template, "Project and configuration details must share one panel.")
+    require('id="model-configuration-summary-content"' in context_template, "Context panel must include the configured summary.")
+    require("<details" not in context_template, "Configured summary must remain visible without an inner dropdown.")
+    require('text-[8px]' in context_template and 'text-[10px]' in context_template, "Context panel must use compact readable typography.")
+    require('leading-[1.1]' in context_template, "Context panel must use compact readable line spacing.")
+    require("model-context-drag-handle" not in context_template, "Fixed context panel must not expose a drag handle.")
+    require("model-context-reset-position" not in context_template, "Fixed context panel must not expose position controls.")
+    require("function renderModelConfigurationSummary" in context_script, "Context script must render the configured summary.")
+    require("MODEL_CONFIGURATION.configuration_summary" in context_script, "Context script must use only YAML-configured fields.")
+    require("item.kind === 'selection_count'" in context_script, "Geometric selections must be summarized by count.")
     require("function toggleModelSidebar" in context_script, "Context script must control the mobile sidebar.")
-    require('root.innerHTML = \'<div class="flex flex-col gap-2">\'' in context_script, "Configuration branches must use a compact single-column layout.")
+    for drag_marker in ("initializeModelContextDrag", "context_panel_position", "setPointerCapture", "setModelContextPosition", "resetModelContextPosition"):
+        require(drag_marker not in context_script, f"Fixed context panel must not include {drag_marker}.")
+    for legacy_branch in ("Model Setup", "Construction Standards", "Geometric Parameters", "Input display units"):
+        require(legacy_branch not in context_script, f"Compact summary must not render legacy branch {legacy_branch}.")
 
     common_units = load_common_units(str(ROOT))
     with (ROOT / "STHE" / "STHE_ui.yaml").open(encoding="utf-8") as handle:
@@ -50,23 +56,40 @@ def main() -> None:
     require(any(item["key"] == "Shell_Method" for item in sthe["selections"]), "STHE select settings must be included.")
     require(any(item["key"] == "Ds" for item in sthe["geometric_options"]), "STHE geometry metadata must include Ds.")
     require(any(item["key"] == "Ntp" for item in gphe["geometric_options"]), "GPHE geometry metadata must include Ntp.")
+    require([item["key"] for item in sthe["configuration_summary"]] == ["Selected_OF", "yfluid", "Shell_Method", "Npt", "lay", "Ds"], "STHE summary must follow its YAML configuration.")
+    require([item["key"] for item in gphe["configuration_summary"]] == ["Selected_OF", "Ntp", "Pl", "Sa", "Nph", "Npc"], "GPHE summary must follow its YAML configuration.")
 
+    invalid_yaml = deepcopy(sthe_yaml)
+    invalid_yaml["model"]["configuration_summary"].append({"key": "unknown_key"})
+    try:
+        build_model_configuration_context(invalid_yaml, load_model_def("STHE"), common_units)
+    except ValueError as exc:
+        require("unknown_key" in str(exc), "Unknown summary key error must identify the invalid key.")
+    else:
+        require(False, "Unknown configuration_summary keys must be rejected.")
+
+    sidebar = read_text(ROOT / "templates" / "model_sidebar.html")
+    require("lg:sticky" in sidebar and "lg:overflow-y-auto" in sidebar, "Sidebar must remain visible with its own desktop scroll.")
+    require("lg:absolute" not in sidebar, "Sidebar must not use movable absolute positioning.")
+    require('id="model-sidebar-toggle"' in sidebar and 'aria-expanded="false"' in sidebar, "Sidebar must provide a collapsed mobile toggle.")
     for shell_template in ("base.html", "results.html"):
         shell = read_text(ROOT / "templates" / shell_template)
-        require("lg:grid-cols-[300px_minmax(0,1fr)]" in shell, f"{shell_template} must use the shared desktop sidebar layout.")
-        require("lg:sticky" in shell and "lg:overflow-y-auto" in shell, f"{shell_template} sidebar must remain visible with its own scroll.")
-        require('id="model-sidebar-toggle"' in shell and 'aria-expanded="false"' in shell, f"{shell_template} must provide a collapsed mobile toggle.")
+        require("lg:grid-cols-[220px_minmax(0,1fr)]" in shell, f"{shell_template} must use a fixed 220px sidebar column.")
+        require("lg:pl-[228px]" not in shell, f"{shell_template} must not reserve empty space with padding.")
+        require('{% include "model_sidebar.html" %}' in shell, f"{shell_template} must use the shared sidebar.")
         require('{% include "model_navigation.html" %}' in shell, f"{shell_template} must use shared model navigation.")
+        require(shell.index('{% include "model_navigation.html" %}') < shell.index('id="model-workspace"'), f"{shell_template} navigation must span the page above the workspace.")
 
     for model in ("STHE", "GPHE"):
-        for page in ("problem_data.html", "geometric_options.html", "units.html", "result_units.html", "results.html", "projects.html"):
+        for page in ("model_options.html", "problem_data.html", "geometric_options.html", "units.html", "result_units.html", "results.html", "projects.html"):
             generated = read_text(ROOT / "output" / model / page)
-            require('id="model-configuration-tree"' in generated, f"{model}/{page} must render the tree.")
+            require('id="model-context-panel"' in generated, f"{model}/{page} must render the unified context panel.")
+            require('id="model-configuration-summary-content"' in generated, f"{model}/{page} must render the configured summary.")
             require("const MODEL_CONFIGURATION =" in generated, f"{model}/{page} must receive model metadata.")
             require('id="model-workspace"' in generated, f"{model}/{page} must render the shared workspace.")
-            require(generated.index('aria-label="Current model context"') < generated.index('aria-label="Model pages"'), f"{model}/{page} sidebar must precede navigation.")
+            require(generated.index('aria-label="Model pages"') < generated.index('aria-label="Current model context"'), f"{model}/{page} navigation must precede the sidebar.")
 
-    print("OK: compact model context sidebars are generated for STHE and GPHE.")
+    print("OK: compact YAML-configured context panels are generated for STHE and GPHE.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block extra_style %}
+<style>
+    .model-options-field label.input-label {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-industrial min-h-[calc(100vh-140px)] p-4 flex flex-wrap gap-4 items-start justify-center">
+    {% for column in columns %}
+    <div class="flex flex-col gap-4">
+        {% for section in column %}
+            {% if section.element == 'radio_group' %}
+        <div class="bg-white/90 p-3 rounded-xl shadow-lg border border-blue-200 {{ section.width_class }}" data-section-id="{{ section.id }}">
+            <h3 class="text-[10px] font-bold text-blue-600 text-center mb-2 leading-tight">{{ section.title }}</h3>
+            <div class="space-y-2 text-xs">
+                {% for opt in section.options %}
+                <label class="flex items-center space-x-2 {{ 'cursor-not-allowed' if opt.disabled else 'cursor-pointer' }}">
+                    <input type="radio" name="{{ section.source_key }}" value="{{ opt.value }}" {{ 'checked' if opt.checked }}{% if opt.disabled %} disabled aria-disabled="true"{% endif %} class="form-radio text-blue-600 h-3 w-3">
+                    <span class="{{ 'text-slate-400' if opt.disabled }}">{{ opt.label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+            {% elif section.element == 'form_group' %}
+        <div class="relative {{ section.color.bg }} p-4 rounded-2xl shadow-xl border {{ section.color.border }} {{ section.width_class }}" data-section-id="{{ section.id }}"{% if section.visible_when %} data-visible-key="{{ section.visible_when.key }}" data-visible-equals="{{ section.visible_when.equals }}"{% endif %}>
+            {% if section.default_button %}
+            <button type="button" onclick='loadDefaultSectionValues({{ section.default_keys | tojson }}, "problem")' class="absolute top-2 right-2 bg-white/80 text-gray-600 border border-gray-300 rounded-full px-1.5 py-0 text-[8px] leading-4 font-bold hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors" title="Load default values for this block">
+                <i class="fas fa-undo-alt mr-0.5 text-[7px]"></i>Default
+            </button>
+            {% endif %}
+            <h2 class="{{ section.color.title }} font-bold text-center {{ 'mt-2' if section.default_button else '' }} mb-4">{{ section.title }}</h2>
+            <div class="space-y-1">
+                {% for field in section.fields %}
+                <div class="model-options-field form_group input-container">
+                    <label class="input-label {{ section.color.label }}">
+                        <span class="whitespace-nowrap">{{ field.label }}{% if field.unit or field.base_unit is defined %} [<span{% if field.base_unit is defined %} data-unit-label-for="{{ field.key }}" data-default-unit="{{ field.display_unit }}"{% endif %}>{{ field.display_unit if field.base_unit is defined else field.unit }}</span>]{% endif %}</span>
+                    </label>
+                    {% if field.element == 'select' %}
+                    <select data-key="{{ field.key }}" class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold">
+                        {% for opt in field.options %}
+                        <option value="{{ opt }}" {{ 'selected' if opt == field.default }}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <input type="text" inputmode="decimal" data-numeric="true" data-key="{{ field.key }}" value="{{ field.default }}"{% if field.base_unit is defined %} data-base-unit="{{ field.base_unit }}" data-display-unit="{{ field.display_unit }}"{% endif %}{% if field.recommended_min is defined and field.recommended_max is defined %} data-recommended-min="{{ field.recommended_min }}" data-recommended-max="{{ field.recommended_max }}"{% endif %} class="custom-input {{ section.color.border }} {{ section.color.input }} font-semibold">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function collectProblemData(markDirty) {
+    if (!validateNumericInputs('input[data-numeric="true"][data-key]')) return null;
+    const data = getJson(problemStorageKey(), {});
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        const key = input.dataset.key;
+        if (!key) return;
+        const value = input.value;
+        data[key] = input.dataset.numeric === 'true' && isStrictNumber(value)
+            ? readNumericInputBaseValue(input)
+            : ((!isNaN(parseFloat(value))) ? parseFloat(value) : value);
+    });
+    setJson(problemStorageKey(), data);
+    sessionStorage.setItem(problemClearedKey(), 'false');
+    if (markDirty !== false) setDirty(true);
+    return data;
+}
+
+window.collectProblemData = collectProblemData;
+
+function getControllerValue(key) {
+    const checkedRadio = document.querySelector('input[name="' + key + '"]:checked');
+    if (checkedRadio) return checkedRadio.value;
+    const input = document.querySelector('input[data-key="' + key + '"], select[data-key="' + key + '"]');
+    if (input) return input.value;
+    return getJson(problemStorageKey(), {})[key];
+}
+
+function updateConditionalSections() {
+    document.querySelectorAll('[data-visible-key]').forEach(function(section) {
+        const current = getControllerValue(section.dataset.visibleKey);
+        section.classList.toggle('hidden', current !== section.dataset.visibleEquals);
+    });
+}
+
+window.updateConditionalSections = updateConditionalSections;
+
+function clearProblemDataForm() {
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        if (input.tagName === 'SELECT') input.selectedIndex = 0;
+        else input.value = '';
+    });
+    updateConditionalSections();
+}
+
+window.clearProblemDataForm = clearProblemDataForm;
+
+function restoreModelOptions() {
+    if (sessionStorage.getItem(problemClearedKey()) === 'true') {
+        clearProblemDataForm();
+        return;
+    }
+    const data = getJson(problemStorageKey(), null);
+    if (!data) return;
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        const key = input.dataset.key;
+        if (!key || data[key] === undefined) return;
+        if (input.dataset.numeric === 'true' && isStrictNumber(data[key])) setNumericInputFromBase(input, data[key]);
+        else input.value = data[key];
+        updateRecommendedLimitWarning(input);
+    });
+    updateConditionalSections();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    attachUnitSelectors();
+    restoreModelOptions();
+    attachNumericFiltering('input[data-numeric="true"][data-key]');
+    attachEnterToAdvance('input[data-key]:not(:disabled), select[data-key]', 'collectProblemData', '');
+    updateRecommendedLimitWarnings('input[data-recommended-min][data-recommended-max]');
+    document.querySelectorAll('input[data-key], select[data-key]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            collectProblemData(true);
+            updateRecommendedLimitWarning(input);
+            updateConditionalSections();
+        });
+    });
+    updateConditionalSections();
+    collectProblemData(false);
+});
+</script>
+{% endblock %}

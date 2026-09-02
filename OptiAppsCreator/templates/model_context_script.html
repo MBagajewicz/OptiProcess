@@ -47,81 +47,32 @@ function modelContextUnitValue(value, item, parameterUnits) {
     return String(displayValue) + (displayUnit ? ' ' + displayUnit : '');
 }
 
-function modelContextBranch(title, content, open) {
-    return '<details class="overflow-hidden rounded-md border border-slate-200 bg-white"' + (open ? ' open' : '') + '>'
-        + '<summary class="cursor-pointer px-2.5 py-2 font-bold text-slate-700 hover:bg-slate-50">' + escapeModelContext(title) + '</summary>'
-        + '<div class="border-t border-slate-100 px-2.5 py-2">' + content + '</div></details>';
+function modelContextSummaryValue(item, problem, geometry, parameterUnits) {
+    const values = item.source === 'geometric_data' ? geometry : problem;
+    if (!Object.prototype.hasOwnProperty.call(values, item.key)) return 'Not selected';
+    const value = values[item.key];
+    if (item.kind === 'selection_count') {
+        return Array.isArray(value) ? value.length + ' selected' : 'Not selected';
+    }
+    if (item.kind === 'choice') return modelContextValueLabel(item.options, value) || 'Not selected';
+    return modelContextUnitValue(value, item, parameterUnits);
 }
 
-function modelContextRows(rows, emptyMessage) {
-    if (!rows.length) return '<div class="text-slate-400">' + escapeModelContext(emptyMessage) + '</div>';
-    return '<dl class="space-y-2">' + rows.map(function(row) {
-        return '<div><dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">' + escapeModelContext(row[0])
-            + '</dt><dd class="break-words font-semibold text-slate-800">' + escapeModelContext(row[1]) + '</dd></div>';
-    }).join('') + '</dl>';
-}
-
-function renderModelConfigurationTree() {
-    const root = document.getElementById('model-configuration-tree-content');
+function renderModelConfigurationSummary() {
+    const root = document.getElementById('model-configuration-summary-content');
     if (!root) return;
     const problem = readModelContextJson('problem_data');
     const geometry = readModelContextJson('geometric_data');
-    const standards = readModelContextJson('geometric_standards');
     const parameterUnits = readModelContextJson('parameter_units');
-    const resultUnits = readModelContextJson('result_units');
-
-    const setupRows = [["Display name", MODEL_CONFIGURATION.display_name || MODEL]];
-    (MODEL_CONFIGURATION.modes || []).forEach(function(mode) {
-        setupRows.push([mode.label, mode.enabled ? 'Enabled' : 'Disabled']);
-    });
-    setupRows.push(['Available objectives', (MODEL_CONFIGURATION.objectives || []).map(function(item) {
-        return item.label + (item.unit ? ' [' + item.unit + ']' : '');
-    }).join(', ') || 'None']);
-    setupRows.push(['Design variables', (MODEL_CONFIGURATION.design_variables || []).join(', ') || 'None']);
-
-    const selectionRows = [];
-    (MODEL_CONFIGURATION.selections || []).forEach(function(item) {
-        if (Object.prototype.hasOwnProperty.call(problem, item.key)) {
-            selectionRows.push([item.label, modelContextValueLabel(item.options, problem[item.key])]);
-        }
-    });
-
-    const geometryRows = [];
-    (MODEL_CONFIGURATION.geometric_options || []).forEach(function(item) {
-        const selected = Array.isArray(geometry[item.key]) ? geometry[item.key] : [];
-        geometryRows.push([item.label, selected.length + ' selected']);
-    });
-
-    const standardRows = [];
-    Object.keys(standards).sort().forEach(function(key) {
-        const item = (MODEL_CONFIGURATION.geometric_options || []).find(function(option) { return option.key === key; });
-        standardRows.push([item ? item.label : key, standards[key]]);
-    });
-
-    const geometricParameterRows = [];
-    (MODEL_CONFIGURATION.geometric_parameters || []).forEach(function(item) {
-        if (Object.prototype.hasOwnProperty.call(geometry, item.key)) {
-            geometricParameterRows.push([item.label, modelContextUnitValue(geometry[item.key], item, parameterUnits)]);
-        }
-    });
-
-    const inputUnitRows = Object.keys(parameterUnits).sort().map(function(key) {
-        return [(MODEL_CONFIGURATION.parameter_labels || {})[key] || key, parameterUnits[key]];
-    });
-    const resultUnitRows = Object.keys(resultUnits).sort().map(function(key) {
-        return [(MODEL_CONFIGURATION.result_labels || {})[key] || key, resultUnits[key]];
-    });
-    const unitsContent = '<div class="mb-2 font-bold text-slate-600">Input display units</div>'
-        + modelContextRows(inputUnitRows, 'Using model default units')
-        + '<div class="mb-2 mt-3 font-bold text-slate-600">Result display units</div>'
-        + modelContextRows(resultUnitRows, 'Using model default units');
-
-    root.innerHTML = '<div class="flex flex-col gap-2">'
-        + modelContextBranch('Model Setup', modelContextRows(setupRows, 'No model setup available'))
-        + modelContextBranch('Current Design', modelContextRows(selectionRows, 'No design selections available'))
-        + modelContextBranch('Geometric Options', modelContextRows(geometryRows, 'No geometric options available'))
-        + modelContextBranch('Construction Standards', modelContextRows(standardRows, 'No configurable standards'))
-        + modelContextBranch('Geometric Parameters', modelContextRows(geometricParameterRows, 'No geometric parameters available'))
-        + modelContextBranch('Units', unitsContent)
-        + '</div>';
+    const items = MODEL_CONFIGURATION.configuration_summary || [];
+    if (!items.length) {
+        root.innerHTML = '<div class="text-[9px] text-slate-400">No summary fields configured</div>';
+        return;
+    }
+    root.innerHTML = '<dl class="divide-y divide-slate-200">' + items.map(function(item) {
+        const value = modelContextSummaryValue(item, problem, geometry, parameterUnits);
+        return '<div class="flex items-baseline justify-between gap-1.5 py-0.5 leading-[1.1]">'
+            + '<dt class="min-w-0 text-[8px] text-slate-500">' + escapeModelContext(item.label) + '</dt>'
+            + '<dd class="max-w-[55%] break-words text-right text-[9px] font-semibold text-slate-800">' + escapeModelContext(value) + '</dd></div>';
+    }).join('') + '</dl>';
 }

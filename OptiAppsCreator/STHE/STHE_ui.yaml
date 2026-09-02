@@ -8,6 +8,13 @@ model:
   sync_scalar_keys:
     - LBLD
     - UBLD
+  configuration_summary:
+    - {key: "Selected_OF", label: "Objective"}
+    - {key: "yfluid", label: "Fluid allocation"}
+    - {key: "Shell_Method", label: "Shell method"}
+    - {key: "Npt", label: "Tube passes"}
+    - {key: "lay", label: "Layouts"}
+    - {key: "Ds", label: "Shell diameters"}
 
 pages:
   # ============================================================
@@ -21,8 +28,7 @@ pages:
       - [optimization_target, fluid_allocation, lmtd_settings, lmtd_display]
       - [cold_stream]
       - [hot_stream]
-      - [flow_limits, other_options, bell_params]
-      - [economic]
+      - [flow_limits]
 
     sections:
 
@@ -105,6 +111,27 @@ pages:
         fields:
           Xp:    {label: "Xp limit (Pmax*Xp < P)"}
           F_min: {label: "F min value"}
+
+  # ============================================================
+  # MODEL OPTIONS PAGE
+  # ============================================================
+  model_options:
+    title: "Model Options"
+    default_buttons: true
+    columns:
+      - [thermal_model, other_options, bell_params]
+      - [economic]
+
+    sections:
+      thermal_model:
+        title: "THERMAL MODEL"
+        element: radio_group
+        source: "UI_State"
+        source_key: "Thermal_Model"
+        default: "LMTD"
+        options:
+          - {value: "LMTD", label: "LMTD Model"}
+          - {value: "Distributed", label: "Distributed Model", disabled: true}
 
       other_options:
         title: "OTHER OPTIONS"

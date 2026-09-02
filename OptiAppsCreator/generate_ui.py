@@ -180,11 +180,13 @@ def get_example_default(example, key_path, equipment=1):
 
 
 def build_model_configuration_context(yaml_data, model_def, common_units=None):
-    """Build metadata used by the expandable model configuration tree."""
+    """Build model metadata and the YAML-selected configuration summary."""
     common_units = common_units or {}
     model_info = model_def.get("Model_Info", {})
     model_meta = yaml_data.get("model", {})
-    problem_sections = yaml_data.get("pages", {}).get("problem_data", {}).get("sections", {})
+    parameter_sections = {}
+    for page_name in ("problem_data", "model_options"):
+        parameter_sections.update(yaml_data.get("pages", {}).get(page_name, {}).get("sections", {}))
     geometric_sections = yaml_data.get("pages", {}).get("geometric_options", {}).get("sections", {})
     result_sections = yaml_data.get("pages", {}).get("results", {}).get("sections", {})
     parameter_base_units = get_model_base_units(model_def, "Model_Parameters")
@@ -195,9 +197,11 @@ def build_model_configuration_context(yaml_data, model_def, common_units=None):
 
     selections = []
     parameter_labels = {}
-    for section in problem_sections.values():
+    for section in parameter_sections.values():
         element = section.get("element", "form_group")
         if element == "radio_group":
+            if section.get("source") == "UI_State":
+                continue
             selections.append({
                 "key": section["source_key"],
                 "label": section.get("title", section["source_key"]).title(),
@@ -277,6 +281,38 @@ def build_model_configuration_context(yaml_data, model_def, common_units=None):
         ("Global Optimizer", "Global_Optimizer"),
         ("Next Level", "Next_Level"),
     ]
+    available_summary_fields = {}
+    for item in selections:
+        available_summary_fields[item["key"]] = {
+            **item,
+            "source": "problem_data",
+            "kind": "choice",
+        }
+    for item in geometric_options:
+        available_summary_fields[item["key"]] = {
+            **item,
+            "source": "geometric_data",
+            "kind": "selection_count",
+        }
+    for item in geometric_parameters:
+        available_summary_fields[item["key"]] = {
+            **item,
+            "source": "geometric_data",
+            "kind": "scalar",
+        }
+
+    configuration_summary = []
+    for configured_item in model_meta.get("configuration_summary", []) or []:
+        configured_item = {"key": configured_item} if isinstance(configured_item, str) else configured_item
+        key = configured_item.get("key")
+        if key not in available_summary_fields:
+            model_label = model_meta.get("display_name", "Model")
+            raise ValueError(f"Unknown {model_label} configuration_summary key: {key}")
+        resolved_item = dict(available_summary_fields[key])
+        if configured_item.get("label"):
+            resolved_item["label"] = configured_item["label"]
+        configuration_summary.append(resolved_item)
+
     return {
         "display_name": model_meta.get("display_name", ""),
         "modes": [{"label": label, "enabled": bool(model_def.get(key, False))} for label, key in mode_keys],
@@ -289,12 +325,13 @@ def build_model_configuration_context(yaml_data, model_def, common_units=None):
         "parameter_base_units": parameter_base_units,
         "result_labels": result_labels,
         "result_base_units": result_base_units,
+        "configuration_summary": configuration_summary,
     }
 
 
-def build_problem_data_context(yaml_data, model_def, example, common_units=None):
-    """Build resolved context for the problem_data page."""
-    page_yaml = yaml_data["pages"]["problem_data"]
+def build_problem_data_context(yaml_data, model_def, example, common_units=None, page_name="problem_data"):
+    """Build resolved context for a YAML-defined model parameter page."""
+    page_yaml = yaml_data["pages"][page_name]
     sections_out = []
     page_default_buttons = bool(page_yaml.get("default_buttons", False))
     recommended_limits = get_recommended_limit_parameters(model_def)
@@ -321,6 +358,9 @@ def build_problem_data_context(yaml_data, model_def, example, common_units=None)
         if element == "radio_group":
             source_key = section["source_key"]
             defaults = get_example_default(example, f"{source}.{source_key}")
+            if defaults in (None, "", []):
+                defaults = section.get("default", "")
+            selected_default = defaults[0] if isinstance(defaults, list) and defaults else defaults
             options = []
             opts = section.get("options")
             if not opts:
@@ -329,7 +369,8 @@ def build_problem_data_context(yaml_data, model_def, example, common_units=None)
                 options.append({
                     "value": opt["value"],
                     "label": opt["label"],
-                    "checked": opt["value"] == defaults if isinstance(defaults, str) else opt["value"] == defaults[0],
+                    "checked": opt["value"] == selected_default,
+                    "disabled": bool(opt.get("disabled", False)),
                 })
             resolved["options"] = options
             resolved["source_key"] = source_key
@@ -778,21 +819,22 @@ def build_units_context(yaml_data, model_def, common_units=None):
             **metadata,
         })
 
-    problem_sections = yaml_data.get("pages", {}).get("problem_data", {}).get("sections", {})
-    for section in problem_sections.values():
-        title = section.get("title", "")
-        element = section.get("element")
-        if element == "form_group":
-            for key, field_meta in section.get("fields", {}).items():
-                if field_meta.get("element") == "select" or field_meta.get("display_factor") is not None:
-                    continue
-                add_row("Problem Data", title, key, field_meta.get("label", key), field_meta.get("unit"))
-        elif element == "limit_table":
-            for row in section.get("rows", []):
-                item = row.get("item", "")
-                unit = row.get("unit")
-                add_row("Problem Data", title, row["lower"], f"{item} lower", unit)
-                add_row("Problem Data", title, row["upper"], f"{item} upper", unit)
+    for page_name, page_label in (("problem_data", "Problem Data"), ("model_options", "Model Options")):
+        parameter_sections = yaml_data.get("pages", {}).get(page_name, {}).get("sections", {})
+        for section in parameter_sections.values():
+            title = section.get("title", "")
+            element = section.get("element")
+            if element == "form_group":
+                for key, field_meta in section.get("fields", {}).items():
+                    if field_meta.get("element") == "select" or field_meta.get("display_factor") is not None:
+                        continue
+                    add_row(page_label, title, key, field_meta.get("label", key), field_meta.get("unit"))
+            elif element == "limit_table":
+                for row in section.get("rows", []):
+                    item = row.get("item", "")
+                    unit = row.get("unit")
+                    add_row(page_label, title, row["lower"], f"{item} lower", unit)
+                    add_row(page_label, title, row["upper"], f"{item} upper", unit)
 
     geometric_sections = yaml_data.get("pages", {}).get("geometric_options", {}).get("sections", {})
     for section in geometric_sections.values():
@@ -921,10 +963,10 @@ def generate():
     })
 
     nav_pages = [
+        {"label": "Model Options", "file": "model_options.html"},
         {"label": "Problem Data", "file": "problem_data.html"},
         {"label": "Geometric Options", "file": "geometric_options.html"},
         {"label": "Results", "file": "results.html"},
-        {"label": "Projects", "file": "projects.html"},
     ]
 
     # --- Login page (once, in output/) ---
@@ -1006,6 +1048,28 @@ def generate():
         )
         (model_output_dir / "problem_data.html").write_text(html, encoding="utf-8")
         print(f"  ✓ output/{model_name}/problem_data.html")
+
+        # Model Options page
+        nav_mo = [{"label": p["label"], "active": p["file"] == "model_options.html", "file": p["file"]} for p in nav_pages]
+        mo_sections = build_problem_data_context(model_ui, model_def, example, common_units, "model_options")
+        mo_columns = build_column_layout(mo_sections, model_ui["pages"]["model_options"]["columns"])
+        mo_columns = uniformize_column_widths(mo_columns)
+
+        template = env.get_template("model_options.html")
+        html = template.render(
+            page_title="Model Options",
+            nav_pages=nav_mo,
+            columns=mo_columns,
+            all_sections=mo_sections,
+            header=header_data,
+            model_name=model_name,
+            sync_scalar_keys=sync_scalar_keys,
+            geometric_scalar_keys=geometric_scalar_keys,
+            unit_conversions=common_units.get("conversions", {}),
+            model_configuration=model_configuration,
+        )
+        (model_output_dir / "model_options.html").write_text(html, encoding="utf-8")
+        print(f"  ✓ output/{model_name}/model_options.html")
 
         # Geometric Options page
         nav_go = [{"label": p["label"], "active": p["file"] == "geometric_options.html", "file": p["file"]} for p in nav_pages]

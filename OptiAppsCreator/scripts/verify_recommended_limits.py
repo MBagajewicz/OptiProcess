@@ -20,8 +20,10 @@ def read_text(path: Path) -> str:
 
 def verify_generated_html() -> None:
     sthe_problem = read_text(ROOT / "output" / "STHE" / "problem_data.html")
+    sthe_model_options = read_text(ROOT / "output" / "STHE" / "model_options.html")
     sthe_geometric = read_text(ROOT / "output" / "STHE" / "geometric_options.html")
     gphe_problem = read_text(ROOT / "output" / "GPHE" / "problem_data.html")
+    gphe_model_options = read_text(ROOT / "output" / "GPHE" / "model_options.html")
     gphe_geometric = read_text(ROOT / "output" / "GPHE" / "geometric_options.html")
 
     require(
@@ -29,7 +31,7 @@ def verify_generated_html() -> None:
         "STHE mh must render recommended limits from Model_Info.",
     )
     require(
-        'data-key="int_rate"' in sthe_problem and 'data-recommended-min="5.0"' in sthe_problem and 'data-recommended-max="20.0"' in sthe_problem,
+        'data-key="int_rate"' in sthe_model_options and 'data-recommended-min="5.0"' in sthe_model_options and 'data-recommended-max="20.0"' in sthe_model_options,
         "STHE int_rate recommended limits must use displayed percentage scale.",
     )
     require(
@@ -39,6 +41,10 @@ def verify_generated_html() -> None:
     require(
         'data-recommended-min=' not in gphe_problem,
         "GPHE Problem Data must not render recommended limits when Model_Info has no key.",
+    )
+    require(
+        'data-recommended-min=' not in gphe_model_options,
+        "GPHE Model Options must not render recommended limits when Model_Info has no key.",
     )
     require(
         'data-recommended-min=' not in gphe_geometric,

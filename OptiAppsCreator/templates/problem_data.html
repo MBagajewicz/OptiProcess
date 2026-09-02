@@ -22,8 +22,8 @@
         <div class="space-y-2 text-xs">
             {% for opt in section.options %}
             <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="radio" name="{{ section.source_key }}" value="{{ opt.value }}" {{ 'checked' if opt.checked }} class="form-radio text-blue-600 h-3 w-3">
-                <span>{{ opt.label }}</span>
+                <input type="radio" name="{{ section.source_key }}" value="{{ opt.value }}" {{ 'checked' if opt.checked }}{% if opt.disabled %} disabled aria-disabled="true"{% endif %} class="form-radio text-blue-600 h-3 w-3">
+                <span class="{{ 'text-slate-400' if opt.disabled }}">{{ opt.label }}</span>
             </label>
             {% endfor %}
         </div>

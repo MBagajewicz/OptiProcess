@@ -1,40 +1,40 @@
+{% set file_active = page_title == "Projects" %}
+{% set units_active = page_title in ["Units Configuration", "Results Units Configuration"] %}
 <nav class="flex flex-col gap-2 border-b border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 xl:flex-row xl:items-center xl:justify-between" aria-label="Model pages">
-    <div class="flex flex-wrap justify-center gap-2 xl:justify-start">
+    <div class="flex flex-wrap items-center justify-center gap-2 xl:justify-start">
+        <div class="relative">
+            <button type="button" onclick="toggleFileMenu()"{% if file_active %} aria-current="page"{% endif %} class="rounded-full border px-4 py-1.5 text-xs font-bold transition-colors {{ 'border-blue-600 bg-blue-600 text-white shadow-sm' if file_active else 'border-slate-300 bg-slate-700 text-white hover:bg-slate-800' }}">
+                File <i class="fas fa-caret-down ml-1"></i>
+            </button>
+            <div id="file-menu" class="absolute left-0 top-8 z-50 hidden min-w-[190px] overflow-hidden rounded-lg border border-gray-200 bg-white text-xs shadow-lg">
+                <button type="button" onclick="loadExamples()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Open Tutorial Library</button>
+                <div class="border-t border-gray-100"></div>
+                <button type="button" onclick="saveCloud()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Save Design</button>
+                <button type="button" onclick="saveAsCloud()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Save Design As...</button>
+                <button type="button" onclick="closeFileMenu(); resetProjectState()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Reset</button>
+                <div class="border-t border-gray-100"></div>
+                <button type="button" onclick="closeFileMenu(); navigateModelPage(event, 'projects.html?scope=users')"{% if file_active %} aria-current="page"{% endif %} class="block w-full px-3 py-2 text-left hover:bg-gray-50">Project Management</button>
+            </div>
+        </div>
+
+        <div class="relative">
+            <button type="button" onclick="toggleUnitsMenu()"{% if units_active %} aria-current="page"{% endif %} class="rounded-full border px-4 py-1.5 text-xs font-bold transition-colors {{ 'border-blue-600 bg-blue-600 text-white shadow-sm' if units_active else 'border-indigo-700 bg-indigo-600 text-white hover:bg-indigo-700' }}">
+                Units <i class="fas fa-caret-down ml-1"></i>
+            </button>
+            <div id="units-menu" class="absolute left-0 top-8 z-50 hidden min-w-[140px] overflow-hidden rounded-lg border border-gray-200 bg-white text-xs shadow-lg">
+                <button type="button" onclick="openUnitsConfiguration()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Input</button>
+                <button type="button" onclick="openResultsUnitsConfiguration()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Output</button>
+            </div>
+        </div>
+
         {% for nav_page in nav_pages %}
         <button type="button" onclick="navigateModelPage(event, '{{ nav_page.file }}')"{% if nav_page.active %} aria-current="page"{% endif %} class="rounded-full border px-4 py-1.5 text-xs font-bold transition-colors {{ 'border-blue-600 bg-blue-600 text-white shadow-sm' if nav_page.active else 'border-slate-300 bg-white text-slate-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700' }}">
             {{ nav_page.label }}
         </button>
         {% endfor %}
     </div>
+
     <div class="flex flex-wrap items-center justify-center gap-2 xl:justify-end">
-        <div class="relative">
-            <button type="button" onclick="toggleLoadMenu()" class="rounded-full bg-slate-700 px-3 py-1 text-xs font-bold text-white hover:bg-slate-800">
-                Load <i class="fas fa-caret-down ml-1"></i>
-            </button>
-            <div id="load-menu" class="absolute right-0 top-8 z-50 hidden min-w-[170px] rounded-lg border border-gray-200 bg-white text-xs shadow-lg">
-                <button type="button" onclick="loadExamples()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Open Tutorial Library</button>
-                <button type="button" onclick="loadUserProjects()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Open User Projects</button>
-            </div>
-        </div>
-        <div class="relative">
-            <button type="button" onclick="toggleSaveMenu()" class="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white hover:bg-blue-700">
-                Save <i class="fas fa-caret-down ml-1"></i>
-            </button>
-            <div id="save-menu" class="absolute right-0 top-8 z-50 hidden min-w-[160px] rounded-lg border border-gray-200 bg-white text-xs shadow-lg">
-                <button type="button" onclick="saveCloud()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Save Design</button>
-                <button type="button" onclick="saveAsCloud()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Save Design As...</button>
-            </div>
-        </div>
-        <div class="relative">
-            <button type="button" onclick="toggleConfigMenu()" class="rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold text-white hover:bg-indigo-700">
-                Units <i class="fas fa-caret-down ml-1"></i>
-            </button>
-            <div id="config-menu" class="absolute right-0 top-8 z-50 hidden min-w-[180px] rounded-lg border border-gray-200 bg-white text-xs shadow-lg">
-                <button type="button" onclick="openUnitsConfiguration()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Input</button>
-                <button type="button" onclick="openResultsUnitsConfiguration()" class="block w-full px-3 py-2 text-left hover:bg-gray-50">Output</button>
-            </div>
-        </div>
-        <button type="button" onclick="resetProjectState()" class="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-700">Reset</button>
         <button type="button" onclick="window.location.href='/ui/main_menu.html'" class="rounded-full bg-slate-500 px-3 py-1 text-xs font-bold text-white hover:bg-slate-600">Main Menu</button>
         <button type="button" onclick="logout()" class="rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white hover:bg-red-700">LOGOUT</button>
     </div>

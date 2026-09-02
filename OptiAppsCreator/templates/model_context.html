@@ -1,29 +1,26 @@
-<div class="flex min-w-0 flex-col gap-2">
-    <div class="min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-slate-300 shadow-sm">
-        <div class="bg-white px-3 py-2 text-left">
-            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Model</span>
-            <strong id="context-model" class="block truncate text-xs text-slate-800">{{ model_name }}</strong>
+<section id="model-context-panel" class="min-w-0 overflow-hidden rounded-md border border-slate-300 bg-white text-[10px] leading-[1.1] text-slate-700 shadow-sm">
+    <div class="divide-y divide-slate-100">
+        <div class="flex items-baseline justify-between gap-1.5 px-2 py-1 text-left">
+            <span class="shrink-0 text-[8px] font-bold uppercase tracking-wide text-slate-400">Model</span>
+            <strong id="context-model" class="min-w-0 truncate text-right font-semibold text-slate-800">{{ model_name }}</strong>
         </div>
-        <div class="mt-px bg-white px-3 py-2 text-left">
-            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Project</span>
-            <strong id="context-project" class="block truncate text-xs text-slate-800">No User Project</strong>
+        <div class="flex items-baseline justify-between gap-1.5 px-2 py-1 text-left">
+            <span class="shrink-0 text-[8px] font-bold uppercase tracking-wide text-slate-400">Project</span>
+            <strong id="context-project" class="min-w-0 truncate text-right font-semibold text-slate-800">No User Project</strong>
         </div>
-        <div class="mt-px bg-white px-3 py-2 text-left">
-            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Design</span>
-            <strong id="context-design" class="block truncate text-xs text-slate-800">Unsaved Design</strong>
+        <div class="flex items-baseline justify-between gap-1.5 px-2 py-1 text-left">
+            <span class="shrink-0 text-[8px] font-bold uppercase tracking-wide text-slate-400">Design</span>
+            <strong id="context-design" class="min-w-0 truncate text-right font-semibold text-slate-800">Unsaved Design</strong>
         </div>
-        <div class="mt-px bg-white px-3 py-2 text-left">
-            <span class="block text-[9px] font-bold uppercase tracking-wide text-slate-400">Calculation Status</span>
-            <strong id="context-calculation-status" class="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">Not calculated</strong>
+        <div class="flex items-center justify-between gap-1.5 px-2 py-1 text-left">
+            <span class="shrink-0 text-[8px] font-bold uppercase tracking-wide text-slate-400">Calculation Status</span>
+            <strong id="context-calculation-status" class="inline-block rounded-full bg-slate-100 px-1 py-0.5 text-[8px] font-semibold text-slate-600">Not calculated</strong>
         </div>
     </div>
-    <details id="model-configuration-tree" class="group min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-slate-50 shadow-sm">
-        <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100">
-            <span><i class="fas fa-sitemap mr-2 text-indigo-500"></i>Model Configuration</span>
-            <i class="fas fa-chevron-down text-[10px] text-slate-400 transition-transform group-open:rotate-180"></i>
-        </summary>
-        <div id="model-configuration-tree-content" class="border-t border-slate-200 p-3 text-xs text-slate-700">
-            <div class="text-slate-400">Loading configuration...</div>
+    <div class="border-t border-slate-300 bg-slate-50 px-2 py-1.5">
+        <h2 class="mb-1 text-[9px] font-bold text-slate-700"><i class="fas fa-sliders-h mr-1 text-indigo-500"></i>Model Configuration</h2>
+        <div id="model-configuration-summary-content">
+            <div class="text-[9px] text-slate-400">Loading configuration...</div>
         </div>
-    </details>
-</div>
+    </div>
+</section>

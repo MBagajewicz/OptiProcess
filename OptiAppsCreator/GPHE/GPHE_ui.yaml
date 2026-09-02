@@ -6,6 +6,13 @@ model:
   display_name: "Plate Exchanger"
   icon: "fa-industry"
   sync_scalar_keys: []
+  configuration_summary:
+    - {key: "Selected_OF", label: "Objective"}
+    - {key: "Ntp", label: "Number of plates"}
+    - {key: "Pl", label: "Plate sizes"}
+    - {key: "Sa", label: "Chevron angles"}
+    - {key: "Nph", label: "Hot stream passes"}
+    - {key: "Npc", label: "Cold stream passes"}
 
 pages:
   # ============================================================
@@ -15,10 +22,9 @@ pages:
     title: "Problem Data"
     default_buttons: true
     columns:
-      - [optimization_target, other_options, heat_display]
+      - [optimization_target, heat_display]
       - [hot_stream, cold_stream]
       - [flow_limits]
-      - [economic]
 
     sections:
 
@@ -79,6 +85,27 @@ pages:
         rows:
           - {item: "Hot velocity", unit: "m/s", lower: vhmin, upper: vhmax}
           - {item: "Cold velocity", unit: "m/s", lower: vcmin, upper: vcmax}
+
+  # ============================================================
+  # MODEL OPTIONS PAGE
+  # ============================================================
+  model_options:
+    title: "Model Options"
+    default_buttons: true
+    columns:
+      - [thermal_model, other_options]
+      - [economic]
+
+    sections:
+      thermal_model:
+        title: "THERMAL MODEL"
+        element: radio_group
+        source: "UI_State"
+        source_key: "Thermal_Model"
+        default: "LMTD"
+        options:
+          - {value: "LMTD", label: "LMTD Model"}
+          - {value: "Distributed", label: "Distributed Model", disabled: true}
 
       other_options:
         title: "OTHER OPTIONS"
