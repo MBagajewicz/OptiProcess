@@ -52,3 +52,62 @@ def display_tube(tube_index):
         f"BWG = {int(bwg)}, "
         f"Thickness = {thk * 1000.0:.3f} mm"
     )
+
+
+def display_solution(
+    solution,
+    active_example,
+    models_def
+):
+    """
+    Display all equipment solutions.
+
+    The equipment type and its display definition are obtained from
+    active_example and models_def. No equipment name or model-specific
+    variable is hardcoded here.
+    """
+
+    for equipment, equipment_solution in solution.items():
+
+        if not isinstance(equipment_solution, dict):
+            continue
+
+        equipment_number = equipment.replace('Equipment', '')
+
+        equipment_data = active_example[
+            f'Equipment{equipment_number}'
+        ]
+
+        type_equipment = equipment_data[
+            'Model_Declarations'
+        ]['Type_Equipment']
+
+        display_definition = (
+            models_def[type_equipment]
+            ['Model_Info']
+            .get('Solution_Display', {})
+        )
+
+        print(
+            f'\nSolution of {equipment} "{type_equipment}":'
+        )
+
+        for variable, value in equipment_solution.items():
+
+            display_name = display_definition.get(variable)
+
+            if display_name is None:
+                print(f"{variable} = {value}")
+                continue
+
+            display_function = globals().get(display_name)
+
+            if display_function is None:
+                raise ValueError(
+                    f"Display function '{display_name}' "
+                    f"not found for variable '{variable}'."
+                )
+
+            print(
+                f"{variable} = {display_function(value)}"
+            )

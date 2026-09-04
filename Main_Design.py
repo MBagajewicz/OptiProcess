@@ -41,10 +41,7 @@ Create_Results_txt = True       # True or False
 # =============================================================================
 # REQUIRED LOCAL LIBRARIES
 # =============================================================================
-from Common.Utils.Solution_Display import (
-    get_solution_variable,
-    display_tube
-)
+from Common.Utils.Solution_Display import display_solution
 from Local_Libraries_Check import ensure_local_libraries
 
 REQUIRED_LOCAL_LIBRARIES = [
@@ -170,18 +167,11 @@ Solution = Calculations_Solver_Selection.Solver_Selection(Active_Example, Active
 
 
 
-if 'Tube' in Solution['Equipment1']:
-
-    tube_index = get_solution_variable(
-        Solution,
-        'Equipment1',
-        'Tube'
-    )
-
-    save_result(
-        f"Tube = {display_tube(tube_index)}"
-    )
-
+display_solution(
+    Solution,
+    Active_Example,
+    Active_Models['Models_Def']
+)
 
 # Record end time
 end_time = time.time()
@@ -195,4 +185,3 @@ save_result(f'Total time elapsed: {elapsed_total_time:.5f} seconds\n')
 ##################################################################################################################
 #endregion
 ##################################################################################################################
-
