@@ -51,6 +51,14 @@ def variables_standard_values(m_d, save_result):
     tol = 0.001
     out = {}
     for name, values in zip(variables, discrete_values):
+
+        # Calculated discrete values are markers that will be
+        # resolved later by the calculated-values resolver.
+        # They are not actual discrete values and therefore
+        # must not be checked against standard values here.
+        if isinstance(values, str) and values.startswith('Calculated_'):
+            continue
+
         standard_values_verif = standard_values.get(name, [])
         for v in values:
             value_c = False

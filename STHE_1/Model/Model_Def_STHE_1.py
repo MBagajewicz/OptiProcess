@@ -46,7 +46,7 @@ Model_STHE_1 = {
         # functions of the list may be skipped and should be called by model programmer inside Next_Level_Set_Up
         # function
 
-        'List_of_Variables': ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc'],
+        'List_of_Variables': ['Ds', 'Tube', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc'],
         # List of discrete design variables. User will give discrete options in example file in the same order as 
         # defined here, and this is also the same order that must be used in Constraints_and_OF.py functions
 
@@ -79,10 +79,7 @@ Model_STHE_1 = {
                    1.4081, 1.4164, 1.4224, 1.4247, 1.433, 1.4412, 1.4478, 1.4495, 1.4578,
                    1.4661, 1.4732, 1.4743, 1.4826, 1.4909, 1.4986, 1.4992, 1.5074, 1.5157,
                    ],
-            'dte': [0.01905, 0.02540, 0.03175, 0.03810, 0.05080,
-                    0.02132, 0.02359, 0.0254, 0.02585, 0.02812, 0.03039, 0.03175,
-                    0.03266, 0.03492, 0.03719, 0.0381, 0.03946, 0.04173, 0.044, 0.04626, 0.04853, 0.0508
-                    ],
+            'Tube': [],
             'Npt': [1, 2, 4, 6, 8],
             'rp': [1.25, 1.33, 1.50],
             'lay': [1, 2, 3],
@@ -110,7 +107,7 @@ Model_STHE_1 = {
         # If it is True you will run Set Trimming in incremental mode
         # If it is False you will run Set Triming in tradicional mode (i.e. all variables will be always used)
 
-        'All_Variables_In_The_Problem': ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc'],
+        'All_Variables_In_The_Problem': ['Ds', 'Tube', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc'],
         # These are all variables used in the problem constraints ordered as they are declared in constraints; is
         # used when 'Incremental_Set_Trimming" is set to True.
 
@@ -134,18 +131,18 @@ Model_STHE_1 = {
         'Set_Trimming_Constraints_List': ['vs_lb', 'vs_ub', 'vt_lb', 'vt_ub', 'Ret_lb', 'Ret_ub', 'Res_lb',
                                           'Res_ub', 'DPs_ub', 'DPt_ub', 'F_min', 'Areq'],
 
-        'Variables_Used_In_Incremental_For_Each_Set_Trimming_Constraint': [['Ds', 'dte', 'rp', 'lay', 'L', 'Nb'],
-                                                                           ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay'],
-                                                                           ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb'],
-                                                                           ['Ds', 'dte', 'rp', 'lay', 'L', 'Nb'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L'],
+        'Variables_Used_In_Incremental_For_Each_Set_Trimming_Constraint': [['Ds', 'Tube', 'rp', 'lay', 'L', 'Nb'],
+                                                                           ['Ds', 'Tube', 'rp', 'lay', 'L', 'Nb'],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay'],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay'],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay'],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay'],
+                                                                           ['Ds', 'Tube', 'rp', 'lay', 'L', 'Nb'],
+                                                                           ['Ds', 'Tube', 'rp', 'lay', 'L', 'Nb'],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc'],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay', 'L'],
                                                                            ['Npt'],
-                                                                           ['Ds', 'dte', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc']],
+                                                                           ['Ds', 'Tube', 'Npt', 'rp', 'lay', 'L', 'Nb', 'Bc']],
         # This is valid if 'Incremental_Set_Trimming' option is set in True
         # Here you need to add the active variables used in each Set_Trimming_Constraint
         # The order used in 'Set_Trimming_Constraints_List' is the order

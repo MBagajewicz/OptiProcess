@@ -269,7 +269,7 @@ Example1 = {
 
                 [0.7874, 0.8382, 0.889, 0.9398, 0.9906, 1.0668, 1.143, 1.2192, 1.3716, 1.524],  # Ds
 
-                [0.01905, 0.02540, 0.03175, 0.03810, 0.05080],  # dte
+                'Calculated_from_TEMA',  # Tube
 
                 [1, 2, 4, 6],  # Npt
 
@@ -351,7 +351,18 @@ Example1 = {
                                           # - User defined: 'ktube': value. 
                                           # - Materials: 'ktube': 'Cooper' or 'CarbonSteel' or 'StainleesSteel304'
                                           # - If 'ktube' does not exists then default... 'ktube': 'CarbonSteel'
-            'thk': 1.65e-3,               # Tube thickness
+            'Stube': 138e6,               # Tube material allowable stress (Pa) ASME SA-516 Gr.70
+
+            'Discrete_Values_Generation': {
+                'Calculated_from_TEMA': {
+                    'Parameters': {
+                        'Tube_Source': 'TEMA',
+                        'Tube_Standard': 'D7M',
+                        'Tube_Outside_Diameter': []
+                    }
+                }
+            },
+
             'yfluid': 'hot_stream',       # Allocation of tube side: 'hot_stream' or 'cold_stream'
 
             # Correlations Tube and Shell Methods
@@ -386,8 +397,8 @@ Example1 = {
         }
     },
 }
-
 # endregion
+
 
 ####################################################################################################################
 

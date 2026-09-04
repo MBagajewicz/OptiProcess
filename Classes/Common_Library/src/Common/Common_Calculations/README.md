@@ -1,7 +1,8 @@
 # Calculations_Model_Consistency
 
 > Consistency-checking module between discrete design-variable values and the standard values defined in the equipment model.  
-> Ensures that optimization/sizing variables respect range limits and match the manufacturer's catalog or base-model values.
+> Ensures that optimization/sizing variables respect range limits and match the model's standard values.  
+> Supports `Calculated_*` markers for discrete sets that are generated later by a dedicated calculated-values resolver.
 
 ---
 
@@ -70,6 +71,7 @@ m_i = {
 3. For each variable, obtains the `[min, max]` range from its standard values.
 4. If any discrete value falls outside the range `± tol` (where `tol = 0.001`), a warning is logged.
 5. If there are no issues, no message is emitted.
+6. If a variable's discrete-value entry is a string starting with `Calculated_`, it is treated as a calculation marker rather than as an actual discrete-value list and is skipped by this validation. The marker is resolved later by the calculated-values resolver.
 
 ### Returns
 
@@ -158,6 +160,8 @@ m_d = variables_standard_values(m_d, save_result)
 - The tolerance `tol = 0.001` allows small rounding differences.
 - Unlike `variables_bounds()`, this function requires **point-wise matching** with catalogued values, not just being within a range.
 - Useful for validating that optimization variables only take commercial or manufacturable values.
+- `Calculated_*` entries are intentionally skipped here because they are placeholders for discrete sets that have not yet been generated.
+- Once the calculated marker has been resolved into actual discrete values, those generated values can be checked normally.
 
 ---
 
@@ -182,6 +186,8 @@ m_d = variables_standard_values(m_d, save_result)
 | Intermediate value | A value within the range but not matching any standard triggers `WARNING: Variables do not match standard values`. |
 | Tolerance | Values with deviation `< 0.001` from a standard should be accepted. |
 | Variables without standard | Variables not present in `Standard_Variables_Values` should be silently ignored. |
+| Calculated discrete marker | A value such as `'Calculated_from_TEMA'` should be recognized as a calculation marker and should not trigger a standard-value warning. |
+| Resolved calculated values | After the marker is replaced by actual discrete values, those values should be subject to the normal standard-value validation. |
 | Non-existent model | Unregistered `Type_Equipment` should be handled by `Model_Loader` (typically with an exception). |
 
 ---

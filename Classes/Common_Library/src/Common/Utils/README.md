@@ -178,6 +178,219 @@ This decouples the generic consistency-checking logic from any specific equipmen
 
 ---
 
+## `Discrete_Values_Resolver`
+
+### Overview
+
+`Discrete_Values_Resolver.py` provides a **generic mechanism for resolving
+calculated discrete values** declared in a model definition.
+
+Its purpose is to allow a model to declare that one of the entries in
+`Discrete_Values_of_Variables` must be generated dynamically, without
+putting equipment-specific calculation logic into the generic framework.
+
+The resolver is implemented through:
+
+```python
+resolve_calculated_discrete_values(
+    m_d,
+    m_p,
+    calculated_values_generators
+)
+```
+
+### Calculated-value markers
+
+A calculated discrete-value entry is identified by a string beginning with:
+
+```text
+Calculated_
+```
+
+For example:
+
+```python
+'Discrete_Values_of_Variables': [
+    ['Ds values'],
+    'Calculated_from_TEMA',
+    ['Npt values'],
+    ...
+]
+```
+
+The marker itself is **not** the calculated result. It is the name of the
+generator that must be called to produce the actual discrete values.
+
+### Generation parameters
+
+The parameters associated with each calculated generator are obtained from
+`m_p['Discrete_Values_Generation']`.
+
+For example:
+
+```python
+'Discrete_Values_Generation': {
+    'Calculated_from_TEMA': {
+        'Parameters': {
+            'Tube_Source': 'TEMA',
+            'Tube_Standard': 'D7M',
+            'Tube_Outside_Diameter': []
+        }
+    }
+}
+```
+
+The resolver obtains the corresponding `Parameters` dictionary and passes
+it to the generator.
+
+### Generator modules
+
+The resolver receives a dictionary of available generator modules through:
+
+```python
+calculated_values_generators
+```
+
+For example:
+
+```python
+calculated_values_generators = {
+    'Calculated_from_TEMA': Calculations_HEX_Tubes
+}
+```
+
+The resolver then:
+
+1. Reads `Discrete_Values_of_Variables`.
+2. Identifies entries that are strings beginning with `Calculated_`.
+3. Uses the marker as the generator name.
+4. Looks for the corresponding generation parameters.
+5. Looks for the corresponding generator module.
+6. Verifies that the generator function exists in that module.
+7. Calls the generator with:
+   ```python
+   generator(
+       m_p=m_p,
+       parameters=parameters
+   )
+   ```
+8. Replaces the original marker in
+   `m_d['Discrete_Values_of_Variables']` with the generated discrete
+   values.
+
+Therefore, after resolution, the marker is no longer present in the
+discrete-value list.
+
+### Generic architecture
+
+The resolver deliberately does **not** contain knowledge of TEMA,
+STHE, tubes, or any other specific equipment model.
+
+The architecture is:
+
+```text
+Model definition
+      │
+      ▼
+Discrete_Values_of_Variables
+      │
+      ├── normal discrete values
+      │
+      └── "Calculated_*" marker
+                    │
+                    ▼
+       Discrete_Values_Resolver
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+ Generation parameters   Generator module
+          │                   │
+          └─────────┬─────────┘
+                    ▼
+             Calculated values
+                    │
+                    ▼
+      Updated Discrete_Values_of_Variables
+```
+
+This keeps the generic resolver independent of the engineering calculation
+that generates the values.
+
+### Error handling
+
+The resolver raises:
+
+| Exception | Condition |
+|-----------|-----------|
+| `ValueError` | A `Calculated_*` marker has no corresponding generation parameters. |
+| `ValueError` | A `Calculated_*` marker has no corresponding generator module. |
+| `AttributeError` | The specified generator function does not exist in the supplied module. |
+
+Non-string entries are ignored by the resolver, as are strings that do not
+begin with `Calculated_`.
+
+### Example
+
+A model may initially contain:
+
+```python
+m_d['Discrete_Values_of_Variables'] = [
+    [0.5, 0.6, 0.7],
+    'Calculated_from_TEMA',
+    [1, 2, 4, 6]
+]
+```
+
+After calling:
+
+```python
+resolve_calculated_discrete_values(
+    m_d=m_d,
+    m_p=m_p,
+    calculated_values_generators={
+        'Calculated_from_TEMA': Calculations_HEX_Tubes
+    }
+)
+```
+
+the calculated entry is replaced by the list returned by
+`Calculated_from_TEMA`.
+
+The resolver therefore acts as a **generic bridge between model
+declarations and calculated discrete-value generators**.
+
+### Separation of responsibilities
+
+The intended separation is:
+
+```text
+Model definition
+   ↓
+Declares that values are calculated
+
+Discrete_Values_Resolver
+   ↓
+Identifies and dispatches calculated-value generators
+
+Calculation module
+   ↓
+Performs the equipment-specific engineering calculation
+
+Resolver
+   ↓
+Stores the generated values in the model declaration
+```
+
+The calculation itself remains outside the resolver.
+
+For example, a TEMA tube calculation belongs to its calculation module,
+while `Discrete_Values_Resolver.py` only performs the generic dispatch and
+replacement mechanism.
+
+---
+
+---
+
 ## 📄 License
 
 *Under construction*

@@ -209,7 +209,7 @@ Example1 = {
             # Problem
             'Aexc': 11,                   # Area excess (%)
             'Tci': 47,                    # Inlet temperature of the cold stream (oC)
-            'Tco': 56,                    # Outlet temperature of the cold stream (oC)
+            'Tco': 56.043866,                    # Outlet temperature of the cold stream (oC)
             'Thi': 120,                   # Inlet temperature of the hot stream (oC)
             'Tho': 80,                    # Outlet temperature of the hot stream (oC)
             'vsmax': 2,                   # Upper bound on the shell-side velocity (m*s**(-1))

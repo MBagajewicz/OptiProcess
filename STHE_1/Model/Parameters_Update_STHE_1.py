@@ -32,11 +32,14 @@ from Common.HEX_Calculations import Calculations_HEX_Allocation
 from Common.HEX_Calculations import Calculations_HEX_Tho_Tco
 from Common.HEX_Calculations import Calculations_HEX_WallTherCond
 from Common.Common_Calculations import Calculations_Model_Consistency
+from Common.HEX_Calculations import Calculations_HEX_Tubes
+from Common.Utils import Discrete_Values_Resolver
 # endregion
 ##################################################################################################################
 
 
 ##################################################################################################################
+
 # region Parameters Calculation functions
 
 # Adjustment of the data
@@ -49,6 +52,10 @@ def basic_consistency(m_d,m_p,save_result):
 
     verify1 = Calculations_Model_Consistency.variables_bounds(m_d, save_result)
     verify2 = Calculations_Model_Consistency.variables_standard_values(m_d, save_result)
+    verify3 = Discrete_Values_Resolver.resolve_calculated_discrete_values(m_d, m_p, 
+                                                                          calculated_values_generators={
+                                                                              'Calculated_from_TEMA': Calculations_HEX_Tubes})
+
 
 # Model consistency
 def model_consistency(m_d, m_p, save_result):
@@ -69,4 +76,3 @@ def model_consistency(m_d, m_p, save_result):
 
 # endregion
 ##################################################################################################################
-
