@@ -170,16 +170,17 @@ Solution = Calculations_Solver_Selection.Solver_Selection(Active_Example, Active
 
 
 
-tube_index = get_solution_variable(
-    Solution,
-    'Equipment1',
-    'Tube'
-)
+if 'Tube' in Solution['Equipment1']:
 
-save_result(
-    f"Tube = {display_tube(tube_index)}"
-)
+    tube_index = get_solution_variable(
+        Solution,
+        'Equipment1',
+        'Tube'
+    )
 
+    save_result(
+        f"Tube = {display_tube(tube_index)}"
+    )
 
 
 # Record end time
