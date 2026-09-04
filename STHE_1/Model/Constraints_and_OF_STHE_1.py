@@ -80,13 +80,6 @@ def lbmax(Ds, Tube, Npt, rp, lay, L, Nb, Bc, m_p):
 def vs_lb(Ds, Tube, Npt, rp, lay, L, Nb, Bc, m_p):
     # Lower bound on vs
     dte, _, _ = Common_Tube.get_tube_values(Tube)
-    print('########################### rp')
-    print(type(rp))
-    print(rp.dtype)
-
-    print('########################### lay')
-    print(type(lay))
-    print(lay.dtype)
     vs = Calculations_STHE_velocity_shellside.STHE_shellside_velocity(m_p['ms'], m_p['ros'], Ds, rp, L, Nb, dte, lay, m_p)
     fun_val = m_p['vsmin'] - vs
     return fun_val
