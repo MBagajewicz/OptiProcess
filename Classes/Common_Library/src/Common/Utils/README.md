@@ -391,6 +391,168 @@ replacement mechanism.
 
 ---
 
+---
+
+## `Solution_Display`
+
+### Overview
+
+`Solution_Display.py` provides simple utilities for extracting values from the
+optimization solution and presenting selected values in a human-readable form.
+
+The module is intentionally kept separate from the solver and from equipment
+calculation logic. Its purpose is only to handle presentation after the
+optimization has finished.
+
+Current functions:
+
+- `get_solution_variable()` — extracts a variable from the solution of a
+  specific equipment.
+- `display_tube()` — converts a numeric `Tube_Index` into readable tube
+  information using `Common_Tube.get_tube_values()`.
+
+### `get_solution_variable()`
+
+```python
+get_solution_variable(
+    solution,
+    equipment,
+    variable
+)
+```
+
+Extracts a variable from an equipment solution.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `solution` | `dict` | Solution returned by the solver. |
+| `equipment` | `str` | Equipment key, for example `'Equipment1'`. |
+| `variable` | `str` | Variable name to extract. |
+
+Returns the value associated with the requested variable.
+
+Example:
+
+```python
+tube_index = get_solution_variable(
+    Solution,
+    'Equipment1',
+    'Tube'
+)
+```
+
+### `display_tube()`
+
+```python
+display_tube(tube_index)
+```
+
+Displays the technical information associated with a numeric `Tube_Index`.
+
+The function obtains the tube properties through `Common_Tube.get_tube_values()`.
+The TEMA/D7M tube table therefore remains outside `Solution_Display.py`.
+
+The returned string contains:
+
+- Tube index
+- Tube outside diameter (OD)
+- BWG
+- Tube wall thickness
+
+OD and wall thickness are displayed in millimetres.
+
+Example:
+
+```python
+tube_information = display_tube(30.0)
+print(tube_information)
+```
+
+Output:
+
+```text
+Index = 30, OD = 19.050 mm, BWG = 20, Thickness = 0.889 mm
+```
+
+### Combined use
+
+The two functions can be used directly after the solver:
+
+```python
+from Common.Utils.Solution_Display import (
+    get_solution_variable,
+    display_tube
+)
+
+tube_index = get_solution_variable(
+    Solution,
+    'Equipment1',
+    'Tube'
+)
+
+save_result(
+    f"Tube = {display_tube(tube_index)}"
+)
+```
+
+Example output:
+
+```text
+Tube = Index = 30, OD = 19.050 mm, BWG = 20, Thickness = 0.889 mm
+```
+
+### Separation of responsibilities
+
+```text
+Solver
+   ↓
+Solution
+   ↓
+get_solution_variable()
+   ↓
+Tube_Index
+   ↓
+display_tube()
+   ↓
+Common_Tube.get_tube_values()
+   ↓
+OD / BWG / Thickness
+```
+
+`Solution_Display.py` does not modify the optimization solution and does not
+participate in candidate generation, consistency checking, constraint
+evaluation, or objective-function calculations.
+
+For the current STHE implementation, the numeric `Tube_Index` remains the
+actual optimization variable. `display_tube()` only translates that index into
+technical information for final presentation.
+
+### Current implementation
+
+```python
+from Common.Standards.Tubes.Tube import Common_Tube
+
+
+def get_solution_variable(
+    solution,
+    equipment,
+    variable
+):
+    return solution[equipment][variable]
+
+
+def display_tube(tube_index):
+    dte, bwg, thk = Common_Tube.get_tube_values(tube_index)
+
+    return (
+        f"Index = {int(tube_index)}, "
+        f"OD = {dte * 1000.0:.3f} mm, "
+        f"BWG = {int(bwg)}, "
+        f"Thickness = {thk * 1000.0:.3f} mm"
+    )
+```
+
+
 ## 📄 License
 
 *Under construction*

@@ -61,6 +61,12 @@ Model_STHE_1 = {
         # first one on the list will be the default if no selection is made
 
         'Consistency_Check_Functions': ['basic_consistency','model_consistency'],
+
+        'Solution_Display': {
+            'Tube': 'display_tube'
+        },
+        # Display of values represented by an index at the solution.
+
         'Standard_Variables_Values': {
             'Ds': [0.2032, 0.254, 0.3048, 0.33655, 0.38735, 0.43815, 0.48895, 0.53975, 0.59055, 0.635, 0.6858, 0.7366,
                    0.7874, 0.8382, 0.8890, 0.9398, 0.9906, 1.0668, 1.143, 1.2192, 1.3716, 1.524, 1.6764, 1.8288, 1.9812,
@@ -164,6 +170,8 @@ Model_STHE_1 = {
             },
         # Recursive Set Trimming Option. It is Optional. If user defines the parameter with the same name, 
         # only one option would be evaluated. If user does not enter a valid option, Variable_Options will be used.
+
+
 
     }
 

@@ -41,7 +41,10 @@ Create_Results_txt = True       # True or False
 # =============================================================================
 # REQUIRED LOCAL LIBRARIES
 # =============================================================================
-
+from Common.Utils.Solution_Display import (
+    get_solution_variable,
+    display_tube
+)
 from Local_Libraries_Check import ensure_local_libraries
 
 REQUIRED_LOCAL_LIBRARIES = [
@@ -164,6 +167,20 @@ save_result(f'\n******************** Starting Execution for {Selected_Model}_{Se
 
 # Call calculations
 Solution = Calculations_Solver_Selection.Solver_Selection(Active_Example, Active_Models, Selected_Model, Selected_Example, save_result)
+
+
+
+tube_index = get_solution_variable(
+    Solution,
+    'Equipment1',
+    'Tube'
+)
+
+save_result(
+    f"Tube = {display_tube(tube_index)}"
+)
+
+
 
 # Record end time
 end_time = time.time()
